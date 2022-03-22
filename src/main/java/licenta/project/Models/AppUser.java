@@ -30,7 +30,7 @@ public class AppUser implements UserDetails {
     private String name;
     private String password;
     private Boolean enabled;
-    private String image;
+    private String profileImage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -59,7 +59,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 
     @Override
