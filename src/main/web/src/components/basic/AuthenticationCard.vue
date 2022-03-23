@@ -10,7 +10,7 @@
       <main class="mt-8">
         <slot name="main"/>
       </main>
-      <footer class="mt-8">
+      <footer>
         <slot name="footer"/>
       </footer>
     </div>

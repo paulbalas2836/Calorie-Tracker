@@ -3,6 +3,7 @@ const About = () => import('../pages/About.vue')
 const CheckCalories = () => import('../pages/CheckCalories.vue')
 const CheckHistory = () => import('../pages/CheckHistory.vue')
 const Register = () => import('../pages/authentication/Register.vue')
+const ConfirmEmail = () => import('../pages/authentication/ConfirmEmail.vue')
 const routes= [
     {
         path:'/',
@@ -23,6 +24,11 @@ const routes= [
         path:'/register',
         name: 'Register',
         component: Register
+    },
+    {
+        path:'/register/confirm',
+        name: 'Confirm Email',
+        component: ConfirmEmail
     }
 ]
 

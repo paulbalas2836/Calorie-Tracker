@@ -5,11 +5,12 @@ import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
 import licenta.project.Models.AppUser;
 import licenta.project.Models.ConfirmationToken;
 import licenta.project.Repositories.AppUserRepository;
-import licenta.project.utils.EmailSender;
+import licenta.project.Utils.Mails.EmailSender;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,9 +22,9 @@ public class AppUserService {
     private ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
 
-    public String register(RegisterDto registerDto) throws UserAlreadyExistAuthenticationException {
-        if(emailExists(registerDto.getEmail())) {
-            throw new UserAlreadyExistAuthenticationException("There is an account with that email address: " + registerDto.getEmail());
+    public void register(RegisterDto registerDto) throws UserAlreadyExistAuthenticationException, MessagingException {
+        if (emailExists(registerDto.getEmail())) {
+            throw new UserAlreadyExistAuthenticationException("The email address is already taken!");
         }
 
         String encodedPassword = BCrypt.hashpw(registerDto.getPassword(), BCrypt.gensalt(12));
@@ -31,6 +32,7 @@ public class AppUserService {
         AppUser appUser = new AppUser();
         appUser.setEmail(registerDto.getEmail());
         appUser.setName(registerDto.getName());
+        appUser.setEnabled(false);
         appUser.setPassword(encodedPassword);
 
         String token = UUID.randomUUID().toString();
@@ -38,11 +40,10 @@ public class AppUserService {
         confirmationTokenService.saveConfirmationToken(confirmationToken);
         String link = "http://localhost:8080/register/confirm?token=" + token;
         emailSender.send(link, registerDto.getEmail());
-        return token;
     }
 
-    private Boolean emailExists(String email){
-       return appUserRepository.findByEmail(email).isPresent();
+    private Boolean emailExists(String email) {
+        return appUserRepository.findByEmail(email).isPresent();
     }
 
 
@@ -51,21 +52,20 @@ public class AppUserService {
     }
 
     @Transactional
-    public String confirmToken(String token){
-        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token).orElseThrow(()-> new IllegalStateException("token not found"));
+    public void confirmToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token).orElseThrow(() -> new IllegalStateException("token not found"));
 
-        if(confirmationToken.getConfirmedAt() != null){
+        if (confirmationToken.getConfirmedAt() != null) {
             throw new IllegalStateException("email already confirmed");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
-        if(expiredAt.isBefore(LocalDateTime.now())){
+        if (expiredAt.isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("token expired");
         }
 
         confirmationTokenService.setConfirmedAt(token);
         enableAppUser(confirmationToken.getAppUser().getEmail());
-        return "Confirmed";
     }
 }

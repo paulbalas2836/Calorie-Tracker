@@ -1,48 +1,74 @@
 package licenta.project.Services;
 
-import licenta.project.utils.EmailSender;
-import lombok.AllArgsConstructor;
+import licenta.project.Utils.Mails.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 @Service
-@AllArgsConstructor
 public class EmailService implements EmailSender {
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
+    @Autowired
+    private final JavaMailSender javaMailSender;
+
+    public EmailService(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
 
     @Override
-    @Async
-    public void send(String link, String emailUser) {
-        String email = "paulbalas28361@gmail.com";
-        String password = "Nephirius1";
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth","true");
-        properties.put("mail.smtp.starttls.enable","true");
-        properties.put("mail.smtp.host","smtp.gmail.com");
-        properties.put("mail.smtp.port","587");
+    public void send(String link, String emailUser) throws MessagingException {
+        javax.mail.internet.MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setSubject("Welcome ");
 
-        Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator(){
-            protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication(email, password);
-            }
-        });
-        try{
-            MimeMessage mimeMessage = new MimeMessage(session);
-            mimeMessage.setFrom(new InternetAddress(email));
-            mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(emailUser));
-            mimeMessage.setText("Verification Link....");
-            mimeMessage.setText("Click Here :: " + link);
-            Transport.send(mimeMessage);
-        }catch (MessagingException e){
-            LOGGER.error("failed to send email", e);
-            throw new IllegalStateException("fail to send email");
-        }
+        String html = "<!doctype html>\n" +
+                "<html lang=\"en\"\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <meta name=\"viewport\"\n" +
+                "          content=\"width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0\">\n" +
+                "    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n" +
+                "    <style type=\"text/css\">\n" +
+                "       .container{\n" +
+                "           background-color: white;\n" +
+                "           max-width: 24rem;\n" +
+                "           padding-left: 4rem;\n" +
+                "           padding-right: 4rem;\n" +
+                "           padding-top: 8rem;\n" +
+                "           padding-bottom: 8rem;\n" +
+                "           box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);\n" +
+                "           border-radius: 25px;}\n" +
+                "        .activate_button{\n" +
+                "           width: 8rem;\n" +
+                "           height: 3rem;\n" +
+                "           border: transparent ;\n" +
+                "           background-color: #10b981;\n" +
+                "           padding: 8rem 8rem;\n" +
+                "           font-size: medium;\n" +
+                "           border-radius: 25px;\n" +
+                "           color: white;\n" +
+                "           box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);\n" +
+                "           cursor: pointer;}\n" +
+                "        :hover.activate_button{\n" +
+                "           background-color: #34d399;}\n" +
+                "    </style>\n" +
+                "    <title>Email</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "   <div class=\"container\">\n" +
+                "       <h2>Ready to get your body in his best shape?</h2>\n" +
+                "       <h3>You are one step away from activating your account</h3>\n" +
+                "       <a href=\"" + link + "\"><button class=\"activate_button\" name=\"activate\" id=\"activate_account\">Activate</button></a>\n" +
+                "  </div>\n" +
+                "</body>\n" +
+                "</html>\n";
+        helper.setText(html, true);
+        helper.setTo(emailUser);
+        javaMailSender.send(mimeMessage);
     }
 }
