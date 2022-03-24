@@ -1,12 +1,20 @@
 package licenta.project.Services;
 
+import io.jsonwebtoken.Claims;
+import licenta.project.Dto.AppUserDto;
 import licenta.project.Dto.RegisterDto;
+import licenta.project.Exceptions.AppException;
 import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
 import licenta.project.Models.AppUser;
 import licenta.project.Models.ConfirmationToken;
 import licenta.project.Repositories.AppUserRepository;
-import licenta.project.Utils.Mails.EmailSender;
+import licenta.project.Repositories.Interfaces.EmailSender;
+import licenta.project.Utils.JwtToken;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +25,17 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class AppUserService {
+public class AppUserService implements UserDetailsService {
     private AppUserRepository appUserRepository;
     private ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
+    private final JwtToken jwtToken;
+    private final static String USER_NOT_FOUND = "user with email %s not found";
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return appUserRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(String.format(USER_NOT_FOUND,email)));
+    }
 
     public void register(RegisterDto registerDto) throws UserAlreadyExistAuthenticationException, MessagingException {
         if (emailExists(registerDto.getEmail())) {
@@ -42,7 +57,7 @@ public class AppUserService {
         emailSender.send(link, registerDto.getEmail());
     }
 
-    private Boolean emailExists(String email) {
+    public Boolean emailExists(String email) {
         return appUserRepository.findByEmail(email).isPresent();
     }
 
@@ -68,4 +83,28 @@ public class AppUserService {
         confirmationTokenService.setConfirmedAt(token);
         enableAppUser(confirmationToken.getAppUser().getEmail());
     }
+
+    public JwtToken getJwtUtil() {
+        return this.jwtToken;
+    }
+
+    public AppUser findAppUserById(Long id){
+        return appUserRepository.findById(id).orElseThrow(()-> new AppException(HttpStatus.BAD_REQUEST, "User "+ id + " was not found"));
+    }
+
+    public AppUserDto getAppUserById(Long userId){
+        AppUser appUser;
+        appUser = findAppUserById(userId);
+
+        AppUserDto appUserDto = new AppUserDto();
+        appUserDto.setImage(appUser.getProfileImage());
+        appUserDto.setEmail(appUser.getEmail());
+        appUserDto.setName(appUser.getName());
+        return appUserDto;
+    }
+    public AppUserDto getAppUserByClaims(Claims claims){
+        Long userId = jwtToken.extractId(claims);
+        return getAppUserById(userId);
+    }
+
 }

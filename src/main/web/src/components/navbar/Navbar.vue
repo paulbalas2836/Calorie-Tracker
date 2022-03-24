@@ -6,8 +6,6 @@
           <MenuButton @click="mobileToggleNavbarPages"></MenuButton>
         </div>
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-          <!--          <div class="flex-shrink-0 flex items-center">-->
-          <!--          </div>-->
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
               <template v-for="page in navbarPages" :key="page.name">
@@ -22,7 +20,7 @@
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
           <DarkModeToggle class="sm:mr-4" :darkMode="darkMode" @click="toggleDarkLightMode"></DarkModeToggle>
-          <div v-show="false">
+          <div v-if="userStore.getUser !== null ">
             <button
                 class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
               <span class="sr-only">Open user menu</span>
@@ -31,7 +29,7 @@
                    alt="">
             </button>
           </div>
-          <div class="ml-4" v-show="true">
+          <div v-else class="ml-4">
             <NavbarButtons class="sm:mr-4 mr-2 dark:hover:bg-fuchsia-200 " @click="openSignInModal">Sign in</NavbarButtons>
             <router-link to="/register">
               <NavbarButtons class="dark:hover:bg-fuchsia-200">Register</NavbarButtons>
@@ -61,6 +59,7 @@ import SignInModal from "../modals/SignInModal.vue";
 import DarkModeToggle from "./DarkModeToggle.vue";
 import {watch, ref} from 'vue'
 import {useRoute} from 'vue-router'
+import { useUserStore } from '../../store/userStore'
 
 const navbarPages = ref([{name: "About", route: '/', isActive: false},
   {name: "Check Calories", route: "/checkCalories", isActive: false},
@@ -69,7 +68,7 @@ const currentRouteName = useRoute();
 const signInModal = ref(false)
 const mobileNavbarPages = ref(false)
 const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))
-
+const userStore = useUserStore()
 
 watch(currentRouteName, () => {
   navbarPages.value.forEach(el => {

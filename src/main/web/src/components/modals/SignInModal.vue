@@ -5,18 +5,19 @@
     </template>
     <template #default>
       <div class="mb-6">
-        <Label label="Email address" />
-        <Input placeholder="email@gmail.com" />
+        <Label label="Email address" for="login_email"/>
+        <Input placeholder="email@gmail.com" name="login_email" v-model="loginForm.email" />
       </div>
 
       <div>
-        <Label label="Password" />
-        <Input placeholder="Password" type="password"/>
+        <Label label="Password" for="login_password" />
+        <Input placeholder="Password" type="password" v-model="loginForm.password" name="login_password"/>
       </div>
+      <ErrorMessage>{{ error }}</ErrorMessage>
     </template>
 
     <template #footer>
-        <Button class="mb-4 dark:bg-fuchsia-300 dark:hover:bg-fuchsia-200 bg-emerald-500 hover:bg-emerald-400 dark:text-black text-white">Login</Button>
+        <Button @click="login" class="mb-4 dark:bg-fuchsia-300 dark:hover:bg-fuchsia-200 bg-emerald-500 hover:bg-emerald-400 dark:text-black text-white">Login</Button>
         <hr v-show="check" class="dark_style">
         <hr v-show="!check" class="light_style">
       <div class="mt-4 border border-2 px-2 py-4 dark:text-white text-black grid grid-flow-col cursor-pointer rounded-md">
@@ -35,8 +36,20 @@ import ModalBase from "./ModalBase.vue"
 import Input from "../basic/Input.vue"
 import Label from "../basic/Label.vue"
 import Button from "../basic/Button.vue"
+import ErrorMessage from "../../components/basic/ErrorMessage.vue";
+import {ref} from 'vue'
+import { useUserStore } from '../../store/userStore'
 
 const check=!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark')
+const url = 'http://localhost:8080/login'
+const error = ref('')
+const  loginForm = ref({email: '', password:''})
+const userStore = useUserStore()
+function login(){
+  const status =  userStore.login(loginForm, url)
+
+}
+
 </script>
 
 <style scoped>

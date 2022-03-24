@@ -26,9 +26,8 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AppUserService appUserService;
-//    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-//    @Autowired
-//    private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
@@ -42,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated();
 
         http    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        http    .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http    .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 //    @Override
@@ -55,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 //        provider.setPasswordEncoder(bCryptPasswordEncoder);
 //        provider.setUserDetailsService(appUserService);
-//        return provider;
+//        return provider;+
 //    }
 
     @Bean
@@ -73,9 +72,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-//    @Override
-//    @Bean
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
 }

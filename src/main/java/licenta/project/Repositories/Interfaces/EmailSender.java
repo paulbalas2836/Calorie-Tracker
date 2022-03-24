@@ -1,4 +1,4 @@
-package licenta.project.Utils.Mails;
+package licenta.project.Repositories.Interfaces;
 
 import javax.mail.MessagingException;
 

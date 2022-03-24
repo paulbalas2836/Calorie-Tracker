@@ -53,6 +53,7 @@ import Label from "../../components/basic/Label.vue"
 import Button from "../../components/basic/Button.vue";
 import ErrorMessage from "../../components/basic/ErrorMessage.vue";
 import {useForm, useField} from 'vee-validate';
+import {useRouter} from 'vue-router'
 import axios from 'axios'
 
 const url = 'http://localhost:8080/register'
@@ -66,6 +67,7 @@ const {
 } = useField('confirm_password', confirmPasswordValidator, {initialValue: ''})
 const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 const validEmailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const router = useRouter()
 
 function emailValidator(value) {
   if (!value || (value.trim().length === 0))
@@ -112,8 +114,8 @@ const submitRegister = handleSubmit(values => {
     email: values.email,
     password: values.password,
     matchingPassword: values.confirm_password
-  }).then(res =>
-      console.log(res)).catch(error => {
+  }).then(() =>
+      router.push('/register/success')).catch(error => {
     if (error.response) {
       if (typeof error.response.data === 'string') {
         if (error.response.data.includes('email')) setFieldError('email', error.response.data)

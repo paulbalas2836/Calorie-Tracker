@@ -1,35 +1,44 @@
 import {createRouter, createWebHistory} from 'vue-router'
+
 const About = () => import('../pages/About.vue')
 const CheckCalories = () => import('../pages/CheckCalories.vue')
 const CheckHistory = () => import('../pages/CheckHistory.vue')
 const Register = () => import('../pages/authentication/Register.vue')
 const ConfirmEmail = () => import('../pages/authentication/ConfirmEmail.vue')
-const routes= [
+const RegistrationSuccess = () => import('../pages/authentication/RegisterSuccess.vue')
+
+const routes = [
     {
-        path:'/',
+        path: '/',
         name: 'About',
-        component:About
+        component: About
     },
     {
-        path:'/checkCalories',
+        path: '/checkCalories',
         name: 'Check Calories',
         component: CheckCalories
     },
     {
-        path:'/checkHistory',
+        path: '/checkHistory',
         name: 'History',
         component: CheckHistory
     },
     {
-        path:'/register',
+        path: '/register',
         name: 'Register',
         component: Register
     },
     {
-        path:'/register/confirm',
+        path: '/register/confirm',
         name: 'Confirm Email',
         component: ConfirmEmail
-    }
+    },
+    {
+        path: '/register/success',
+        name: 'Registration Success',
+        component: RegistrationSuccess
+    },
+
 ]
 
 const router = createRouter({

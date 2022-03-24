@@ -1,6 +1,6 @@
 package licenta.project.Services;
 
-import licenta.project.Utils.Mails.EmailSender;
+import licenta.project.Repositories.Interfaces.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
