@@ -41,11 +41,11 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-//    @org.springframework.web.bind.annotation.ExceptionHandler(AppException.class)
-//    private ResponseEntity<ErrorModel> handleAppExceptions(AppException ex){
-//        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getMessage());
-//        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//    }
+    @org.springframework.web.bind.annotation.ExceptionHandler(AppException.class)
+    private ResponseEntity<ErrorModel> handleAppExceptions(AppException ex){
+        ErrorModel error = new ErrorModel(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistAuthenticationException.class)
     private ResponseEntity<ErrorModel> handleAppExceptions(AuthenticationException ex){

@@ -1,13 +1,15 @@
 import {defineStore} from 'pinia'
-import axios from "axios";
+import axios from "axios"
 
 export const useUserStore = defineStore('user', {
     state: () => {
         return {
-            user: null,
-            token: null,
+            user: sessionStorage.getItem("user") || null,
+            token: sessionStorage.getItem("token") || null,
         }
     },
+
+
     getters: {
         getUser: (state) => state.user,
         getToken: (state) => state.token
@@ -15,13 +17,19 @@ export const useUserStore = defineStore('user', {
 
     actions: {
         login(user, url) {
-            console.log(user)
-            axios.post(url, {email: user.value.email, password: user.value.password}).then(res => {
-                this.user = res.data.appUserDto
-                this.token = res.data.jwt
-
-            }).catch(err => console.log(err.response.data))
+            return new Promise((resolve, reject) => {
+                axios.post(url, {email: user.value.email, password: user.value.password})
+                    .then(response => {
+                    this.user = response.data.appUserDto
+                    this.token = response.data.jwt
+                    sessionStorage.setItem("user", this.user)
+                    sessionStorage.setItem("token", this.token)
+                        resolve(response)
+                }).catch(error => {
+                    reject(error.response)
+                })
+            })
         }
-    }
+    },
 
 })

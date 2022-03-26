@@ -13,7 +13,7 @@
         <Label label="Password" for="login_password" />
         <Input placeholder="Password" type="password" v-model="loginForm.password" name="login_password"/>
       </div>
-      <ErrorMessage>{{ error }}</ErrorMessage>
+      <ErrorMessage>{{ errorMessage }}</ErrorMessage>
     </template>
 
     <template #footer>
@@ -39,16 +39,32 @@ import Button from "../basic/Button.vue"
 import ErrorMessage from "../../components/basic/ErrorMessage.vue";
 import {ref} from 'vue'
 import { useUserStore } from '../../store/userStore'
+import {useField} from "vee-validate";
 
 const check=!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark')
+const emit = defineEmits(['closeSignInModal'])
 const url = 'http://localhost:8080/login'
-const error = ref('')
 const  loginForm = ref({email: '', password:''})
 const userStore = useUserStore()
-function login(){
-  const status =  userStore.login(loginForm, url)
+let errorMessage = ref('')
 
+function login(){
+   userStore.login(loginForm, url).then(()=>{
+     emit("closeSignInModal")
+    }).catch(err=> {
+      err.data.errors.forEach(err =>{
+        if(err.includes('enable'))
+        {
+          errorMessage.value = err
+        }
+        else
+          errorMessage.value = "Email and password don't match"
+      })
+
+
+   })
 }
+
 
 </script>
 

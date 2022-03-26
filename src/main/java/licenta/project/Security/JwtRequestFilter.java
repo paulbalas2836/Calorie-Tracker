@@ -3,6 +3,7 @@ package licenta.project.Security;
 import licenta.project.Models.AppUser;
 import licenta.project.Services.AppUserService;
 import licenta.project.Utils.JwtToken;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +25,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtToken jwtToken;
 
+    @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws SecurityException, IOException, ServletException {
         final String authorizationHeader = request.getHeader("Authorization");

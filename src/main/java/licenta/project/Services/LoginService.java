@@ -16,7 +16,7 @@ public class LoginService {
     @Autowired
     private AppUserService appUserService;
 
-    public String loginAccount(LoginDto loginDto) {
+    public String loginAccount(LoginDto loginDto) throws AppException {
         boolean emailBoolean = this.appUserService.emailExists(loginDto.getEmail());
         boolean passwordBool = false;
         if (emailBoolean) {
@@ -24,13 +24,13 @@ public class LoginService {
         }
 
         if (!emailBoolean || !passwordBool) {
-            throw new AppException(HttpStatus.NOT_FOUND, "Password or email incorrect!");
+            throw new AppException("Password or email incorrect!");
         }
 
         AppUser appUser = (AppUser) appUserService.loadUserByUsername(loginDto.getEmail());
         if(!appUser.getEnabled())
         {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Account is not enable!");
+            throw new AppException("Account is not enable!");
         }
 
         return this.appUserService

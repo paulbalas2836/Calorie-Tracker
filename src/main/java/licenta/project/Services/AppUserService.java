@@ -88,11 +88,11 @@ public class AppUserService implements UserDetailsService {
         return this.jwtToken;
     }
 
-    public AppUser findAppUserById(Long id){
-        return appUserRepository.findById(id).orElseThrow(()-> new AppException(HttpStatus.BAD_REQUEST, "User "+ id + " was not found"));
+    public AppUser findAppUserById(Long id) throws AppException {
+        return appUserRepository.findById(id).orElseThrow(()-> new AppException( "User "+ id + " was not found"));
     }
 
-    public AppUserDto getAppUserById(Long userId){
+    public AppUserDto getAppUserById(Long userId) throws AppException {
         AppUser appUser;
         appUser = findAppUserById(userId);
 
@@ -102,7 +102,7 @@ public class AppUserService implements UserDetailsService {
         appUserDto.setName(appUser.getName());
         return appUserDto;
     }
-    public AppUserDto getAppUserByClaims(Claims claims){
+    public AppUserDto getAppUserByClaims(Claims claims) throws AppException {
         Long userId = jwtToken.extractId(claims);
         return getAppUserById(userId);
     }

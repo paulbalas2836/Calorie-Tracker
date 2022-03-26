@@ -22,11 +22,11 @@ public class JwtToken {
         return claims.get("email").toString();
     }
 
-    public Date extractExpiration(String token) {
+    public Date extractExpiration(String token) throws AppException {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public Date extractCreationDate(String token) {
+    public Date extractCreationDate(String token) throws AppException {
         return extractClaim(token, Claims::getIssuedAt);
     }
 
@@ -34,7 +34,7 @@ public class JwtToken {
         return Long.parseLong(claims.get("id").toString());
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws AppException {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -44,11 +44,11 @@ public class JwtToken {
             return true;
         } else {
             log.error("Jwt is null!");
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Jwt is null!");
+            throw new AppException("Jwt is null!");
         }
     }
 
-    public Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) throws AppException {
         try {
             return Jwts.parser().setSigningKey(secret_key).parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException
@@ -56,16 +56,16 @@ public class JwtToken {
                 | MalformedJwtException
                 | SignatureException
                 | IllegalArgumentException e) {
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Invalid Jwt");
+            throw new AppException("Invalid Jwt");
         }
     }
 
-    private Boolean isTokenExpired(String token) throws HttpServerErrorException {
+    private Boolean isTokenExpired(String token) throws HttpServerErrorException, AppException {
         if (!extractExpiration(token).before(new Date())) {
             return false;
         } else {
             log.error("Token is expired!");
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Token is expired!");
+            throw new AppException("Token is expired!");
         }
     }
 
@@ -79,12 +79,12 @@ public class JwtToken {
                 .compact();
     }
 
-    public Boolean validateEmail(String email, Claims claims) throws HttpServerErrorException {
+    public Boolean validateEmail(String email, Claims claims) throws HttpServerErrorException, AppException {
         if (this.extractEmail(claims).equals(email)) {
             return true;
         } else {
             log.error("Invalid email!");
-            throw new AppException(HttpStatus.UNAUTHORIZED, "Invalid email!");
+            throw new AppException("Invalid email!");
         }
     }
 
@@ -94,7 +94,7 @@ public class JwtToken {
         return true;
     }
 
-    public Boolean validateToken(String token, AppUser appUser) throws HttpServerErrorException {
+    public Boolean validateToken(String token, AppUser appUser) throws HttpServerErrorException, AppException {
         try {
             Claims claims =
                     Jwts.parser()
@@ -105,7 +105,7 @@ public class JwtToken {
             return true;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new AppException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            throw new AppException(e.getMessage());
         }
     }
 }

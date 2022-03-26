@@ -49,7 +49,7 @@
       </template>
     </div>
   </div>
-  <SignInModal v-if="signInModal" @closeModal="closeSignInModal"/>
+  <SignInModal v-if="signInModal" @closeModal="closeSignInModal" @closeSignInModal ='closeSignInModal'/>
 </template>
 
 <script setup>
@@ -57,7 +57,7 @@ import MenuButton from "./MenuButton.vue"
 import NavbarButtons from "./NavbarButtons.vue"
 import SignInModal from "../modals/SignInModal.vue";
 import DarkModeToggle from "./DarkModeToggle.vue";
-import {watch, ref} from 'vue'
+import {watch, ref, inject} from 'vue'
 import {useRoute} from 'vue-router'
 import { useUserStore } from '../../store/userStore'
 
@@ -65,10 +65,11 @@ const navbarPages = ref([{name: "About", route: '/', isActive: false},
   {name: "Check Calories", route: "/checkCalories", isActive: false},
   {name: "History", route: "/checkHistory", isActive: false}])
 const currentRouteName = useRoute();
-const signInModal = ref(false)
+const signInModal = ref( false)
 const mobileNavbarPages = ref(false)
 const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))
 const userStore = useUserStore()
+
 
 watch(currentRouteName, () => {
   navbarPages.value.forEach(el => {
