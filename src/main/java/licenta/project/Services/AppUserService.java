@@ -9,6 +9,7 @@ import licenta.project.Models.AppUser;
 import licenta.project.Models.ConfirmationToken;
 import licenta.project.Repositories.AppUserRepository;
 import licenta.project.Repositories.Interfaces.EmailSender;
+import licenta.project.Struct.Provider;
 import licenta.project.Utils.JwtToken;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -49,6 +51,7 @@ public class AppUserService implements UserDetailsService {
         appUser.setName(registerDto.getName());
         appUser.setEnabled(false);
         appUser.setPassword(encodedPassword);
+        appUser.setProvider(Provider.LOCAL);
 
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(appUser, token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(30));
@@ -57,7 +60,7 @@ public class AppUserService implements UserDetailsService {
         emailSender.send(link, registerDto.getEmail());
     }
 
-    public Boolean emailExists(String email) {
+        public Boolean emailExists(String email) {
         return appUserRepository.findByEmail(email).isPresent();
     }
 

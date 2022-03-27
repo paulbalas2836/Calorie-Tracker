@@ -30,6 +30,23 @@
             </button>
           </div>
           <div v-else class="ml-4">
+            <div id="g_id_onload"
+                 data-client_id="1078733011731-q159frn9qatl2h8iiqt11jkhh8o68nmq.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="gg"
+                 data-nonce=""
+                 data-auto_select="true">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="filled_black"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
             <NavbarButtons class="sm:mr-4 mr-2 dark:hover:bg-fuchsia-200 " @click="openSignInModal">Sign in</NavbarButtons>
             <router-link to="/register">
               <NavbarButtons class="dark:hover:bg-fuchsia-200">Register</NavbarButtons>
@@ -57,7 +74,7 @@ import MenuButton from "./MenuButton.vue"
 import NavbarButtons from "./NavbarButtons.vue"
 import SignInModal from "../modals/SignInModal.vue";
 import DarkModeToggle from "./DarkModeToggle.vue";
-import {watch, ref, inject} from 'vue'
+import {watch, ref} from 'vue'
 import {useRoute} from 'vue-router'
 import { useUserStore } from '../../store/userStore'
 
