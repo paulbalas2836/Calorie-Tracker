@@ -20,16 +20,24 @@ export const useUserStore = defineStore('user', {
             return new Promise((resolve, reject) => {
                 axios.post(url, {email: user.value.email, password: user.value.password})
                     .then(response => {
-                    this.user = response.data.appUserDto
-                    this.token = response.data.jwt
-                    sessionStorage.setItem("user", this.user)
-                    sessionStorage.setItem("token", this.token)
+                        this.user = response.data.appUserDto
+                        this.token = response.data.jwt
+                        sessionStorage.setItem("user", this.user)
+                        sessionStorage.setItem("token", this.token)
                         resolve(response)
-                }).catch(error => {
+                    }).catch(error => {
                     reject(error.response)
                 })
             })
-        }
+        },
+        logout(){
+            return new Promise((resolve => {
+                sessionStorage.removeItem("user")
+                sessionStorage.removeItem("token")
+                location.reload()
+                resolve()
+            }))
+        },
     },
 
 })

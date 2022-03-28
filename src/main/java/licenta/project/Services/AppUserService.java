@@ -1,5 +1,6 @@
 package licenta.project.Services;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import io.jsonwebtoken.Claims;
 import licenta.project.Dto.AppUserDto;
 import licenta.project.Dto.RegisterDto;
@@ -12,7 +13,6 @@ import licenta.project.Repositories.Interfaces.EmailSender;
 import licenta.project.Struct.Provider;
 import licenta.project.Utils.JwtToken;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +36,7 @@ public class AppUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(String.format(USER_NOT_FOUND,email)));
+        return appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, email)));
     }
 
     public void register(RegisterDto registerDto) throws UserAlreadyExistAuthenticationException, MessagingException {
@@ -44,7 +44,7 @@ public class AppUserService implements UserDetailsService {
             throw new UserAlreadyExistAuthenticationException("The email address is already taken!");
         }
 
-        String encodedPassword = BCrypt.hashpw(registerDto.getPassword(), BCrypt.gensalt(12));
+        String encodedPassword = BCrypt.hashpw(registerDto.getPassword(), BCrypt.gensalt(10));
 
         AppUser appUser = new AppUser();
         appUser.setEmail(registerDto.getEmail());
@@ -60,7 +60,17 @@ public class AppUserService implements UserDetailsService {
         emailSender.send(link, registerDto.getEmail());
     }
 
-        public Boolean emailExists(String email) {
+    public void registerWithGoogle(GoogleIdToken.Payload googleAppUser) {
+        AppUser appUser = new AppUser();
+        appUser.setName((String) googleAppUser.get("name"));
+        appUser.setEmail(googleAppUser.getEmail());
+        appUser.setEnabled(true);
+        appUser.setProfileImage((String) googleAppUser.get("picture"));
+        appUser.setProvider(Provider.GOOGLE);
+        appUserRepository.save(appUser);
+    }
+
+    public Boolean emailExists(String email) {
         return appUserRepository.findByEmail(email).isPresent();
     }
 
@@ -92,7 +102,7 @@ public class AppUserService implements UserDetailsService {
     }
 
     public AppUser findAppUserById(Long id) throws AppException {
-        return appUserRepository.findById(id).orElseThrow(()-> new AppException( "User "+ id + " was not found"));
+        return appUserRepository.findById(id).orElseThrow(() -> new AppException("User " + id + " was not found"));
     }
 
     public AppUserDto getAppUserById(Long userId) throws AppException {
@@ -105,6 +115,12 @@ public class AppUserService implements UserDetailsService {
         appUserDto.setName(appUser.getName());
         return appUserDto;
     }
+
+    public Boolean isProviderLocale(String email){
+        AppUser appUser =(AppUser) loadUserByUsername(email);
+        return appUser.getProvider() == Provider.LOCAL;
+    }
+
     public AppUserDto getAppUserByClaims(Claims claims) throws AppException {
         Long userId = jwtToken.extractId(claims);
         return getAppUserById(userId);

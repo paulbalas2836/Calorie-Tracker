@@ -6,6 +6,7 @@ const CheckHistory = () => import('../pages/CheckHistory.vue')
 const Register = () => import('../pages/authentication/Register.vue')
 const ConfirmEmail = () => import('../pages/authentication/ConfirmEmail.vue')
 const RegistrationSuccess = () => import('../pages/authentication/RegisterSuccess.vue')
+const ProfileContent = () => import('../pages/profile/ProfileContent.vue')
 
 const routes = [
     {
@@ -14,12 +15,12 @@ const routes = [
         component: About
     },
     {
-        path: '/checkCalories',
+        path: '/Calories',
         name: 'Check Calories',
         component: CheckCalories
     },
     {
-        path: '/checkHistory',
+        path: '/History',
         name: 'History',
         component: CheckHistory
     },
@@ -38,7 +39,11 @@ const routes = [
         name: 'Registration Success',
         component: RegistrationSuccess
     },
-
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: ProfileContent
+    },
 ]
 
 const router = createRouter({

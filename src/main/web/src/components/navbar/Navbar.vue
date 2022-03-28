@@ -19,35 +19,51 @@
           </div>
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-          <DarkModeToggle class="sm:mr-4" :darkMode="darkMode" @click="toggleDarkLightMode"></DarkModeToggle>
+          <DarkModeToggle class="mr-4" :darkMode="darkMode" @click="toggleDarkLightMode"></DarkModeToggle>
           <div v-if="userStore.getUser !== null ">
-            <button
-                class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-              <span class="sr-only">Open user menu</span>
-              <img class="h-8 w-8 rounded-full"
-                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                   alt="">
-            </button>
+            <dropdown>
+              <template #toggle>
+                <button
+                    class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                  <span class="sr-only">Open user menu</span>
+                  <img class="h-8 w-8 rounded-full"
+                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                       alt="">
+                </button>
+              </template>
+              <dropdown-content class="origin-top-right absolute">
+                <router-link :to="userNavigation.profile.href">
+                  <dropdown-items>
+                    {{ userNavigation.profile.name }}
+                  </dropdown-items>
+                </router-link>
+                <dropdown-items @click="logout">
+                  {{ userNavigation.logout.name }}
+                </dropdown-items>
+              </dropdown-content>
+            </dropdown>
           </div>
-          <div v-else class="ml-4">
-            <div id="g_id_onload"
-                 data-client_id="1078733011731-q159frn9qatl2h8iiqt11jkhh8o68nmq.apps.googleusercontent.com"
-                 data-context="signin"
-                 data-ux_mode="popup"
-                 data-callback="gg"
-                 data-nonce=""
-                 data-auto_select="true">
-            </div>
+          <div v-else class="flex">
+            <div class="mr-4">
+              <div id="g_id_onload"
+                   data-client_id="1078733011731-q159frn9qatl2h8iiqt11jkhh8o68nmq.apps.googleusercontent.com"
+                   data-context="signin"
+                   data-ux_mode="popup"
+                   data-callback=connectWithGoogle
+                   data-login_uri="http://localhost:8080/login/google"
+                   data-nonce=""
+                   data-auto_select="true">
+              </div>
 
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="rectangular"
-                 data-theme="filled_black"
-                 data-text="signin_with"
-                 data-size="large"
-                 data-logo_alignment="left">
+              <div class="g_id_signin"
+                   data-type="icon"
+                   data-shape="circle"
+                   data-text="continue_with"
+                   data-size="large">
+              </div>
             </div>
-            <NavbarButtons class="sm:mr-4 mr-2 dark:hover:bg-fuchsia-200 " @click="openSignInModal">Sign in</NavbarButtons>
+            <NavbarButtons class="sm:mr-4 mr-2 dark:hover:bg-fuchsia-200 " @click="openSignInModal">Sign in
+            </NavbarButtons>
             <router-link to="/register">
               <NavbarButtons class="dark:hover:bg-fuchsia-200">Register</NavbarButtons>
             </router-link>
@@ -66,7 +82,7 @@
       </template>
     </div>
   </div>
-  <SignInModal v-if="signInModal" @closeModal="closeSignInModal" @closeSignInModal ='closeSignInModal'/>
+  <SignInModal v-if="signInModal" @closeModal="closeSignInModal" @closeSignInModal='closeSignInModal'/>
 </template>
 
 <script setup>
@@ -76,13 +92,20 @@ import SignInModal from "../modals/SignInModal.vue";
 import DarkModeToggle from "./DarkModeToggle.vue";
 import {watch, ref} from 'vue'
 import {useRoute} from 'vue-router'
-import { useUserStore } from '../../store/userStore'
+import {useUserStore} from '../../store/userStore'
+import Dropdown from "../dorpdown/Dropdown.vue"
+import DropdownContent from "../dorpdown/DropdownContent.vue"
+import DropdownItems from "../dorpdown/DropdownItems.vue"
 
+const userNavigation = {
+  profile: {name: 'Your Profile', href: 'Profile'},
+  logout: {name: 'Sign out', href: '#'},
+}
 const navbarPages = ref([{name: "About", route: '/', isActive: false},
-  {name: "Check Calories", route: "/checkCalories", isActive: false},
-  {name: "History", route: "/checkHistory", isActive: false}])
+  {name: "Check Calories", route: "/Calories", isActive: false},
+  {name: "History", route: "/History", isActive: false}])
 const currentRouteName = useRoute();
-const signInModal = ref( false)
+const signInModal = ref(false)
 const mobileNavbarPages = ref(false)
 const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))
 const userStore = useUserStore()
@@ -102,9 +125,14 @@ function closeSignInModal() {
   signInModal.value = false
 }
 
+function logout(){
+  userStore.logout()
+}
+
 function mobileToggleNavbarPages() {
   mobileNavbarPages.value = !mobileNavbarPages.value
 }
+
 
 function toggleDarkLightMode() {
   darkMode.value = !darkMode.value
