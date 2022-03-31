@@ -6,7 +6,7 @@ import licenta.project.Annotations.RegisterPasswordMatches;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class PasswordMatchesValidator implements ConstraintValidator<RegisterPasswordMatches, Object> {
+public class RegisterPasswordMatchesValidator implements ConstraintValidator<RegisterPasswordMatches, Object> {
     @Override
     public void initialize(RegisterPasswordMatches constraintAnnotation) {
     }

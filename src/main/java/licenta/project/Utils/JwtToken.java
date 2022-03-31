@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 

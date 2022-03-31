@@ -27,7 +27,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @SneakyThrows
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws SecurityException, IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws SecurityException {
         final String authorizationHeader = request.getHeader("Authorization");
         Long userId = null;
         String jwt = null;
@@ -39,7 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             AppUser appUser = this.appUserService.findAppUserById(userId);
             if(jwtToken.validateToken(jwt, appUser)){
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(appUser,null);
+                        new UsernamePasswordAuthenticationToken(appUser,null,appUser.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }

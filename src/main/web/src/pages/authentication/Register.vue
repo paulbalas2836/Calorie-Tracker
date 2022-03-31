@@ -35,8 +35,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-8">
-          <Button type="submit" :disabled="isSubmitting"
-                  class="dark:bg-fuchsia-300 dark:hover:bg-fuchsia-200 bg-emerald-500 hover:bg-emerald-400 dark:text-black text-white">
+          <Button type="submit" :disabled="isSubmitting">
             Register
           </Button>
         </div>
@@ -56,7 +55,7 @@ import {useForm, useField} from 'vee-validate';
 import {useRouter} from 'vue-router'
 import axios from 'axios'
 
-const url = 'http://localhost:8080/register'
+const URL = 'http://localhost:8080/register'
 const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const {value: email, errorMessage: emailError} = useField('email', emailValidator, {initialValue: ''})
 const {value: name, errorMessage: nameError} = useField('name', nameValidator, {initialValue: ''})
@@ -109,7 +108,7 @@ function confirmPasswordValidator(value) {
 }
 
 const submitRegister = handleSubmit(values => {
-  axios.post(url, {
+  axios.post(URL, {
     name: values.name,
     email: values.email,
     password: values.password,

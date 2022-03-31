@@ -17,7 +17,6 @@
 
           function connectWithGoogle(tokens){
               const URL = "http://localhost:8080/login/google"
-              console.log(tokens)
               fetch(URL,{
                   method: 'POST',
                   mode: 'cors',
@@ -26,8 +25,11 @@
                   },
                   body:  tokens.credential,
               }).then(response => response.json()).then(data => {
-                  sessionStorage.setItem("user", data.appUserDto)
+                  sessionStorage.setItem("name", data.appUserDto.name)
+                  sessionStorage.setItem("email", data.appUserDto.email)
+                  sessionStorage.setItem("image", data.appUserDto.image)
                   sessionStorage.setItem("token",data.jwt)
+                  sessionStorage.setItem("provider", data.appUserDto.provider)
                   location.reload()
               }).catch(err => {console.log(err)})
           }

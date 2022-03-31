@@ -4,15 +4,22 @@ import axios from "axios"
 export const useUserStore = defineStore('user', {
     state: () => {
         return {
-            user: sessionStorage.getItem("user") || null,
+            name: sessionStorage.getItem("name") || null,
+            email: sessionStorage.getItem("email") || null,
+            image: sessionStorage.getItem("image") || null,
             token: sessionStorage.getItem("token") || null,
+            provider: sessionStorage.getItem("provider") || null,
         }
     },
 
 
     getters: {
-        getUser: (state) => state.user,
-        getToken: (state) => state.token
+        getName: (state) => state.name,
+        getEmail: (state) => state.email,
+        getImage: (state) => state.image,
+        getToken: (state) => state.token,
+        getProvider: (state) => state.provider,
+        getIsUserAuth: state => { return state.email != null }
     },
 
     actions: {
@@ -20,10 +27,16 @@ export const useUserStore = defineStore('user', {
             return new Promise((resolve, reject) => {
                 axios.post(url, {email: user.value.email, password: user.value.password})
                     .then(response => {
-                        this.user = response.data.appUserDto
+                        this.name = response.data.appUserDto.name
+                        this.email = response.data.appUserDto.email
+                        this.image= response.data.appUserDto.image
                         this.token = response.data.jwt
-                        sessionStorage.setItem("user", this.user)
+                        this.provider = response.data.appUserDto.provider
+                        sessionStorage.setItem("name", this.name)
+                        sessionStorage.setItem("email", this.email)
+                        sessionStorage.setItem("image", this.image)
                         sessionStorage.setItem("token", this.token)
+                        sessionStorage.setItem("provider", this.provider)
                         resolve(response)
                     }).catch(error => {
                     reject(error.response)
@@ -32,8 +45,11 @@ export const useUserStore = defineStore('user', {
         },
         logout(){
             return new Promise((resolve => {
-                sessionStorage.removeItem("user")
+                sessionStorage.removeItem("image")
+                sessionStorage.removeItem("email")
+                sessionStorage.removeItem("name")
                 sessionStorage.removeItem("token")
+                sessionStorage.removeItem("provider")
                 location.reload()
                 resolve()
             }))

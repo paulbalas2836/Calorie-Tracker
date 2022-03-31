@@ -3,6 +3,7 @@ package licenta.project.Services;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import io.jsonwebtoken.Claims;
 import licenta.project.Dto.AppUserDto;
+import licenta.project.Dto.ChangePasswordDto;
 import licenta.project.Dto.RegisterDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -51,6 +52,7 @@ public class AppUserService implements UserDetailsService {
         appUser.setName(registerDto.getName());
         appUser.setEnabled(false);
         appUser.setPassword(encodedPassword);
+        appUser.setProfileImage("./profile_images/default_photo.png");
         appUser.setProvider(Provider.LOCAL);
 
         String token = UUID.randomUUID().toString();
@@ -113,6 +115,7 @@ public class AppUserService implements UserDetailsService {
         appUserDto.setImage(appUser.getProfileImage());
         appUserDto.setEmail(appUser.getEmail());
         appUserDto.setName(appUser.getName());
+        appUserDto.setProvider(appUser.getProvider());
         return appUserDto;
     }
 
@@ -124,6 +127,22 @@ public class AppUserService implements UserDetailsService {
     public AppUserDto getAppUserByClaims(Claims claims) throws AppException {
         Long userId = jwtToken.extractId(claims);
         return getAppUserById(userId);
+    }
+
+    public void changePassword(String email, ChangePasswordDto changePasswordDto) throws AppException {
+        AppUser appUser = (AppUser) loadUserByUsername(email);
+        if(!BCrypt.checkpw(changePasswordDto.getCurrentPassword(), appUser.getPassword()))
+        {
+            throw new AppException("Current password is incorrect!");
+        }
+
+        if(Objects.equals(changePasswordDto.getCurrentPassword(), changePasswordDto.getNewPassword()))
+        {
+            throw new AppException("Your new password should be different from the current one!");
+        }
+
+        appUser.setPassword(BCrypt.hashpw(changePasswordDto.getNewPassword(), BCrypt.gensalt(10)));
+        appUserRepository.save(appUser);
     }
 
 }

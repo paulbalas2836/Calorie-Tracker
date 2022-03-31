@@ -1,5 +1,6 @@
 package licenta.project.Dto;
 
+import licenta.project.Struct.Provider;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,10 @@ public class AppUserDto {
     @NotEmpty
     @NotNull
     private String email;
+
+    @NotEmpty
+    @NotNull
+    private Provider provider;
 
     @NotEmpty
     @NotNull

@@ -1,6 +1,5 @@
 package licenta.project.Security;
 
-import licenta.project.Services.AppUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +20,6 @@ import java.util.List;
 @AllArgsConstructor
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final AppUserService appUserService;
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
@@ -31,10 +29,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http    .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/register/**", "/login","/login/google")
-                .permitAll()
-                .anyRequest()
-                .authenticated();
+                    .antMatchers("/register/**", "/login","/login/google")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated();
 
         http    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http    .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
