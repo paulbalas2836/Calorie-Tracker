@@ -25,11 +25,16 @@ public class AppUser implements UserDetails {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Provider provider;
+    @Column(nullable = false)
     private String email;
+    @Column(nullable = false,length = 50)
     private String name;
     private String password;
+    @Column(nullable = false)
     private Boolean enabled;
+    @Column(nullable = false)
     private String profileImage;
 
     @Override

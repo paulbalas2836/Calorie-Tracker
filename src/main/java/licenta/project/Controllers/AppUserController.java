@@ -17,7 +17,7 @@ import javax.validation.Valid;
 public class AppUserController {
     private AppUserService appUserService;
 
-    @PostMapping(path = "/changePassword/{userEmail}")
+    @PutMapping(path = "/changePassword/{userEmail}")
     public ResponseEntity<?> changePassword(@PathVariable String userEmail, @Valid @RequestBody ChangePasswordDto changePasswordDto) {
         try {
             appUserService.changePassword(userEmail, changePasswordDto);

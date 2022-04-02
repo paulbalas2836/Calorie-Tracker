@@ -17,7 +17,7 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <Input placeholder="Weight in grams"/>
+            <Input placeholder="Weight in grams" v-model="weight"/>
             <Button class="self-end" @click="getCalories">Get Calories</Button>
           </div>
         </div>
@@ -37,11 +37,11 @@ import MicroNutrients from "./MicroNutrients.vue";
 import {ref} from "vue"
 import Input from "../../components/basic/Input.vue"
 import {useUserStore} from "../../store/userStore";
-import {useForm, useField} from 'vee-validate';
 import ErrorMessage from "../../components/basic/ErrorMessage.vue"
+import axios from "axios";
 
-const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const user = useUserStore()
+const URL_PATH = 'http://localhost/8080/food/'
 
 const macroNutrients = ref({
   calories: {label: "Calories", amount: 500},
@@ -84,8 +84,7 @@ const microNutrients = ref({
   }
 })
 const image = ref(null)
-// const {value: name, errorMessage: nameError} = useField('name', nameValidator, {initialValue: ''})
-const uploadImage = new FormData()
+const prediction = new FormData()
 const isImageUploaded = ref(false)
 const imageError = ref(null)
 const weight = ref(null)
@@ -106,7 +105,7 @@ function onFileSelected(event) {
 
   const file = event.target.files[0];
   if (imageValidator(file) === true) {
-    uploadImage.append("image", file)
+    prediction.append("image", file)
     imageError.value = null
     isImageUploaded.value = true
     image.value = URL.createObjectURL(file)
@@ -139,6 +138,10 @@ function onFileSelected(event) {
 
 
 function getCalories() {
-
+  prediction.append("weight", weight.value)
+  prediction.append("email", user.getEmail)
+  axios.post('http://localhost:8080/food/prediction', prediction,).then(res => {
+    console.log(res)
+  }).catch(err => console.log(err))
 }
 </script>

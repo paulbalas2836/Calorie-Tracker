@@ -6,13 +6,10 @@ import licenta.project.Services.AppUserService;
 import licenta.project.Services.LoginService;
 import licenta.project.Utils.JwtToken;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpServerErrorException;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/login")
