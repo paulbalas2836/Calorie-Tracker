@@ -31,6 +31,7 @@
 </template>
 
 <script setup>
+import * as tf from '@tensorflow/tfjs';
 import Button from "../../components/basic/Button.vue";
 import MacroNutrients from "./MacroNutrients.vue"
 import MicroNutrients from "./MicroNutrients.vue";
@@ -42,6 +43,8 @@ import axios from "axios";
 
 const user = useUserStore()
 const URL_PATH = 'http://localhost/8080/food/'
+const TENSORFLOW_MODEL = "http://127.0.0.1:8081/model.json"
+// const model = await tf.loadLayersModel('http://127.0.0.1:8081/model.json');
 
 const macroNutrients = ref({
   calories: {label: "Calories", amount: 500},
@@ -137,11 +140,14 @@ function onFileSelected(event) {
 }
 
 
-function getCalories() {
+async function getCalories() {
   prediction.append("weight", weight.value)
   prediction.append("email", user.getEmail)
+  prediction.append("label", "banana")
+  // const model = await tf.loadLayersModel('http://127.0.0.1:8081/model.json');
+  // model.summary()
   axios.post('http://localhost:8080/food/prediction', prediction,).then(res => {
     console.log(res)
-  }).catch(err => console.log(err))
+  }).catch(err => console.log(err.response))
 }
 </script>

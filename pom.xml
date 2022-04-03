@@ -70,11 +70,24 @@
             <artifactId>google-api-client</artifactId>
             <version>1.33.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.tensorflow/tensorflow -->
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>20030203.000550</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.imgscalr/imgscalr-lib -->
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>4.2</version>
+        </dependency>
+
         <dependency>
             <groupId>org.tensorflow</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>1.15.0</version>
+            <artifactId>tensorflow-core-platform</artifactId>
+            <version>0.4.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.http-client/google-http-client-gson -->
