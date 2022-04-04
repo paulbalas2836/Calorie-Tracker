@@ -39,12 +39,12 @@ import {ref} from "vue"
 import Input from "../../components/basic/Input.vue"
 import {useUserStore} from "../../store/userStore";
 import ErrorMessage from "../../components/basic/ErrorMessage.vue"
+import { toRaw } from 'vue'
 import axios from "axios";
 
 const user = useUserStore()
 const URL_PATH = 'http://localhost/8080/food/'
 const TENSORFLOW_MODEL = "http://127.0.0.1:8081/model.json"
-// const model = await tf.loadLayersModel('http://127.0.0.1:8081/model.json');
 
 const macroNutrients = ref({
   calories: {label: "Calories", amount: 500},
@@ -87,10 +87,11 @@ const microNutrients = ref({
   }
 })
 const image = ref(null)
-const prediction = new FormData()
+const saveToHistory = new FormData()
 const isImageUploaded = ref(false)
 const imageError = ref(null)
 const weight = ref(null)
+const imageTensor = ref(null)
 
 function imageValidator(value) {
   if (!(value.type.split('/')[0] === 'image'))
@@ -103,51 +104,56 @@ function imageValidator(value) {
 }
 
 function onFileSelected(event) {
+  const file = event.target.files[0];
+
   if (event.target.files.length === 0)
     return
 
-  const file = event.target.files[0];
-  if (imageValidator(file) === true) {
-    prediction.append("image", file)
-    imageError.value = null
-    isImageUploaded.value = true
-    image.value = URL.createObjectURL(file)
-  } else {
+  if (!imageValidator(file) === true) {
     imageError.value = imageValidator(file)
+    return;
   }
 
-  // const fileName = file.name;
-  // const img = new Image()
-  // img.src = URL.createObjectURL(file)
-  // img.onload = () => {
-  //   const canvas = document.createElement('canvas')
-  //   const ctx = canvas.getContext('2d')
-  //
-  //   const maxWidth = 240
-  //   const maxHeight = 240
-  //
-  //   const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-  //   const width = img.width * ratio + .5 | 0;
-  //   const height = img.height * ratio + .5 | 0;
-  //
-  //   canvas.width = width
-  //   canvas.height = height
-  //   ctx.drawImage(img, 0, 0, width, height)
-  //   ctx.canvas.toBlob((blob) => {
-  //     showImage.value = URL.createObjectURL(new File([blob], fileName, file));
-  //   })
-  // }
+
+  saveToHistory.append("image", file)
+  imageError.value = null
+  isImageUploaded.value = true
+  image.value = URL.createObjectURL(file)
+
+  const img = new Image()
+  img.src = URL.createObjectURL(file)
+  img.onload = () => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, img.width, img.height)
+    imageTensor.value = ctx.getImageData(0,0,img.width,img.height)
+    // ctx.canvas.toBlob((blob) => {
+    //   showImage.value = URL.createObjectURL(new File([blob], fileName, file));
+    // })
+  }
 }
 
+class L2 {
+
+  static className = 'L2';
+
+  constructor(config) {
+    return tf.regularizers.l1l2(config)
+  }
+}
+
+tf.serialization.registerClass(L2);
 
 async function getCalories() {
-  prediction.append("weight", weight.value)
-  prediction.append("email", user.getEmail)
-  prediction.append("label", "banana")
-  // const model = await tf.loadLayersModel('http://127.0.0.1:8081/model.json');
-  // model.summary()
-  axios.post('http://localhost:8080/food/prediction', prediction,).then(res => {
-    console.log(res)
-  }).catch(err => console.log(err.response))
+  console.log(imageTensor.value)
+  saveToHistory.append("weight", weight.value)
+  saveToHistory.append("email", user.getEmail)
+  saveToHistory.append("label", "banana")
+  const model = await tf.loadLayersModel('http://127.0.0.1:8081/model.json');
+  const prediction = model.predict(tf.browser.fromPixels(imageTensor.value).resizeNearestNeighbor([64, 64]).cast('float32').expandDims()).data()
+  console.log(prediction)
+  // axios.post('http://localhost:8080/food/prediction', prediction,).then(res => {
+  //   console.log(res)
+  // }).catch(err => console.log(err.response))
 }
 </script>
