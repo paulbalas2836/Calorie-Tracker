@@ -39,12 +39,11 @@ import {ref} from "vue"
 import Input from "../../components/basic/Input.vue"
 import {useUserStore} from "../../store/userStore";
 import ErrorMessage from "../../components/basic/ErrorMessage.vue"
-import { toRaw } from 'vue'
 import axios from "axios";
+import * as constants from "../../Constants.js"
+import {L2} from "../../L2.js"
 
 const user = useUserStore()
-const URL_PATH = 'http://localhost/8080/food/'
-const TENSORFLOW_MODEL = "http://127.0.0.1:8081/model.json"
 
 const macroNutrients = ref({
   calories: {label: "Calories", amount: 500},
@@ -104,11 +103,10 @@ function imageValidator(value) {
 }
 
 function onFileSelected(event) {
-  const file = event.target.files[0];
-
   if (event.target.files.length === 0)
     return
 
+  const file = event.target.files[0];
   if (!imageValidator(file) === true) {
     imageError.value = imageValidator(file)
     return;
@@ -121,39 +119,41 @@ function onFileSelected(event) {
   image.value = URL.createObjectURL(file)
 
   const img = new Image()
-  img.src = URL.createObjectURL(file)
+  img.src = image.value
   img.onload = () => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-    ctx.drawImage(img, 0, 0, img.width, img.height)
-    imageTensor.value = ctx.getImageData(0,0,img.width,img.height)
-    // ctx.canvas.toBlob((blob) => {
-    //   showImage.value = URL.createObjectURL(new File([blob], fileName, file));
-    // })
+    ctx.drawImage(img, 0, 0, 64, 64)
+    imageTensor.value = ctx.getImageData(0, 0, 64, 64)
   }
 }
 
-class L2 {
-
-  static className = 'L2';
-
-  constructor(config) {
-    return tf.regularizers.l1l2(config)
+function getLabel(prediction){
+  let labelByIndex = -1
+  let value = -1
+  for (let i = 0; i < prediction.length; i++) {
+    if (prediction[i] > value) {
+      value = prediction[i]
+      labelByIndex =  i
+    }
   }
+  return constants.productMap.get(labelByIndex)
 }
-
-tf.serialization.registerClass(L2);
 
 async function getCalories() {
-  console.log(imageTensor.value)
-  saveToHistory.append("weight", weight.value)
+  saveToHistory.append("weight", weight.value )
   saveToHistory.append("email", user.getEmail)
-  saveToHistory.append("label", "banana")
-  const model = await tf.loadLayersModel('http://127.0.0.1:8081/model.json');
-  const prediction = model.predict(tf.browser.fromPixels(imageTensor.value).resizeNearestNeighbor([64, 64]).cast('float32').expandDims()).data()
-  console.log(prediction)
-  // axios.post('http://localhost:8080/food/prediction', prediction,).then(res => {
-  //   console.log(res)
-  // }).catch(err => console.log(err.response))
+
+  tf.serialization.registerClass(L2)
+  const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255))
+  const model = await tf.loadLayersModel(constants.TENSORFLOW_MODEL);
+  const prediction = model.predict(normalizedData.expandDims()).dataSync()
+
+  const label = getLabel(prediction)
+  console.log(label)
+  saveToHistory.append("label",label)
+  axios.post(constants.BACKEND_URL + 'food/prediction', saveToHistory,).then(res => {
+    console.log(res)
+  }).catch(err => console.log(err.response))
 }
 </script>

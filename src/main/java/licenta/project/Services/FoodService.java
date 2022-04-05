@@ -7,21 +7,20 @@ import licenta.project.Repositories.FoodRepository;
 import licenta.project.Utils.ImageManipulation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class FoodService {
+
     private FoodRepository foodRepository;
     private AppUserService appUserService;
     private ImageManipulation imageManipulation;
 
-    public FoodDto getData(MultipartFile image, Double weight, String email, String label) throws AppException {
+    public FoodDto getData(MultipartFile image, Double weight, String email, String label) throws AppException, IOException {
         Optional<Food> defaultFood = this.foodRepository.getFoodByName(label);
         if (defaultFood.isEmpty()) throw new AppException("No food found");
         FoodDto foodDto = new FoodDto(label, weight);
