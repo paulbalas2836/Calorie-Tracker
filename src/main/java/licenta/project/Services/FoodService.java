@@ -1,6 +1,7 @@
 package licenta.project.Services;
 
 import licenta.project.Dto.FoodDto;
+import licenta.project.Dto.HistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.Food;
 import licenta.project.Repositories.FoodRepository;
@@ -20,25 +21,29 @@ public class FoodService {
     private AppUserService appUserService;
     private ImageManipulation imageManipulation;
 
-    public FoodDto getData(MultipartFile image, Double weight, String email, String label) throws AppException, IOException {
-        Optional<Food> defaultFood = this.foodRepository.getFoodByName(label);
+    public FoodDto getData(MultipartFile image, HistoryDto historyDto) throws AppException, IOException {
+        Optional<Food> defaultFood = this.foodRepository.getFoodByName(historyDto.getLabel());
         if (defaultFood.isEmpty()) throw new AppException("No food found");
-        FoodDto foodDto = new FoodDto(label, weight);
+        FoodDto foodDto = new FoodDto(historyDto.getLabel(), historyDto.getWeight());
         return calculateNutritionalValues(defaultFood.get(), foodDto);
     }
 
     public FoodDto calculateNutritionalValues(Food food, FoodDto foodDto) {
-        foodDto.setCalcium((food.getCalcium() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setCalories((food.getCalories() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setCarbs((food.getCarbs() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setCholesterol((food.getCholesterol() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setFat((food.getFat() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setFiber((food.getFiber() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setPotassium((food.getPotassium() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setIron((food.getIron() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setProtein((food.getProtein() * foodDto.getQuantity()) / food.getDefaultQuantity());
-        foodDto.setSodium((food.getSodium() * foodDto.getQuantity()) / food.getDefaultQuantity());
+        foodDto.setCalcium(round(((food.getCalcium() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setCalories(round(((food.getCalories() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setCarbs(round(((food.getCarbs() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setCholesterol(round(((food.getCholesterol() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setFat(round(((food.getFat() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setFiber(round(((food.getFiber() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setPotassium(round(((food.getPotassium() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setIron(round(((food.getIron() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setProtein(round(((food.getProtein() * foodDto.getQuantity()) / food.getDefaultQuantity())));
+        foodDto.setSodium(round(((food.getSodium() * foodDto.getQuantity()) / food.getDefaultQuantity())));
         return foodDto;
+    }
+    private static double round(double value) {
+        int scale = (int) Math.pow(10, 2);
+        return (double) Math.round(value * scale) / scale;
     }
 
 }

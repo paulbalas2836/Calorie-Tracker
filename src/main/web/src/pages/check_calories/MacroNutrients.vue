@@ -54,29 +54,32 @@
 <script setup>
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 
-const props = defineProps({
+defineProps({
   macroNutrients: {
+    type: Object,
+  },
+  macroNutrientChart:{
     type: Object,
   }
 })
-const macroNutrientChart = {
-  id: 'doughnut',
-  type: 'doughnut',
-  data: {
-    labels: [props.macroNutrients.proteins.label, props.macroNutrients.fats.label, props.macroNutrients.carbs.label],
-    datasets: [
-      {
-        backgroundColor: [
-          '#FF9933',
-          '#00CC66',
-          '#0080FF',
-        ],
-        data: [props.macroNutrients.proteins.amount, props.macroNutrients.fats.amount, props.macroNutrients.carbs.amount]
-      }
-    ]
-  },
-  options: {
-    responsive: false,
-  }
-}
+// const macroNutrientChart = {
+//   id: 'doughnut',
+//   type: 'doughnut',
+//   data: {
+//     labels: [props.macroNutrients.proteins.label, props.macroNutrients.fats.label, props.macroNutrients.carbs.label],
+//     datasets: [
+//       {
+//         backgroundColor: [
+//           '#FF9933',
+//           '#00CC66',
+//           '#0080FF',
+//         ],
+//         data: [props.macroNutrients.proteins.amount, props.macroNutrients.fats.amount, props.macroNutrients.carbs.amount]
+//       }
+//     ]
+//   },
+//   options: {
+//     responsive: false,
+//   }
+// }
 </script>

@@ -17,12 +17,12 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <Input placeholder="Weight in grams" v-model="weight"/>
+            <Input placeholder="Weight in grams" v-model="historyDto.weight"/>
             <Button class="self-end" @click="getCalories">Get Calories</Button>
           </div>
         </div>
         <div class="md:col-span-2 sm:mt-0 mt-4">
-          <MacroNutrients :macroNutrients="macroNutrients"></MacroNutrients>
+          <MacroNutrients :macroNutrients="macroNutrients" :macroNutrientChart="macroNutrientChart"></MacroNutrients>
           <MicroNutrients :microNutrients="microNutrients"></MicroNutrients>
         </div>
       </div>
@@ -85,12 +85,36 @@ const microNutrients = ref({
     unitOfMeasurement: "mg"
   }
 })
+Object.seal(microNutrients)
+Object.seal(macroNutrients)
+
+const macroNutrientChart = {
+  id: 'doughnut',
+  type: 'doughnut',
+  data: {
+    labels: [macroNutrients.value.proteins.label, macroNutrients.value.fats.label, macroNutrients.value.carbs.label],
+    datasets: [
+      {
+        backgroundColor: [
+          '#FF9933',
+          '#00CC66',
+          '#0080FF',
+        ],
+        data: [macroNutrients.value.proteins.amount, macroNutrients.value.fats.amount, macroNutrients.value.carbs.amount]
+      }
+    ]
+  },
+  options: {
+    responsive: false,
+  }
+}
+
 const image = ref(null)
 const saveToHistory = new FormData()
 const isImageUploaded = ref(false)
 const imageError = ref(null)
-const weight = ref(null)
 const imageTensor = ref(null)
+const historyDto = ref({weight: null, label: null, email: null})
 
 function imageValidator(value) {
   if (!(value.type.split('/')[0] === 'image'))
@@ -128,32 +152,52 @@ function onFileSelected(event) {
   }
 }
 
-function getLabel(prediction){
+function getLabel(prediction) {
   let labelByIndex = -1
   let value = -1
   for (let i = 0; i < prediction.length; i++) {
     if (prediction[i] > value) {
       value = prediction[i]
-      labelByIndex =  i
+      labelByIndex = i
     }
   }
   return constants.productMap.get(labelByIndex)
 }
 
 async function getCalories() {
-  saveToHistory.append("weight", weight.value )
-  saveToHistory.append("email", user.getEmail)
-
   tf.serialization.registerClass(L2)
   const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255))
   const model = await tf.loadLayersModel(constants.TENSORFLOW_MODEL);
   const prediction = model.predict(normalizedData.expandDims()).dataSync()
 
   const label = getLabel(prediction)
-  console.log(label)
-  saveToHistory.append("label",label)
-  axios.post(constants.BACKEND_URL + 'food/prediction', saveToHistory,).then(res => {
-    console.log(res)
+  historyDto.value.email = user.getEmail;
+  historyDto.value.label = label;
+  saveToHistory.append("historyDto", new Blob([JSON.stringify({
+    "weight": historyDto.value.weight,
+    "label": historyDto.value.label,
+    "email": historyDto.value.email
+        })], {
+        type: "application/json"
+        }))
+  axios.post(constants.BACKEND_URL + 'food/prediction', saveToHistory,
+      {
+        headers: {
+          "Content-Type": undefined
+        }
+      }).then(res => {
+    console.log(res.data)
+    macroNutrients.value.calories.amount = res.data.calories
+    macroNutrients.value.carbs.amount = res.data.carbs
+    macroNutrients.value.fiber.amount = res.data.fiber
+    macroNutrients.value.fats.amount = res.data.fat
+    macroNutrients.value.proteins.amount = res.data.protein
+
+    macroNutrientChart.data.datasets[0].data[0] = res.data.protein
+    macroNutrientChart.data.datasets[0].data[1] = res.data.fat
+    macroNutrientChart.data.datasets[0].data[2] = res.data.carbs
+
+
   }).catch(err => console.log(err.response))
 }
 </script>
