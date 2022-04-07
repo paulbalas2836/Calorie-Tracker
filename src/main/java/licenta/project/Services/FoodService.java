@@ -25,6 +25,8 @@ public class FoodService {
         Optional<Food> defaultFood = this.foodRepository.getFoodByName(historyDto.getLabel());
         if (defaultFood.isEmpty()) throw new AppException("No food found");
         FoodDto foodDto = new FoodDto(historyDto.getLabel(), historyDto.getWeight());
+        if (foodDto.getQuantity() == null)
+            foodDto.setQuantity(defaultFood.get().getDefaultQuantity());
         return calculateNutritionalValues(defaultFood.get(), foodDto);
     }
 
@@ -41,6 +43,7 @@ public class FoodService {
         foodDto.setSodium(round(((food.getSodium() * foodDto.getQuantity()) / food.getDefaultQuantity())));
         return foodDto;
     }
+
     private static double round(double value) {
         int scale = (int) Math.pow(10, 2);
         return (double) Math.round(value * scale) / scale;
