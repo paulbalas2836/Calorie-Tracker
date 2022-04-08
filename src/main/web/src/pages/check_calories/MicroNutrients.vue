@@ -23,7 +23,7 @@
 
 function width(all, current) {
   return {
-    'width': (current * 100) / all + '%',
+    'width': ((current * 100) / all - 100 > 0 ? 100 : (current * 100) / all) + '%',
     'transition-duration': '2s'
   }
 }

@@ -18,6 +18,7 @@ import java.util.Optional;
 public class FoodService {
 
     private FoodRepository foodRepository;
+    private HistoryService historyService;
     private AppUserService appUserService;
     private ImageManipulation imageManipulation;
 
@@ -27,6 +28,11 @@ public class FoodService {
         FoodDto foodDto = new FoodDto(historyDto.getLabel(), historyDto.getWeight());
         if (foodDto.getQuantity() == null)
             foodDto.setQuantity(defaultFood.get().getDefaultQuantity());
+
+        String filename = imageManipulation.saveImage(image, historyDto.getLabel());
+
+        if(appUserService.emailExists(historyDto.getEmail()))
+        historyService.addToHistory(historyDto.getEmail(),defaultFood.get(),filename, foodDto.getQuantity());
         return calculateNutritionalValues(defaultFood.get(), foodDto);
     }
 
