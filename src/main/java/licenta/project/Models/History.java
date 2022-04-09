@@ -20,11 +20,11 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = AppUser.class)
     @JoinColumn(name = "app_user_id", nullable = false)
     private AppUser appUser;
 
-    @OneToOne
+    @ManyToOne(targetEntity = Food.class)
     @JoinColumn(name = "food_id", nullable = false)
     private Food food;
 

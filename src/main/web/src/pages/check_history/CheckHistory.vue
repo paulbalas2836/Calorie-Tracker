@@ -18,7 +18,12 @@
 
 <script setup>
 import FoodCard from "../../components/basic/FoodCard.vue"
-import {ref} from 'vue'
+import {BACKEND_URL} from "../../Constants";
+import axios from "axios";
+import {onBeforeMount, ref} from 'vue'
+import {useUserStore} from "../../store/userStore";
+
+const user = useUserStore()
 
 const WEEK_DAY = ref([
   {name: "Monday", active: true},
@@ -29,6 +34,13 @@ const WEEK_DAY = ref([
 ])
 Object.seal(WEEK_DAY)
 
+onBeforeMount(() => {
+  axios.get(BACKEND_URL + 'history/getHistory/' + user.getEmail, {
+    headers: {
+      Authorization: "Bearer " + user.getToken
+    }
+  }).then(res => console.log(res)).catch(err => console.log(err))
+})
 
 const changeDay = (day) => {
   day.active = true

@@ -17,7 +17,7 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <Input placeholder="Weight in grams" v-model="historyDto.weight"/>
+            <Input placeholder="Weight in grams" v-model="saveHistoryDto.weight"/>
             <Button class="self-end" @click="getCalories">Get Calories</Button>
           </div>
         </div>
@@ -136,7 +136,7 @@ const saveToHistory = new FormData()
 const isImageUploaded = ref(false)
 const imageError = ref(null)
 const imageTensor = ref(null)
-const historyDto = ref({weight: null, label: null, email: null})
+const saveHistoryDto = ref({weight: null, label: null, email: null})
 const label = ref(null)
 const quantity = ref(null)
 
@@ -195,16 +195,16 @@ async function getCalories() {
   const prediction = model.predict(normalizedData.expandDims()).dataSync()
 
   label.value = getLabel(prediction)
-  historyDto.value.email = user.getEmail;
-  historyDto.value.label = label.value;
-  saveToHistory.append("historyDto", new Blob([JSON.stringify({
-    "weight": historyDto.value.weight,
-    "label": historyDto.value.label,
-    "email": historyDto.value.email
+  saveHistoryDto.value.email = user.getEmail;
+  saveHistoryDto.value.label = label.value;
+  saveToHistory.append("saveHistoryDto", new Blob([JSON.stringify({
+    "weight": saveHistoryDto.value.weight,
+    "label": saveHistoryDto.value.label,
+    "email": saveHistoryDto.value.email
         })], {
         type: "application/json"
         }))
-  axios.post(constants.BACKEND_URL + 'food/prediction', saveToHistory,
+  axios.post(constants.BACKEND_URL + 'history/prediction', saveToHistory,
       {
         headers: {
           "Content-Type": undefined
@@ -239,7 +239,7 @@ async function getCalories() {
 
     chartRef.value.update()
     quantity.value = res.data.quantity
-    saveToHistory.delete("historyDto")
-  }).catch(err => console.log(err.response))
+    saveToHistory.delete("saveHistoryDto")
+  }).catch(err => console.log(err.response.data))
 }
 </script>

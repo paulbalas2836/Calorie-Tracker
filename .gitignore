@@ -34,3 +34,4 @@ build/
 
 ### Environments ##
 TrainImages
+/src/main/web/public/profile_images

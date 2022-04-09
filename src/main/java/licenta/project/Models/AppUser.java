@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -36,6 +37,10 @@ public class AppUser implements UserDetails {
     private Boolean enabled;
     @Column(nullable = false)
     private String profileImage;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "appUser")
+    @ToString.Exclude
+    private List<History> appUserHistorySet;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

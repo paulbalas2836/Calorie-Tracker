@@ -124,7 +124,7 @@ const submitChangePassword = handleSubmit(values => {
     confirmNewPassword: values.confirmNewPassword,
   }, {
     headers: {
-      Authorization: "Bearer " + sessionStorage.getItem("token")
+      Authorization: "Bearer " + useUser.getToken
     }
   }).then(() => successMessage.value = "Password has successfully been changed!")
       .catch(error => {

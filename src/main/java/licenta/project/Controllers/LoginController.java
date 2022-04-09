@@ -24,11 +24,11 @@ public class LoginController {
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws Exception {
         try {
             String jwt = this.loginService.loginAccount(loginDto);
-            return new ResponseEntity(
+            return new ResponseEntity<>(
                     new JwtDto(jwt, appUserService.getAppUserByClaims(this.jwtToken.extractAllClaims(jwt))),
                     HttpStatus.OK);
         } catch (HttpServerErrorException e) {
-            return new ResponseEntity(e.getMessage(), e.getStatusCode());
+            return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
         }
     }
 
@@ -36,7 +36,7 @@ public class LoginController {
     public ResponseEntity<?> loginWithGoogle(@RequestBody String credential)throws Exception{
           try{
               String jwt = this.loginService.connectWithGoogle(credential);
-              return new ResponseEntity(
+              return new ResponseEntity<>(
                       new JwtDto(jwt, appUserService.getAppUserByClaims(this.jwtToken.extractAllClaims(jwt))),
                       HttpStatus.OK);
           }catch (HttpServerErrorException e){

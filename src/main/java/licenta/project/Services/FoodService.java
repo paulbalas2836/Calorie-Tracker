@@ -1,16 +1,15 @@
 package licenta.project.Services;
 
 import licenta.project.Dto.FoodDto;
-import licenta.project.Dto.HistoryDto;
-import licenta.project.Exceptions.AppException;
 import licenta.project.Models.Food;
+import licenta.project.Models.History;
 import licenta.project.Repositories.FoodRepository;
-import licenta.project.Utils.ImageManipulation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,22 +17,9 @@ import java.util.Optional;
 public class FoodService {
 
     private FoodRepository foodRepository;
-    private HistoryService historyService;
-    private AppUserService appUserService;
-    private ImageManipulation imageManipulation;
 
-    public FoodDto getData(MultipartFile image, HistoryDto historyDto) throws AppException, IOException {
-        Optional<Food> defaultFood = this.foodRepository.getFoodByName(historyDto.getLabel());
-        if (defaultFood.isEmpty()) throw new AppException("No food found");
-        FoodDto foodDto = new FoodDto(historyDto.getLabel(), historyDto.getWeight());
-        if (foodDto.getQuantity() == null)
-            foodDto.setQuantity(defaultFood.get().getDefaultQuantity());
-
-        String filename = imageManipulation.saveImage(image, historyDto.getLabel());
-
-        if(appUserService.emailExists(historyDto.getEmail()))
-        historyService.addToHistory(historyDto.getEmail(),defaultFood.get(),filename, foodDto.getQuantity());
-        return calculateNutritionalValues(defaultFood.get(), foodDto);
+    public Optional<Food> getFood(String label) {
+        return this.foodRepository.getFoodByName(label);
     }
 
     public FoodDto calculateNutritionalValues(Food food, FoodDto foodDto) {
@@ -53,6 +39,16 @@ public class FoodService {
     private static double round(double value) {
         int scale = (int) Math.pow(10, 2);
         return (double) Math.round(value * scale) / scale;
+    }
+
+    public List<Food> getFoodByHistory(List<History> historySet)
+    {
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        boolean saturday =  cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
+        historySet.size();
+        return null;
     }
 
 }

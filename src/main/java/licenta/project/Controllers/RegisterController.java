@@ -20,11 +20,11 @@ public class RegisterController {
     private AppUserService appUserService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterDto registerDto) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto registerDto) {
         try {
             appUserService.register(registerDto);
         } catch (UserAlreadyExistAuthenticationException | MessagingException e) {
-            return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

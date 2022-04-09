@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "food")
 public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +44,6 @@ public class Food {
     @Column(nullable = false)
     private Double defaultQuantity;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "food")
+    private List<History> foodHistorySet;
 }
