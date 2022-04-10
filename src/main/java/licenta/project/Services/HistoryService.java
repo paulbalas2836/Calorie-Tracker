@@ -14,9 +14,8 @@ import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.text.ParseException;
+import java.util.*;
 
 @Service
 @Getter
@@ -53,9 +52,10 @@ public class HistoryService {
         historyRepository.save(history);
     }
 
-    public GetHistoryDto getHistory(String email){
+    public GetHistoryDto getHistory(String email) throws ParseException {
         AppUser appUser = (AppUser) appUserService.loadUserByUsername(email);
-        List<Food> foodSet = foodService.getFoodByHistory(appUser.getAppUserHistorySet());
+        Map<String, Map<String, List<FoodDto>>> wholeHistoryMap = new HashMap<>();
+//        List<Food> foodSet = foodService.getFoodByHistory(appUser.getAppUserHistorySet());
         return null;
     }
 

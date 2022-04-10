@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping(path="/history")
@@ -24,7 +25,7 @@ public class HistoryController {
     private HistoryService historyService;
 
     @GetMapping(path = "getHistory/{email}")
-    private ResponseEntity getHistoryByDay(@PathVariable String email){
+    private ResponseEntity getHistoryByDay(@PathVariable String email) throws ParseException {
        return new ResponseEntity(historyService.getHistory(email), HttpStatus.ACCEPTED);
     }
 

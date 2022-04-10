@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Setter
@@ -35,5 +35,5 @@ public class History {
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private Date createdAt;
 }

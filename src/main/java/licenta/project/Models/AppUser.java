@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class AppUser implements UserDetails {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "appUser")
     @ToString.Exclude
-    private List<History> appUserHistorySet;
+    private List<History> appUserHistorySet = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
