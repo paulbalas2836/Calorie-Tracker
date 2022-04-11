@@ -1,7 +1,7 @@
 package licenta.project.Services;
 
 import licenta.project.Dto.FoodDto;
-import licenta.project.Dto.GetHistoryDto;
+import licenta.project.Dto.HistoryIntervalDto;
 import licenta.project.Dto.SaveHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
@@ -14,7 +14,9 @@ import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -41,22 +43,54 @@ public class HistoryService {
         return foodService.calculateNutritionalValues(defaultFood.get(), foodDto);
     }
 
-    public void addToHistory(String email, Food food, String filename, Double quantity)
-    {
+    public void addToHistory(String email, Food food, String filename, Double quantity) {
         History history = new History();
         AppUser appUser = (AppUser) appUserService.loadUserByUsername(email);
         history.setAppUser(appUser);
         history.setFood(food);
         history.setQuantity(quantity);
-        history.setPath("D:\\Licenta\\Licenta\\TrainImages\\" + filename + ".jpg");
+        history.setPath(filename + ".jpg");
         historyRepository.save(history);
     }
 
-    public GetHistoryDto getHistory(String email) throws ParseException {
+    public List<List<FoodDto>> getHistory(String email, HistoryIntervalDto historyIntervalDto) throws ParseException, AppException {
+        Calendar calendarFirstDay = Calendar.getInstance();
+        Calendar calendarLastDay = Calendar.getInstance();
+
+        Date endDate = new SimpleDateFormat("dd/MM/yyyy").parse(historyIntervalDto.getStartingDate());
+        calendarLastDay.setTime(endDate);
+
+        Date startDate = new SimpleDateFormat("dd/MM/yyyy").parse(historyIntervalDto.getStartingDate());
+        calendarFirstDay.setTime(startDate);
+
+        if (calendarFirstDay.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY && calendarLastDay.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+            throw new AppException("Bad Request!");
+        }
+
         AppUser appUser = (AppUser) appUserService.loadUserByUsername(email);
-        Map<String, Map<String, List<FoodDto>>> wholeHistoryMap = new HashMap<>();
-//        List<Food> foodSet = foodService.getFoodByHistory(appUser.getAppUserHistorySet());
-        return null;
+        List<List<FoodDto>> weeklyHistoryMap = new ArrayList<>();
+        int index = 0;
+        while (index < 7) {
+            String currentDate = new SimpleDateFormat("dd/MM/yyyy").format(calendarFirstDay.getTime());
+            List<FoodDto> foodList = getHistoryByDate(currentDate, appUser.getAppUserHistorySet());
+            weeklyHistoryMap.add(foodList);
+            index++;
+            calendarFirstDay.add(Calendar.DATE, 1);
+        }
+        return weeklyHistoryMap;
+    }
+
+    public List<FoodDto> getHistoryByDate(String currentDate, List<History> historyList) {
+        List<FoodDto> historyListByDay = new ArrayList<>();
+        for (History history : historyList) {
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String historyDate = dateFormat.format(history.getCreatedAt());
+            if (Objects.equals(currentDate, historyDate)) {
+                FoodDto foodDto = new FoodDto(history.getFood().getName(), history.getQuantity(), history.getPath());
+                historyListByDay.add(foodService.calculateNutritionalValues(history.getFood(), foodDto));
+            }
+        }
+        return historyListByDay;
     }
 
 

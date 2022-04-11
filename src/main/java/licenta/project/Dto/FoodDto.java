@@ -24,8 +24,15 @@ public class FoodDto {
     private Double sodium;
     private Double iron;
     private Double quantity;
+    private String path;
 
     public FoodDto(String name, Double quantity){
+        this.path = null;
+        this.name = name;
+        this.quantity = quantity;
+    }
+    public FoodDto(String name, Double quantity, String path){
+        this.path = path;
         this.name = name;
         this.quantity = quantity;
     }

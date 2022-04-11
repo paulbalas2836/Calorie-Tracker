@@ -193,7 +193,7 @@ async function getCalories() {
   const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255))
   const model = await tf.loadLayersModel(constants.TENSORFLOW_MODEL);
   const prediction = model.predict(normalizedData.expandDims()).dataSync()
-
+  console.log(prediction)
   label.value = getLabel(prediction)
   saveHistoryDto.value.email = user.getEmail;
   saveHistoryDto.value.label = label.value;
@@ -210,7 +210,6 @@ async function getCalories() {
           "Content-Type": undefined
         }
       }).then(res => {
-    console.log(res.data)
     macroNutrients.value.calories.amount = res.data.calories
     macroNutrients.value.carbs.amount = res.data.carbs
     macroNutrients.value.fiber.amount = res.data.fiber

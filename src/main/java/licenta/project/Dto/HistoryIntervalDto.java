@@ -2,14 +2,20 @@ package licenta.project.Dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @Getter
-public class GetHistoryDto {
+@Setter
+public class HistoryIntervalDto {
     @NotNull
     @NotEmpty
-    private String email;
+    private String startingDate;
+
+    @NotEmpty
+    @NotNull
+    private String endingDate;
 }
