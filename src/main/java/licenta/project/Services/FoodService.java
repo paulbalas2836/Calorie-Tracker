@@ -1,5 +1,6 @@
 package licenta.project.Services;
 
+import licenta.project.Dto.DailyNutrientsDto;
 import licenta.project.Dto.FoodDto;
 import licenta.project.Models.Food;
 import licenta.project.Repositories.FoodRepository;
@@ -30,6 +31,20 @@ public class FoodService {
         foodDto.setProtein(round(((food.getProtein() * foodDto.getQuantity()) / food.getDefaultQuantity())));
         foodDto.setSodium(round(((food.getSodium() * foodDto.getQuantity()) / food.getDefaultQuantity())));
         return foodDto;
+    }
+
+    public void getDailyNutrients(DailyNutrientsDto dailyNutrientsDto, FoodDto foodDto) {
+        dailyNutrientsDto.setCalcium(dailyNutrientsDto.getCalcium() + foodDto.getCalcium());
+        dailyNutrientsDto.setCalories(dailyNutrientsDto.getCalories() + foodDto.getCalories());
+        dailyNutrientsDto.setCarbs(dailyNutrientsDto.getCarbs() + foodDto.getCarbs());
+        dailyNutrientsDto.setCholesterol(dailyNutrientsDto.getCholesterol() + foodDto.getCholesterol());
+        dailyNutrientsDto.setFiber(dailyNutrientsDto.getFiber() + foodDto.getFiber());
+        dailyNutrientsDto.setFat(dailyNutrientsDto.getFat() + foodDto.getFat());
+        dailyNutrientsDto.setIron(dailyNutrientsDto.getIron() + foodDto.getIron());
+        dailyNutrientsDto.setPotassium(dailyNutrientsDto.getPotassium() + foodDto.getPotassium());
+        dailyNutrientsDto.setProtein(dailyNutrientsDto.getProtein() + foodDto.getProtein());
+        dailyNutrientsDto.setSodium(dailyNutrientsDto.getSodium() + foodDto.getSodium());
+
     }
 
     private static double round(double value) {

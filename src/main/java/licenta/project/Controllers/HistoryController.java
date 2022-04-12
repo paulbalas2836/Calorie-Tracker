@@ -26,7 +26,7 @@ public class HistoryController {
     private HistoryService historyService;
 
     @GetMapping(path = "getHistory/{email}")
-    private ResponseEntity<List<List<FoodDto>>> getHistoryByDay(@PathVariable String email, HistoryIntervalDto historyIntervalDto) throws ParseException, AppException {
+    private ResponseEntity<Map<String, List<Object>>> getHistoryByDay(@PathVariable String email, HistoryIntervalDto historyIntervalDto) throws ParseException, AppException {
        return new ResponseEntity<>(historyService.getHistory(email, historyIntervalDto), HttpStatus.ACCEPTED);
     }
 

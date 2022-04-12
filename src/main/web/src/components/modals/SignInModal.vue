@@ -33,7 +33,7 @@ import Button from "../basic/Button.vue"
 import ErrorMessage from "../../components/basic/ErrorMessage.vue";
 import {ref} from 'vue'
 import {useUserStore} from '../../store/userStore'
-import {BACKEND_URL} from "../../Constants.js";
+import constants from "../../Constants.js";
 
 const emit = defineEmits(['closeSignInModal'])
 const loginForm = ref({email: '', password: ''})
@@ -41,7 +41,7 @@ const userStore = useUserStore()
 let errorMessage = ref('')
 
 function login() {
-  userStore.login(loginForm, BACKEND_URL + "login").then(() => {
+  userStore.login(loginForm, constants.BACKEND_URL + "login").then(() => {
     emit("closeSignInModal")
   }).catch(err => {
     err.data.errors.forEach(err => {

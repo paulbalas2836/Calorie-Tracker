@@ -7,19 +7,20 @@
       <transition enter-active-class="transition ease-out duration-200" enter-from-class="transform opacity-0 scale-95"
                   enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75"
                   leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-        <div class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div
+            class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="dark:bg-neutral-900 bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <header class="flow-col justify-center text-center text-lg">
-                  <slot name="header"></slot>
-                </header>
-                <main class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <slot></slot>
-                </main>
-                <footer class="mb-4 flex flex-col px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <slot name="footer"></slot>
-                </footer>
-              </div>
+            <header class="flow-col justify-center text-center text-lg">
+              <slot name="header"></slot>
+            </header>
+            <main class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <slot></slot>
+            </main>
+            <footer class="mb-4 flex flex-col px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <slot name="footer"></slot>
+            </footer>
           </div>
+        </div>
       </transition>
     </div>
   </div>

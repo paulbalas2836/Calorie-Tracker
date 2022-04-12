@@ -8,6 +8,4 @@
 
 <script setup>
 import ProfileInformation from "./ProfileInformation.vue";
-
-
 </script>

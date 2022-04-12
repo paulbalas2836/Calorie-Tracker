@@ -28,13 +28,10 @@
             </svg>
           </a>
         </div>
-        <div class="text-center font-md text-white text-lg mt-4">
+        <div class="text-center font-medium text-white text-lg mt-4">
           &copy; AppName, All rights reserved.
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<script>
-</script>

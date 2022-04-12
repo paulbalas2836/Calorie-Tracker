@@ -54,7 +54,7 @@ import ErrorMessage from "../../components/basic/ErrorMessage.vue";
 import {useForm, useField} from 'vee-validate';
 import {useRouter} from 'vue-router'
 import axios from 'axios'
-import {BACKEND_URL} from "../../Constants.js";
+import constants from "../../Constants.js";
 
 const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const {value: email, errorMessage: emailError} = useField('email', emailValidator, {initialValue: ''})
@@ -108,7 +108,7 @@ function confirmPasswordValidator(value) {
 }
 
 const submitRegister = handleSubmit(values => {
-  axios.post(BACKEND_URL + "register", {
+  axios.post(constants.BACKEND_URL + "register", {
     name: values.name,
     email: values.email,
     password: values.password,

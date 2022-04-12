@@ -4,7 +4,7 @@
     <main>
       <router-view></router-view>
     </main>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
@@ -12,6 +12,4 @@
 <script setup>
 import Navbar from "../components/navbar/Navbar.vue"
 import Footer from "../components/basic/Footer.vue"
-import { ref } from 'vue'
-
 </script>

@@ -63,7 +63,7 @@ import ErrorMessage from "../../components/basic/ErrorMessage.vue"
 import axios from "axios"
 import SuccessMessage from "../../components/basic/SuccessMessage.vue";
 import {ref} from 'vue'
-import {BACKEND_URL} from "../../Constants.js";
+import constants from "../../Constants.js";
 
 const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const useUser = useUserStore()
@@ -118,7 +118,7 @@ function confirmNewPasswordValidator(value) {
 
 const submitChangePassword = handleSubmit(values => {
   successMessage.value = ''
-  axios.put(BACKEND_URL + "user/changePassword/" + useUser.getEmail, {
+  axios.put(constants.BACKEND_URL + "user/changePassword/" + useUser.getEmail, {
     currentPassword: values.currentPassword,
     newPassword: values.newPassword,
     confirmNewPassword: values.confirmNewPassword,

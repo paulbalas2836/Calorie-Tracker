@@ -124,7 +124,7 @@ function closeSignInModal() {
   signInModal.value = false
 }
 
-function logout(){
+function logout() {
   userStore.logout()
 }
 

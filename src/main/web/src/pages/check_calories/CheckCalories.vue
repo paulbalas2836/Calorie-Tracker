@@ -23,7 +23,8 @@
         </div>
         <div class="md:col-span-2 sm:mt-0 mt-4">
           <div class="dark:bg-neutral-900 bg-white shadows-md px-4 py-5 rounded-md flex flex-col lg:mt-0 mt-4">
-            <div v-show="label !== null" class="flex justify-center text-center font-md text-xl dark:text-white text-gray-700">
+            <div v-show="label !== null"
+                 class="flex justify-center text-center  text-xl dark:text-white text-gray-700">
               {{ label }}: {{ quantity }}g
             </div>
             <div class="flex md:flex-row flex-col mt-4 justify-center items-center md:gap-x-12 lg:gap-x-9">
@@ -32,14 +33,15 @@
                            ref="chartRef"
                            :data="macroNutrientChart.data"
                            :options="macroNutrientChart.options"></Vue3ChartJs>
-              <div v-for="macro in macroNutrients" :key="macro.label" class="self-center mt-4 md:mt-0 text-center relative">
-                <div class="text-xl font-md text-gray-700 dark:text-white">{{ macro.label }}</div>
-                <div v-if="macro.label !== 'Calories'" class="text-lg font-md text-gray-700 dark:text-white">{{
+              <div v-for="macro in macroNutrients" :key="macro.label"
+                   class="self-center mt-4 md:mt-0 text-center relative">
+                <div class="text-xl  text-gray-700 dark:text-white">{{ macro.label }}</div>
+                <div v-if="macro.label !== 'Calories'" class="text-lg  text-gray-700 dark:text-white">{{
                     macro.amount
                   }}g
                 </div>
-                <div v-else class="text-lg font-md text-gray-700 dark:text-white">{{ macro.amount }}</div>
-                <div v-if="macro.hasOwnProperty('percentage')" class="text-lg font-md text-gray-700 dark:text-white"
+                <div v-else class="text-lg  text-gray-700 dark:text-white">{{ macro.amount }}</div>
+                <div v-if="macro.hasOwnProperty('percentage')" class="text-lg font-medium text-gray-700 dark:text-white"
                      :style="macro.percentageColor">
                   {{ macro.percentage }}%
                 </div>
@@ -57,14 +59,15 @@
 import * as tf from '@tensorflow/tfjs';
 import Button from "../../components/basic/Button.vue";
 import MicroNutrients from "./MicroNutrients.vue";
-import {ref} from "vue"
+import {onMounted, ref} from "vue"
 import Input from "../../components/basic/Input.vue"
 import {useUserStore} from "../../store/userStore";
 import ErrorMessage from "../../components/basic/ErrorMessage.vue"
 import axios from "axios";
-import * as constants from "../../Constants.js"
+import constants from "../../Constants.js"
 import {L2} from "../../L2.js"
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+
 const user = useUserStore()
 
 const macroNutrients = ref({
@@ -139,6 +142,7 @@ const imageTensor = ref(null)
 const saveHistoryDto = ref({weight: null, label: null, email: null})
 const label = ref(null)
 const quantity = ref(null)
+let model = null
 
 function imageValidator(value) {
   if (!(value.type.split('/')[0] === 'image'))
@@ -176,6 +180,11 @@ function onFileSelected(event) {
   }
 }
 
+onMounted(async () => {
+  tf.serialization.registerClass(L2)
+  model = await tf.loadLayersModel("http://127.0.0.1:8081/model.json")
+})
+
 function getLabel(prediction) {
   let labelByIndex = -1
   let value = -1
@@ -185,15 +194,12 @@ function getLabel(prediction) {
       labelByIndex = i
     }
   }
-  return constants.productMap.get(labelByIndex)
+  return constants.PRODUCT_MAP.get(labelByIndex)
 }
 
 async function getCalories() {
-  tf.serialization.registerClass(L2)
   const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255))
-  const model = await tf.loadLayersModel(constants.TENSORFLOW_MODEL);
   const prediction = model.predict(normalizedData.expandDims()).dataSync()
-  console.log(prediction)
   label.value = getLabel(prediction)
   saveHistoryDto.value.email = user.getEmail;
   saveHistoryDto.value.label = label.value;
@@ -201,9 +207,9 @@ async function getCalories() {
     "weight": saveHistoryDto.value.weight,
     "label": saveHistoryDto.value.label,
     "email": saveHistoryDto.value.email
-        })], {
-        type: "application/json"
-        }))
+  })], {
+    type: "application/json"
+  }))
   axios.post(constants.BACKEND_URL + 'history/prediction', saveToHistory,
       {
         headers: {
@@ -215,9 +221,9 @@ async function getCalories() {
     macroNutrients.value.fiber.amount = res.data.fiber
     macroNutrients.value.fats.amount = res.data.fat
     macroNutrients.value.proteins.amount = res.data.protein
-    macroNutrients.value.proteins.percentage = Math.round((res.data.protein*4*100)/res.data.calories)
-    macroNutrients.value.fats.percentage = Math.round((res.data.fat*9*100)/res.data.calories)
-    macroNutrients.value.carbs.percentage = 100- macroNutrients.value.proteins.percentage - macroNutrients.value.fats.percentage
+    macroNutrients.value.proteins.percentage = Math.round((res.data.protein * 4 * 100) / res.data.calories)
+    macroNutrients.value.fats.percentage = Math.round((res.data.fat * 9 * 100) / res.data.calories)
+    macroNutrients.value.carbs.percentage = 100 - macroNutrients.value.proteins.percentage - macroNutrients.value.fats.percentage
 
     microNutrients.value.calcium.amount = res.data.calcium
     microNutrients.value.iron.amount = res.data.iron
@@ -232,13 +238,14 @@ async function getCalories() {
           '#00CC66',
           '#0080FF',
         ],
-        data: [res.data.protein, res.data.fat,  res.data.carbs]
+        data: [res.data.protein, res.data.fat, res.data.carbs]
       }
     ]
 
     chartRef.value.update()
     quantity.value = res.data.quantity
     saveToHistory.delete("saveHistoryDto")
+    saveToHistory.delete("image")
   }).catch(err => console.log(err.response.data))
 }
 </script>
