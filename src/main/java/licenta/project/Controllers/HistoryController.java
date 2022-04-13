@@ -1,7 +1,7 @@
 package licenta.project.Controllers;
 
 import licenta.project.Dto.FoodDto;
-import licenta.project.Dto.HistoryIntervalDto;
+import licenta.project.Dto.HistoryDateDto;
 import licenta.project.Dto.SaveHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Services.HistoryService;
@@ -26,8 +26,8 @@ public class HistoryController {
     private HistoryService historyService;
 
     @GetMapping(path = "getHistory/{email}")
-    private ResponseEntity<Map<String, List<Object>>> getHistoryByDay(@PathVariable String email, HistoryIntervalDto historyIntervalDto) throws ParseException, AppException {
-       return new ResponseEntity<>(historyService.getHistory(email, historyIntervalDto), HttpStatus.ACCEPTED);
+    private ResponseEntity<Map<String, Object>> getHistoryByDay(@PathVariable String email, HistoryDateDto historyDateDto) throws ParseException, AppException {
+       return new ResponseEntity<>(historyService.getHistory(email, historyDateDto), HttpStatus.ACCEPTED);
     }
 
     @PostMapping(path = "/prediction")

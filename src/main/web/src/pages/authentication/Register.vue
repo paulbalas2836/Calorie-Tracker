@@ -54,7 +54,7 @@ import ErrorMessage from "../../components/basic/ErrorMessage.vue";
 import {useForm, useField} from 'vee-validate';
 import {useRouter} from 'vue-router'
 import axios from 'axios'
-import constants from "../../Constants.js";
+import constants from "../../FrozenConstants.js";
 
 const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const {value: email, errorMessage: emailError} = useField('email', emailValidator, {initialValue: ''})

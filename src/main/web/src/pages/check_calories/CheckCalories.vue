@@ -33,22 +33,12 @@
                            ref="chartRef"
                            :data="macroNutrientChart.data"
                            :options="macroNutrientChart.options"></Vue3ChartJs>
-              <div v-for="macro in macroNutrients" :key="macro.label"
-                   class="self-center mt-4 md:mt-0 text-center relative">
-                <div class="text-xl  text-gray-700 dark:text-white">{{ macro.label }}</div>
-                <div v-if="macro.label !== 'Calories'" class="text-lg  text-gray-700 dark:text-white">{{
-                    macro.amount
-                  }}g
-                </div>
-                <div v-else class="text-lg  text-gray-700 dark:text-white">{{ macro.amount }}</div>
-                <div v-if="macro.hasOwnProperty('percentage')" class="text-lg font-medium text-gray-700 dark:text-white"
-                     :style="macro.percentageColor">
-                  {{ macro.percentage }}%
-                </div>
-              </div>
+              <MacroNutrients :macroNutrients="macroNutrients"/>
             </div>
           </div>
-          <MicroNutrients :microNutrients="microNutrients"></MicroNutrients>
+          <div class="dark:bg-neutral-900 bg-white shadows-md px-6 py-8 rounded-md flex flex-col mt-4 gap-8">
+            <MicroNutrients :microNutrients="microNutrients"></MicroNutrients>
+          </div>
         </div>
       </div>
     </div>
@@ -64,75 +54,13 @@ import Input from "../../components/basic/Input.vue"
 import {useUserStore} from "../../store/userStore";
 import ErrorMessage from "../../components/basic/ErrorMessage.vue"
 import axios from "axios";
-import constants from "../../Constants.js"
+import constants from "../../FrozenConstants.js"
 import {L2} from "../../L2.js"
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+import MacroNutrients from './MacroNutrients.vue'
+import {microNutrients, macroNutrientChart, macroNutrients} from '../../SealConstants'
 
 const user = useUserStore()
-
-const macroNutrients = ref({
-  calories: {label: "Calories", amount: 500},
-  fiber: {label: "Fiber", amount: 36},
-  proteins: {label: "Proteins", amount: 35, percentage: 35, percentageColor: 'color:#FF9933;'},
-  fats: {label: "Fats", amount: 20, percentage: 25, percentageColor: 'color:#00CC66;'},
-  carbs: {label: "Carbs", amount: 45, percentage: 45, percentageColor: 'color:#0080FF;'},
-})
-
-const microNutrients = ref({
-  calcium: {
-    label: "Calcium",
-    amount: 2.5,
-    recommendedDailyIntake: 1000,
-    unitOfMeasurement: "mg"
-  },
-  potassium: {
-    label: "Potassium",
-    amount: 1500,
-    recommendedDailyIntake: 3500,
-    unitOfMeasurement: "mg"
-  },
-  sodium: {
-    label: "Sodium",
-    amount: 500,
-    recommendedDailyIntake: 2300,
-    unitOfMeasurement: "mg"
-  },
-  cholesterol: {
-    label: "Cholesterol",
-    amount: 50,
-    recommendedDailyIntake: 300,
-    unitOfMeasurement: "mg"
-  },
-  iron: {
-    label: "Iron",
-    amount: 5,
-    recommendedDailyIntake: 19.3,
-    unitOfMeasurement: "mg"
-  }
-})
-Object.seal(microNutrients)
-Object.seal(macroNutrients)
-
-const macroNutrientChart = {
-  id: 'doughnut',
-  type: 'doughnut',
-  data: {
-    labels: [macroNutrients.value.proteins.label, macroNutrients.value.fats.label, macroNutrients.value.carbs.label],
-    datasets: [
-      {
-        backgroundColor: [
-          '#FF9933',
-          '#00CC66',
-          '#0080FF',
-        ],
-        data: [macroNutrients.value.proteins.amount, macroNutrients.value.fats.amount, macroNutrients.value.carbs.amount]
-      }
-    ]
-  },
-  options: {
-    responsive: false,
-  }
-}
 const chartRef = ref(null)
 const image = ref(null)
 const saveToHistory = new FormData()
@@ -180,7 +108,40 @@ function onFileSelected(event) {
   }
 }
 
+function initMicroNutrients() {
+  microNutrients.value.potassium.amount = 0
+  microNutrients.value.sodium.amount = 0
+  microNutrients.value.calcium.amount = 0
+  microNutrients.value.cholesterol.amount = 0
+  microNutrients.value.iron.amount = 0
+}
+
+function initMacroNutrient() {
+  macroNutrientChart.data.datasets = [
+    {
+      backgroundColor: [
+        '#FF9933',
+        '#00CC66',
+        '#0080FF',
+      ],
+      data: [35, 20, 45]
+    }
+  ]
+  chartRef.value.update()
+
+  macroNutrients.value.fiber.amount = 8
+  macroNutrients.value.calories.amount = 500
+  macroNutrients.value.fats.amount = 20
+  macroNutrients.value.carbs.amount = 45
+  macroNutrients.value.proteins.amount = 35
+  macroNutrients.value.fats.percentage = 20
+  macroNutrients.value.carbs.percentage = 45
+  macroNutrients.value.proteins.percentage = 35
+}
+
 onMounted(async () => {
+  initMacroNutrient()
+  initMicroNutrients()
   tf.serialization.registerClass(L2)
   model = await tf.loadLayersModel("http://127.0.0.1:8081/model.json")
 })

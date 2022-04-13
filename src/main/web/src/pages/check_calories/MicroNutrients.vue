@@ -1,5 +1,4 @@
 <template>
-  <div class="dark:bg-neutral-900 bg-white shadows-md px-6 py-8 rounded-md flex flex-col mt-4 gap-8">
     <template v-for="micro in microNutrients" :key="micro.label">
       <div>
         <div class="flex flex-row">
@@ -16,7 +15,6 @@
         </div>
       </div>
     </template>
-  </div>
 </template>
 
 <script setup>

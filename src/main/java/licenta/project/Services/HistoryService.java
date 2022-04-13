@@ -2,7 +2,7 @@ package licenta.project.Services;
 
 import licenta.project.Dto.DailyNutrientsDto;
 import licenta.project.Dto.FoodDto;
-import licenta.project.Dto.HistoryIntervalDto;
+import licenta.project.Dto.HistoryDateDto;
 import licenta.project.Dto.SaveHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
@@ -54,44 +54,25 @@ public class HistoryService {
         historyRepository.save(history);
     }
 
-    public Map<String, List<Object>> getHistory(String email, HistoryIntervalDto historyIntervalDto) throws ParseException, AppException {
-        Calendar calendarFirstDay = Calendar.getInstance();
-        Calendar calendarLastDay = Calendar.getInstance();
+    public Map<String, Object> getHistory(String email, HistoryDateDto historyDateDto) throws ParseException {
+        Calendar calendar = Calendar.getInstance();
 
-        Date endDate = new SimpleDateFormat("dd/MM/yyyy").parse(historyIntervalDto.getStartingDate());
-        calendarLastDay.setTime(endDate);
+        Date selectedDate = new SimpleDateFormat("dd/MM/yyyy").parse(historyDateDto.getSelectedDate());
+        calendar.setTime(selectedDate);
 
-        Date startDate = new SimpleDateFormat("dd/MM/yyyy").parse(historyIntervalDto.getStartingDate());
-        calendarFirstDay.setTime(startDate);
-
-        if (calendarFirstDay.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY && calendarLastDay.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-            throw new AppException("Bad Request!");
-        }
-        Map<String, List<Object>> weeklyHistoryMap = new HashMap<>();
         AppUser appUser = (AppUser) appUserService.loadUserByUsername(email);
-        List<Object> weeklyProductHistoryList = new ArrayList<>();
-        List<Object> weeklyNutrientsHistoryList = new ArrayList<>();
-        int index = 0;
-        while (index < 7) {
-            String currentDate = new SimpleDateFormat("dd/MM/yyyy").format(calendarFirstDay.getTime());
-            Map<String, Object> foodList = getHistoryByDate(currentDate, appUser.getAppUserHistorySet());
-            weeklyProductHistoryList.add(foodList.get("products"));
-            weeklyNutrientsHistoryList.add(foodList.get("dailyNutrients"));
-            index++;
-            calendarFirstDay.add(Calendar.DATE, 1);
-        }
-        weeklyHistoryMap.put("products", weeklyProductHistoryList);
-        weeklyHistoryMap.put("dailyNutrients", weeklyNutrientsHistoryList);
-        return weeklyHistoryMap;
+
+        return getHistoryByDate(calendar.getTime(), appUser.getAppUserHistorySet());
     }
 
-    public Map<String, Object> getHistoryByDate(String currentDate, List<History> historyList) {
+    public Map<String, Object> getHistoryByDate(Date date, List<History> historyList) {
         Map<String, Object> historyListByDay = new HashMap<>();
         ArrayList<Object> foodListByDay = new ArrayList<>();
         DailyNutrientsDto dailyNutrientsDto = new DailyNutrientsDto();
         for (History history : historyList) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             String historyDate = dateFormat.format(history.getCreatedAt());
+            String currentDate = dateFormat.format(date);
             if (Objects.equals(currentDate, historyDate)) {
                 FoodDto foodDto = new FoodDto(history.getFood().getName(), history.getQuantity(), history.getPath());
                 FoodDto calculatedFoodDto = foodService.calculateNutritionalValues(history.getFood(), foodDto);

@@ -1,23 +1,13 @@
 <template>
   <div class="min-h-screen py-12 px-8">
     <div class="flex flex-row flex-wrap gap-x-1 items-center justify-center text-center mb-8">
-      <ChevronLeftIcon @click="previousWeek"
-                       class="h-8 w-10 dark:fill-gray-400 cursor-pointer hover:fill-gray-800 fill-gray-400 dark:hover:fill-white self-end"/>
-      <div @click="changeDay(day)"
-           class="cursor-pointer text-3xl font-medium mr-2 ml-2 dark:hover:text-gray-200 hover:text-gray-600"
-           :class="day.active ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-gray-400'"
-           v-for="day in WEEK_DAY" :key="day.name">
-        {{ day.name }}
-      </div>
-      <ChevronRightIcon @click="nextWeek"
-                        class="h-8 w-10 dark:fill-gray-400 cursor-pointer hover:fill-gray-800 fill-gray-400 dark:hover:fill-white self-end"/>
-    </div>
-    <div class="flex justify-center font-medium text-center text-xl dark:text-white text-gray-800 ">
-      {{ getCurrentWeekMonday() }} - {{ getCurrentWeekSunday() }}
+      <div @click="previousDay">PreviousDay</div>
+      <div class="text-xl dark:text-white text-gray-800 font-medium ml-4 mr-4">{{ getSelectedDate() }}</div>
+      <div @click="nextDay">NextDay</div>
     </div>
     <div class="flex flex-row flex-wrap gap-20 mt-12 items-center justify-center">
-      <template v-if="historyByWeek">
-        <template v-for="food in historyByWeek.products[key]" :key="food.id">
+      <template v-if="historyByDay">
+        <template v-for="food in historyByDay.products" :key="food.id">
           <transition enter-active-class="transition ease-out duration-300"
                       enter-from-class="transform opacity-0 scale-95"
                       enter-to-class="transform opacity-100 scale-100"
@@ -28,87 +18,97 @@
         </template>
       </template>
     </div>
-    <div class="w-full h-full flex flex-row border border-transparent dark:bg-neutral-900 bg-gray-400 h-40 mt-8 rounded-md">
-      <DailyNutrients v-if="historyByWeek" :dailyNutrients="historyByWeek.dailyNutrients[key]"/>
+    <div class="dark:bg-neutral-900 bg-white shadows-md px-6 py-8 rounded-md flex flex-col mt-4 gap-8">
+      <div class="flex flex-row gap-14">
+        <Vue3ChartJs :height=200 :width=200 :id="macroNutrientChart.id"
+                     :type="macroNutrientChart.type"
+                     ref="chartRef"
+                     :data="macroNutrientChart.data"
+                     :options="macroNutrientChart.options"
+        ></Vue3ChartJs>
+        <MacroNutrients :macroNutrients="macroNutrients" />
+      </div>
+      <MicroNutrients :microNutrients="microNutrients"></MicroNutrients>
     </div>
   </div>
 </template>
 
 <script setup>
 import FoodCard from "./FoodCard.vue"
-import constants from "../../Constants";
+import constants from "../../FrozenConstants";
 import axios from "axios";
 import {onBeforeMount, ref} from 'vue'
 import {useUserStore} from "../../store/userStore";
-import DailyNutrients from "./DailyNutrients.vue"
-import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
+import MicroNutrients from "../check_calories/MicroNutrients.vue";
+import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
+import {microNutrients, macroNutrientChart, macroNutrients} from '../../SealConstants'
+import MacroNutrients from '../check_calories/MacroNutrients.vue'
 
 const user = useUserStore()
 
-const WEEK_DAY = ref([
-  {name: "Monday", active: true, index: 0},
-  {name: "Tuesday", active: false, index: 1},
-  {name: "Wednesday", active: false, index: 2},
-  {name: "Thursday", active: false, index: 3},
-  {name: "Friday", active: false, index: 4},
-  {name: "Saturday", active: false, index: 5},
-  {name: "Sunday", active: false, index: 6}
-])
-Object.seal(WEEK_DAY)
-const currentWeekMonday = ref(new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1)))
-const currentWeekSunday = ref(new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 7)))
+const selectedDate = ref(new Date())
+const historyByDay = ref(null)
+const chartRef = ref(null)
 
-const key = ref(0)
-const historyByWeek = ref(null)
-
-function getCurrentWeekMonday() {
-  return currentWeekMonday.value.getDate() + '/' + (currentWeekMonday.value.getMonth() + 1) + '/' + currentWeekMonday.value.getFullYear()
+function getSelectedDate() {
+  return selectedDate.value.getDate() + '/' + (selectedDate.value.getMonth() + 1) + '/' + selectedDate.value.getFullYear()
 }
 
-function getCurrentWeekSunday() {
-  return currentWeekSunday.value.getDate() + '/' + (currentWeekSunday.value.getMonth() + 1) + '/' + currentWeekSunday.value.getFullYear()
-}
 
-function getHistoryByWeek() {
-  axios.get(constants.BACKEND_URL + 'history/getHistory/' + user.getEmail, {
+async function getHistoryByWeek() {
+  await axios.get(constants.BACKEND_URL + 'history/getHistory/' + user.getEmail, {
     params: {
-      startingDate: getCurrentWeekMonday(),
-      endingDate: getCurrentWeekSunday(),
+      selectedDate: getSelectedDate(),
     },
     headers: {
       Authorization: "Bearer " + user.getToken
     }
   }).then(res => {
-    historyByWeek.value = res.data
+    historyByDay.value = res.data
+    microNutrients.value.calcium.amount = res.data.dailyNutrients.calcium
+    microNutrients.value.potassium.amount = res.data.dailyNutrients.potassium
+    microNutrients.value.sodium.amount = res.data.dailyNutrients.sodium
+    microNutrients.value.cholesterol.amount = res.data.dailyNutrients.cholesterol
+    microNutrients.value.iron.amount = res.data.dailyNutrients.iron
+
+    macroNutrients.value.proteins.amount = res.data.dailyNutrients.protein
+    macroNutrients.value.carbs.amount = res.data.dailyNutrients.carbs
+    macroNutrients.value.fats.amount = res.data.dailyNutrients.fat
+    macroNutrients.value.fiber.amount = res.data.dailyNutrients.fiber
+    macroNutrients.value.calories.amount = res.data.dailyNutrients.calories
+
+    macroNutrients.value.proteins.percentage = Math.round((res.data.dailyNutrients.protein * 4 * 100) / res.data.dailyNutrients.calories)
+    macroNutrients.value.fats.percentage = Math.round((res.data.dailyNutrients.fat * 9 * 100) / res.data.dailyNutrients.calories)
+    macroNutrients.value.carbs.percentage = 100 - macroNutrients.value.proteins.percentage - macroNutrients.value.fats.percentage
+
+    macroNutrientChart.data.datasets = [
+      {
+        backgroundColor: [
+          '#FF9933',
+          '#00CC66',
+          '#0080FF',
+        ],
+        data: [res.data.dailyNutrients.protein, res.data.dailyNutrients.fat, res.data.dailyNutrients.carbs]
+      }
+    ]
+
+    chartRef.value.update()
     console.log(res.data)
   }).catch(err => console.log(err.response))
 }
 
-onBeforeMount(async () => {
-  await getHistoryByWeek()
+onBeforeMount(() => {
+  getHistoryByWeek()
 })
 
-function previousWeek() {
-  currentWeekMonday.value.setDate(currentWeekMonday.value.getDate() - 7)
-  currentWeekSunday.value.setDate(currentWeekSunday.value.getDate() - 7)
+function previousDay() {
+  selectedDate.value.setDate(selectedDate.value.getDate() - 1)
   getHistoryByWeek()
 }
 
-function nextWeek() {
-  currentWeekMonday.value.setDate(currentWeekMonday.value.getDate() + 7)
-  currentWeekSunday.value.setDate(currentWeekSunday.value.getDate() + 7)
+function nextDay() {
+  selectedDate.value.setDate(selectedDate.value.getDate() + 1)
   getHistoryByWeek()
 }
 
-function changeDay(day) {
-  day.active = true
-  key.value = day.index
-  WEEK_DAY.value.forEach((el) => {
-    if (el.name !== day.name) {
-      el.active = false
-    }
-  })
-
-
-}
 </script>

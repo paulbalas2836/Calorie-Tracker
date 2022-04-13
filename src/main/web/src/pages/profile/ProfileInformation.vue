@@ -63,7 +63,7 @@ import ErrorMessage from "../../components/basic/ErrorMessage.vue"
 import axios from "axios"
 import SuccessMessage from "../../components/basic/SuccessMessage.vue";
 import {ref} from 'vue'
-import constants from "../../Constants.js";
+import constants from "../../FrozenConstants.js";
 
 const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const useUser = useUserStore()

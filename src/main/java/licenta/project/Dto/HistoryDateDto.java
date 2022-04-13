@@ -10,12 +10,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Getter
 @Setter
-public class HistoryIntervalDto {
+public class HistoryDateDto {
     @NotNull
     @NotEmpty
-    private String startingDate;
-
-    @NotEmpty
-    @NotNull
-    private String endingDate;
+    private String selectedDate;
+    
 }

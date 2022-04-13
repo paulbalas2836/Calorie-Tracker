@@ -41,7 +41,7 @@
 <script setup>
 import {useUserStore} from "../../store/userStore";
 import {ref} from "vue"
-import constants from "../../Constants";
+import constants from "../../FrozenConstants";
 
 defineProps({
   food: Object
