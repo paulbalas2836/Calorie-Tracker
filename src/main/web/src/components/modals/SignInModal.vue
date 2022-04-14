@@ -1,7 +1,7 @@
 <template>
   <ModalBase>
     <template #header>
-      <h2 class="mt-4 text-2xl text-dark dark:text-white">Sign in to your account</h2>
+      <h2 class="text-2xl text-dark dark:text-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">Sign in to your account</h2>
     </template>
     <template #default>
       <div class="mb-6">

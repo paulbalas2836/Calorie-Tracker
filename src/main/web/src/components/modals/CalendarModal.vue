@@ -1,0 +1,133 @@
+<template>
+  <ModalBase>
+    <template #header>
+      <div class="flex flex-row justify-between dark:bg-fuchsia-400 bg-emerald-500 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <ChevronLeftIcon @click="previousMonth" class="h-12 dark:fill-neutral-900 fill-white cursor-pointer"/>
+        <div>
+          <div class="uppercase text-xl text-shadow font-semibold dark:text-neutral-900 text-white">
+            {{ getCurrentMonth }}
+          </div>
+          <p class="text-sm font-medium mt-4 text-shadow dark:text-neutral-900 text-white">{{ getCurrentDate }}</p>
+        </div>
+        <ChevronRightIcon @click="nextMonth" class="h-12 dark:fill-neutral-900 fill-white cursor-pointer"/>
+      </div>
+    </template>
+    <template #default>
+      <div class="flex flex-row justify-between sm:gap-x-0  px-2 py-2 text-center">
+        <template v-for="dayName in constants.DAYS" :key="dayName.id">
+          <div class="dark:text-white sm:w-16">{{ dayName }}</div>
+        </template>
+      </div>
+      <div class="flex flex-wrap sm:justify-between sm:gap-x-0 text-center items-center px-2 py-2">
+        <template v-for="days in daysOfTheMonth">
+          <div class="dark:text-white sm:w-16 sm:py-2 sm:px-2 cursor-pointer px-2" @click="selectNewDate(days)"
+               :style="days.dayClass">{{ days.day }}
+          </div>
+        </template>
+      </div>
+    </template>
+  </ModalBase>
+</template>
+
+<script setup>
+import ModalBase from './ModalBase.vue'
+import {computed, ref, watch} from 'vue'
+import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
+import constants from '../../FrozenConstants.js'
+
+const props = defineProps({
+  selectedDate: Date
+})
+
+const emit = defineEmits(['selectNewDate'])
+
+const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))
+const currentDate = ref(props.selectedDate)
+const startingMonth = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), currentDate.value.getDate())
+const daysOfTheMonth = ref([])
+
+const getLastDayOfMonth = computed(() => {
+  return new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0).getDate()
+})
+
+const getLastDayOfPreviousMonth = computed(() => {
+  return new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), 0).getDate()
+})
+
+const getCurrentMonth = computed(() => {
+  return constants.MONTHS[currentDate.value.getMonth()]
+})
+
+const getCurrentDate = computed(() => {
+  return startingMonth.toDateString()
+})
+
+function getAllDays() {
+  const backgroundColor = darkMode.value ? "background-color: rgb(232 121 249);" : "background-color: rgb(16 185 129);"
+  const firstDayIndex = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), 1).getDay()
+  const lastDayIndex = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0).getDay()
+  const nextDays = 6 - lastDayIndex
+  daysOfTheMonth.value = []
+  for (let f = firstDayIndex; f > 0; f--) {
+    daysOfTheMonth.value.push({
+      day: getLastDayOfPreviousMonth.value - f + 1,
+      month: currentDate.value.getMonth(),
+      year: currentDate.value.getFullYear(),
+      whichMonth: "previous",
+      dayClass: "opacity: 0.5;"
+    })
+  }
+
+  for (let i = 1; i <= getLastDayOfMonth.value; i++) {
+    if (i === currentDate.value.getDate() && startingMonth.getMonth() === currentDate.value.getMonth()) {
+      daysOfTheMonth.value.push({
+        day: i,
+        month: currentDate.value.getMonth(),
+        year: currentDate.value.getFullYear(),
+        whichMonth: "current",
+        dayClass: backgroundColor
+      })
+      continue
+    }
+
+    daysOfTheMonth.value.push({
+      day: i,
+      month: currentDate.value.getMonth(),
+      year: currentDate.value.getFullYear(),
+      whichMonth: "current",
+      dayClass: ""
+    })
+  }
+
+  for (let l = 1; l <= nextDays; l++) {
+    daysOfTheMonth.value.push({
+      day: l,
+      month: currentDate.value.getMonth(),
+      year: currentDate.value.getFullYear(),
+      whichMonth: "next",
+      dayClass: "opacity: 0.5;"
+    })
+  }
+}
+
+getAllDays()
+
+watch(currentDate, () => {
+  getAllDays()
+})
+
+function nextMonth() {
+  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, currentDate.value.getDate())
+}
+
+function previousMonth() {
+  currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, currentDate.value.getDate())
+}
+
+function selectNewDate(day) {
+  const newDate = day.whichMonth === "current" ? new Date(day.year, day.month, day.day) : day.whichMonth === "next" ? new Date(day.year, day.month + 1, day.day) : new Date(day.year, day.month - 1, day.day)
+
+  emit("selectNewDate", newDate)
+
+}
+</script>
