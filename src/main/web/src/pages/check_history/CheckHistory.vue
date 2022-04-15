@@ -13,18 +13,19 @@
     </div>
     <div class="flex flex-row flex-wrap gap-20 mt-12 items-center justify-center">
       <template v-if="historyByDay">
-        <template v-for="food in historyByDay.products" :key="food.id">
-          <transition enter-active-class="transition ease-out duration-300"
-                      enter-from-class="transform opacity-0 scale-95"
-                      enter-to-class="transform opacity-100 scale-100"
-                      leave-active-class="transition ease-in duration-75"
-                      leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+        <TransitionGroup enter-active-class="transition ease-out duration-700"
+                         enter-from-class="transform opacity-0 scale-95"
+                         enter-to-class="transform opacity-100 scale-100"
+                         leave-active-class="transition ease-in duration-700"
+                         leave-from-class="transform opacity-100 scale-100"
+                         leave-to-class="transform opacity-0 scale-95">
+          <template v-for="food in historyByDay.products" :key="food">
             <FoodCard :food="food"/>
-          </transition>
-        </template>
+          </template>
+        </TransitionGroup>
       </template>
     </div>
-    <div class="dark:bg-neutral-900 bg-white shadows-md px-6 py-8 rounded-md flex flex-col mt-4 gap-8">
+    <div class="dark:bg-neutral-900 bg-white shadows-md px-6 py-8 rounded-md flex flex-col mt-8 gap-8 ">
       <div class="flex md:flex-row flex-col mt-4 justify-center items-center md:gap-x-12 lg:gap-x-9">
         <Vue3ChartJs :height=200 :width=200 :id="macroNutrientChart.id"
                      :type="macroNutrientChart.type"
@@ -36,8 +37,14 @@
       </div>
       <MicroNutrients :microNutrients="microNutrients"></MicroNutrients>
     </div>
-    <CalendarModal v-if="openCalendarModal" @selectNewDate="getNewDate" @closeModal="openCalendarModal = false"
-                   :selectedDate="selectedDate"/>
+    <Transition enter-active-class="transition ease-out duration-400"
+                enter-from-class="transform opacity-0 scale-50"
+                enter-to-class="transform opacity-100 scale-100 "
+                leave-active-class="transition ease-in duration-300"
+                leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-100">
+      <CalendarModal v-if="openCalendarModal" @selectNewDate="getNewDate" @closeModal="openCalendarModal = false"
+                     :selectedDate="selectedDate"/>
+    </Transition>
   </div>
 </template>
 

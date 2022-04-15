@@ -1,28 +1,28 @@
 <template>
-  <ModalBase>
-    <template #header>
-      <h2 class="text-2xl text-dark dark:text-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">Sign in to your account</h2>
-    </template>
-    <template #default>
-      <div class="mb-6">
-        <Label label="Email address" for="login_email"/>
-        <Input placeholder="email@gmail.com" name="login_email" v-model="loginForm.email"/>
-      </div>
+    <ModalBase>
+      <template #header>
+        <h2 class="text-2xl text-dark dark:text-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">Sign in to your account</h2>
+      </template>
+      <template #default>
+        <div class="mb-6">
+          <Label label="Email address" for="login_email"/>
+          <Input placeholder="email@gmail.com" name="login_email" v-model="loginForm.email"/>
+        </div>
 
-      <div>
-        <Label label="Password" for="login_password"/>
-        <Input placeholder="Password" type="password" v-model="loginForm.password" name="login_password"/>
-      </div>
-      <ErrorMessage>{{ errorMessage }}</ErrorMessage>
-    </template>
+        <div>
+          <Label label="Password" for="login_password"/>
+          <Input placeholder="Password" type="password" v-model="loginForm.password" name="login_password"/>
+        </div>
+        <ErrorMessage>{{ errorMessage }}</ErrorMessage>
+      </template>
 
-    <template #footer>
-      <Button @click="login"
-              class="mb-4 dark:bg-fuchsia-300 dark:hover:bg-fuchsia-200 bg-emerald-500 hover:bg-emerald-400 dark:text-black text-white">
-        Login
-      </Button>
-    </template>
-  </ModalBase>
+      <template #footer>
+        <Button @click="login"
+                class="mb-4 dark:bg-fuchsia-300 dark:hover:bg-fuchsia-200 bg-emerald-500 hover:bg-emerald-400 dark:text-black text-white">
+          Login
+        </Button>
+      </template>
+    </ModalBase>
 </template>
 
 <script setup>

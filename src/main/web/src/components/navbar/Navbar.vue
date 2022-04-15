@@ -1,5 +1,5 @@
 <template>
-  <div class="dark:bg-neutral-900 bg-blue-500">
+  <div class="fixed w-full dark:bg-neutral-900 bg-blue-500">
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -82,7 +82,13 @@
       </template>
     </div>
   </div>
-  <SignInModal v-if="signInModal" @closeModal="closeSignInModal" @closeSignInModal='closeSignInModal'/>
+  <Transition enter-active-class="transition ease-out duration-400"
+              enter-from-class="transform opacity-0 scale-0"
+              enter-to-class="transform opacity-100 scale-100 "
+              leave-active-class="transition ease-in duration-300"
+              leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-100">
+    <SignInModal v-if="signInModal" @closeModal="closeSignInModal" @closeSignInModal='closeSignInModal'/>
+  </Transition>
 </template>
 
 <script setup>
