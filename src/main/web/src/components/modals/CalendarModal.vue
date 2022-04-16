@@ -34,6 +34,7 @@ import ModalBase from './ModalBase.vue'
 import {computed, ref, watch} from 'vue'
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 import constants from '../../FrozenConstants.js'
+import {darkMode} from "../../SealConstants";
 
 const props = defineProps({
   selectedDate: Date
@@ -41,7 +42,6 @@ const props = defineProps({
 
 const emit = defineEmits(['selectNewDate'])
 
-const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))
 const currentDate = ref(props.selectedDate)
 const startingMonth = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), currentDate.value.getDate())
 const daysOfTheMonth = ref([])

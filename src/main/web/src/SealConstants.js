@@ -1,4 +1,5 @@
 import {ref} from "vue";
+import {exp} from "@tensorflow/tfjs";
 
 export const microNutrients = Object.seal(ref({
     calcium: {
@@ -61,3 +62,5 @@ export const macroNutrients = Object.seal(ref({
     fats: {label: "Fats", amount: 0, percentage: 0, percentageColor: 'color:#00CC66;'},
     carbs: {label: "Carbs", amount: 0, percentage: 0, percentageColor: 'color:#0080FF;'},
 }))
+
+export const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))

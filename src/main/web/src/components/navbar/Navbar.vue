@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed w-full dark:bg-neutral-900 bg-blue-500">
+  <div class="absolute w-full dark:bg-neutral-900 bg-blue-500">
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -102,6 +102,7 @@ import {useUserStore} from '../../store/userStore'
 import Dropdown from "../dorpdown/Dropdown.vue"
 import DropdownContent from "../dorpdown/DropdownContent.vue"
 import DropdownItems from "../dorpdown/DropdownItems.vue"
+import {darkMode} from "../../SealConstants";
 
 const userNavigation = {
   profile: {name: 'Your Profile', href: 'Profile'},
@@ -113,7 +114,6 @@ const navbarPages = ref([{name: "About", route: '/', isActive: false},
 const currentRouteName = useRoute();
 const signInModal = ref(false)
 const mobileNavbarPages = ref(false)
-const darkMode = ref(!localStorage.getItem('theme') ? true : (localStorage.theme === 'dark'))
 const userStore = useUserStore()
 
 watch(currentRouteName, () => {
