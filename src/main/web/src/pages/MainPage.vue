@@ -15,6 +15,7 @@ import Navbar from "../components/navbar/Navbar.vue"
 import Footer from "../components/basic/Footer.vue"
 import {onMounted, ref, watch} from "vue";
 import {darkMode} from "../SealConstants";
+import Dot from '../Dot.js'
 import gsap from "gsap";
 
 const canvas = ref(null)
@@ -25,9 +26,6 @@ const dpr = ref(null)
 const pxWidth = ref(null)
 const pxHeight = ref(null)
 
-const PERSPECTIVE = ref(null)
-const PROJECTION_CENTER_X = ref(null)
-const PROJECTION_CENTER_Y = ref(null)
 
 watch(darkMode, () => {
   if (!darkMode.value) {
@@ -59,53 +57,13 @@ onMounted(() => {
     const context = canvas.value.getContext("2d")
     context.scale(dpr.value, dpr.value)
     savedContext.value =  context
-    PERSPECTIVE.value = canvas.value.width * 0.8
-    PROJECTION_CENTER_X.value = canvas.value.width/2
-    PROJECTION_CENTER_Y.value = canvas.value.height/2
+    const perspective = canvas.value.width * 0.8
+    const projection_center_x = canvas.value.width/2
+    const projection_center_y = canvas.value.height/2
 
-    const DOT_RADIUS = 10; // Radius of the dots
-    let GLOBE_RADIUS = canvas.value.width / 3; // Radius of the globe based on the canvas width
-    class Dot {
-      constructor() {
-        this.theta = Math.random() * 2 * Math.PI; // Random value between [0, 2Pi]
-        this.phi = Math.acos((Math.random() * 2) - 1); // Random value between [0, Pi]
-        this.x = (Math.random() - 0.5) * canvas.value.width;
-        this.y = (Math.random() - 0.5) * canvas.value.height;
-        this.z = Math.random() * canvas.value.width;
-        this.radius = 10;
 
-        this.xProjected = 0;
-        this.yProjected = 0;
-        this.scaleProjected = 0;
-
-        gsap.to(this, {duration :Math.random() * 10 + 15,
-          z: canvas.value.width,
-          repeat: -1,
-          theta: this.theta + Math.PI *2,
-          ease: "power0.easeNone",
-        });
-      }
-
-      project() {
-        this.x = GLOBE_RADIUS * Math.sin(this.phi) * Math.cos(this.theta);
-        this.y = GLOBE_RADIUS * Math.cos(this.phi);
-        this.z = GLOBE_RADIUS * Math.sin(this.phi) * Math.sin(this.theta) + GLOBE_RADIUS;
-
-        this.scaleProjected = PERSPECTIVE.value / (PERSPECTIVE.value + this.z);
-        this.xProjected = (this.x * this.scaleProjected) + PROJECTION_CENTER_X.value;
-        this.yProjected = (this.y * this.scaleProjected) + PROJECTION_CENTER_Y.value;
-      }
-      draw() {
-        this.project();
-        context.globalAlpha = Math.abs(1 - this.z / canvas.value.width);
-        context.beginPath();
-        context.arc(this.xProjected, this.yProjected, DOT_RADIUS * this.scaleProjected, 0, Math.PI * 2);
-        // context.fillRect(this.xProjected - this.radius, this.yProjected - this.radius, this.radius * 2 * this.scaleProjected, this.radius * 2 * this.scaleProjected);
-        context.fill()
-      }
-    }
     for (let i = 0; i < 800; i++) {
-      dots.push(new Dot());
+      dots.push(new Dot(cssWidth.value, cssHeight.value, perspective, projection_center_x, projection_center_y, context));
     }
     function render() {
       context.clearRect(0, 0, canvas.value.width, canvas.value.height);
