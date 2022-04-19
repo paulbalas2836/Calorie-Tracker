@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-full">
-<!--        <navbar ></navbar>-->
-    <canvas ref="canvas" class="w-full h-80"></canvas>
+    <header>
+      <navbar :intersecting="intersecting"></navbar>
+      <canvas ref="canvas" class="w-full h-80 bg-blue-100"></canvas>
+    </header>
     <main>
       <router-view></router-view>
     </main>
@@ -15,154 +17,96 @@ import Navbar from "../components/navbar/Navbar.vue"
 import Footer from "../components/basic/Footer.vue"
 import {onMounted, ref, watch} from "vue";
 import {darkMode} from "../SealConstants";
-import Dot from '../Dot.js'
-import gsap from "gsap";
+import Particle from '../Particle.js'
 
 const canvas = ref(null)
-const savedContext =ref(null)
+const savedContext = ref(null)
 const cssWidth = ref(null)
 const cssHeight = ref(null)
 const dpr = ref(null)
 const pxWidth = ref(null)
 const pxHeight = ref(null)
+const intersecting = ref(false)
+const mouse = ref({x: null, y: null, radius: 100})
 
 
 watch(darkMode, () => {
   if (!darkMode.value) {
-    canvas.value.style.background = "#FFFFFF"
+    canvas.value.style.background = "#fcba03"
   } else {
     canvas.value.style.background = "#34495E"
   }
 })
 
-
 onMounted(() => {
-  // const mouse = {x: null, y: null}
-  // let particlesArray;
-  // window.addEventListener('mousemove', function (event) {
-  //   mouse.x = event.x;
-  //   mouse.y = event.y
-  // })
-
-  const dots = [];
+  let particlesArray = [];
 
   function redraw() {
     dpr.value = window.devicePixelRatio
     cssWidth.value = canvas.value.clientWidth
     cssHeight.value = canvas.value.clientHeight
-    pxWidth.value = Math.round(dpr.value*cssWidth.value)
-    pxHeight.value = Math.round( dpr.value*cssHeight.value)
+    pxWidth.value = Math.round(dpr.value * cssWidth.value)
+    pxHeight.value = Math.round(dpr.value * cssHeight.value)
     canvas.value.width = pxWidth.value
     canvas.value.height = pxHeight.value
     const context = canvas.value.getContext("2d")
     context.scale(dpr.value, dpr.value)
-    savedContext.value =  context
-    const perspective = canvas.value.width * 0.8
-    const projection_center_x = canvas.value.width/2
-    const projection_center_y = canvas.value.height/2
+    savedContext.value = context
 
-
-    for (let i = 0; i < 800; i++) {
-      dots.push(new Dot(cssWidth.value, cssHeight.value, perspective, projection_center_x, projection_center_y, context));
-    }
-    function render() {
-      context.clearRect(0, 0, canvas.value.width, canvas.value.height);
-
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].project();
-      }
-
-      // Sort dots array based on their projected size
-      dots.sort((dot1, dot2) => {
-        return dot1.sizeProjection - dot2.sizeProjection;
-      });
-
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].draw();
-      }
-
-      window.requestAnimationFrame(render);
-    }
-    render()
   }
-   new ResizeObserver(() => redraw()).observe(canvas.value)
 
-
-  // class Particle {
-  //   constructor(x, y, directionX, directionY, size, color) {
-  //     this.x = x;
-  //     this.y = y;
-  //     this.directionX = directionX;
-  //     this.directionY = directionY;
-  //     this.size = size;
-  //     this.color = color;
-  //   }
-  //
-  //   draw() {
-  //     savedContext.value.beginPath()
-  //     savedContext.value.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-  //     savedContext.value.fillStyle = '#8C5523'
-  //     savedContext.value.fill();
-  //   }
-  //
-  //   update() {
-  //     if(this.x > canvas.value.width || this.x < 0){
-  //       this.directionX  =- this.directionX;
-  //     }
-  //     if(this.y> canvas.value.height || this.y < 0){
-  //       this.directionY = -this.directionY;
-  //     }
-  //
-  //     this.x += this.directionX;
-  //     this.y += this.directionY;
-  //     this.draw();
-  //   }
-  //
-  // }
-  //
-  // function init(){
-  //   particlesArray = [];
-  //   let numberOfParticles = 10
-  //   for(let i = 0; i < numberOfParticles; i++){
-  //     let size = (Math.random() * 5) + 1;
-  //     let x = (Math.random()* ((canvas.value.width - size*2)- (size*2)) +size*2)
-  //     let y = (Math.random()* ((canvas.value.height - size*2)- (size*2)) +size*2)
-  //     let directionX = (Math.random()* 5) - 2.5
-  //     let directionY = (Math.random()* 5) - 2.5
-  //     let color = '#8C5523'
-  //     particlesArray.push(new Particle(x,y,directionX,directionY,size, color))
-  //   }
-  // }
-  //
-  // function animate(){
-  //   requestAnimationFrame(animate);
-  //   savedContext.value.clearRect(0,0, canvas.value.width, canvas.value.height)
-  //
-  //   for(let i = 0; i < particlesArray.length; i++){
-  //     particlesArray[i].update();
-  //   }
-  //   connect();
-  // }
-  //
-  // function connect(){
-  //   let opacityValue = 1;
-  //   for(let a = 0; a< particlesArray.length; a++){
-  //     for(let b = a; b<particlesArray.length; b++){
-  //       let distance = ((particlesArray[a].x - particlesArray[b].x)*(particlesArray[a].x - particlesArray[b].x)) + ((particlesArray[a].y -particlesArray[b].y)* (particlesArray[a].y-particlesArray[b].y))
-  //       if(distance < (canvas.value.width/7)*(canvas.value.height/7)){
-  //         opacityValue = 1 -(distance/20000);
-  //         savedContext.value.strokeStyle='rgba(140,85,31,'+opacityValue+')';
-  //         savedContext.value.lineWidth = 1;
-  //         savedContext.value.beginPath();
-  //         savedContext.value.moveTo(particlesArray[a].x, particlesArray[a].y)
-  //         savedContext.value.lineTo(particlesArray[b].x, particlesArray[b].y)
-  //         savedContext.value.stroke();
-  //       }
-  //     }
-  //   }
-  // }
-  // init();
-  // animate();
+  const navbarOptions = {};
+  const navbarObserver = new IntersectionObserver(function (entries, navbarObserver) {
+    entries.forEach(entry => {
+      intersecting.value = !entry.isIntersecting;
+    })
+  }, navbarOptions);
+  navbarObserver.observe(canvas.value);
+  new ResizeObserver(() => redraw()).observe(canvas.value)
+//
+//   window.addEventListener('mousemove',
+//       function (event) {
+//         mouse.value.x = event.x + canvas.value.clientLeft / 2;
+//         mouse.value.y = event.y + canvas.value.clientTop / 2;
+//       })
+//
+//   function drawImage() {
+//     let imageWidth = img.width;
+//     let imageHeight = img.height;
+//     const data = savedContext.value.getImageData(0, 0, imageWidth, imageHeight);
+//     savedContext.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+//
+//     function init() {
+//       particlesArray = [];
+//       for (let y = 0, y2 = data.height; y < y2; y++) {
+//         for (let x = 0, x2 = data.width; x< x2; x++) {
+//           if(data.data[(y*4*data.width)+ (x*4)+3]>128){
+//             let positionX = x;
+//             let positionY = y;
+//             let color = "rgb("  + data.data[(y*4*data.width) + (x*4)] + "," + data.data[(y*4*data.width)+(x*4) + 1]+ "," +data.data[(y*4*data.width)+(x*4) + 2] + ")";
+//             particlesArray.push(new Particle(positionX * 4, positionY *4, 2, color, canvas.value.width,canvas.value.height, imageWidth, imageHeight));
+//           }
+//         }
+//       }
+//     }
+//     function animate(){
+//       requestAnimationFrame(animate);
+//       savedContext.value.fillStyle = 'rgba(0,0,0,.05)';
+//       savedContext.value.fillRect(0,0, canvas.value.width, canvas.value.height)
+//
+//       for(let i = 0; i < particlesArray.length; i++){
+//         particlesArray[i].update(canvas.value.width,canvas.value.height,savedContext.value, mouse.value);
+//       }
+//     }
+//     init();
+//     animate();
+//   }
+//   const img = new Image()
+//     img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAADnUlEQVRIDa3BfUicBRwH8O/vnnt5bnfe+V7zzpeztRA3ttOpp6MthwXj8g/JGNQGsaCwFwVXgzH2x4omURxlzSSEEThvDPtj1WoxdyM26tKtLTp93M2h4rvn9OT0vBfv+RUHUpLGzPt8iJmxcTU1NZeuX4FW4BQROvWB9B27CnY4HA7EETNjIyRJKraVLB1+CnkGbFHhL/dm6dowV+boOgbysrI9Hg8xMx4NM+v1+qA9G7Ysuj3FFSYsRunL3/mlAohKqAUoCQoFvf8zMTP+kyRJDocjNzfXZrM9d66BK0z4cZCMGhaIIjLPh1GYjoE50qnQNUzTwcbGRmJmrK++vt51qWPf9tRvpcXktDTP0UzcmqTLD/h4GfRquiDBpOfHdYjIeDCnvD7q9XotFgsxM9bX3t5+5vjrpXna3vGlW5X55J7gI4XQCJgNUe9DrspBjEGEvpmS31Td3d2II2bGakNDQy6Xi/zzF1taZkbHXnz7rbPnPq2w6L6+47coVHqVMmQx+rYZZtTEoWWSHlbmWOvq6mpra7GCmBkrOjs7z59tqf5D2qvWZggC4gKyXE0TBlFYmFh2pZqxQgb3R6N3I+Er6UbzgcrW1lasIGZGXFlZWfm9gZNJKQIIq32x5O/Lj7k9iz1pOVjLvCzb/dPtN34qKioCQMwMoLm5eeTU6ROGVKx2NRS8FgreX44mmYX+kVC2QnkhdatAhLU0zPn2fHC6oaGBmNnr9R7auasr00zYrD3TI11SHzGzKIr30806ImzaUCz60f5ycjqdn79y9JsMExJBBp4YHyS73f7ZnT6jQkAiMPC8b4zyMjJ7NAYFEoOBat847daIXRlmQmIwUDE1QjaN9rsMEyExZGD7xCBZVOqex3IIiREDlyiipCAazcrXECERFlh+Y3cB2e32Q7/etot6JMLN8FKw+WNyOp31h4/0b81DIlT6Rr9y/0LMnJSUdFKpfU1vxObIzNsWZvx+PzFzJBLRiaIrM7tQpcYmHPSNXp2eMhgMxMwAAoGAOSvre11qgUqN/6UjGNjb9YPVagVAzIy4WCxWXFz8wvDYm/pkbNAngbnkUycajx1DHDEz/sHtdr+8b/8ZY/qz4hY8Ak80/Ors1PmbN0pLS7GCmBn/0tvbW15e/kyM3zOmmQWVAmCA8Lcwsy+2/PTshDYlZXJyEqsRM2N9bW1tH77zrhAMepejJkG5U6UJsnw3Gn7Saq2qqmpqasJa/gR3z5SleYTThwAAAABJRU5ErkJggg=="
+//     img.onload = function(){
+//     savedContext.value.drawImage(img, 0,0);
+//     drawImage()
+//   }
 })
 
 
