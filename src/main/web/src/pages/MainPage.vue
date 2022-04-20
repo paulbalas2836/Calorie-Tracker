@@ -2,8 +2,9 @@
   <div class="min-h-full">
     <header>
       <navbar :intersecting="intersecting"></navbar>
-      <canvas ref="canvas" class="w-full h-80 bg-blue-100"></canvas>
+      <canvas ref="canvas" class="w-full h-[30rem]"/>
     </header>
+<!--    <canvas ref="canvas" ></canvas>-->
     <main>
       <router-view></router-view>
     </main>
@@ -27,6 +28,7 @@ const dpr = ref(null)
 const pxWidth = ref(null)
 const pxHeight = ref(null)
 const intersecting = ref(false)
+const image = ref(null)
 const mouse = ref({x: null, y: null, radius: 100})
 
 
@@ -40,7 +42,6 @@ watch(darkMode, () => {
 
 onMounted(() => {
   let particlesArray = [];
-
   function redraw() {
     dpr.value = window.devicePixelRatio
     cssWidth.value = canvas.value.clientWidth
@@ -53,6 +54,11 @@ onMounted(() => {
     context.scale(dpr.value, dpr.value)
     savedContext.value = context
 
+    const img = new Image()
+    img.src = '/navigation.png'
+    img.onload = function () {
+      savedContext.value.drawImage(img, 0, 0, cssWidth.value, cssHeight.value);
+    }
   }
 
   const navbarOptions = {};
@@ -62,7 +68,9 @@ onMounted(() => {
     })
   }, navbarOptions);
   navbarObserver.observe(canvas.value);
+
   new ResizeObserver(() => redraw()).observe(canvas.value)
+
 //
 //   window.addEventListener('mousemove',
 //       function (event) {
