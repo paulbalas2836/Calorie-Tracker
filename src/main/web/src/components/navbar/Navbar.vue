@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed w-full" :class="intersecting ? 'dark:bg-neutral-900 bg-white border border-gray-200 dark:border-transparent': ''">
+  <div class="w-full dark:bg-neutral-900 bg-white border border-transparent " >
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -10,8 +10,8 @@
             <div class="flex space-x-4">
               <template v-for="page in navbarPages" :key="page.name">
                 <router-link :to=page.route><a href="#"
-                                               class="dark:hover:bg-fuchsia-200 dark:hover:text-gray-900 hover:bg-emerald-400 dark:text-white text-white px-3 py-2 rounded-md text-sm font-medium"
-                                               :class="{'text-gray-900 dark:text-white' : intersecting, 'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black shadow-lg': page.isActive}"
+                                               class="dark:hover:bg-fuchsia-200 text-gray-900 dark:text-white dark:hover:text-gray-900 hover:bg-emerald-400 dark:text-white text-white px-3 py-2 rounded-md text-sm font-medium"
+                                               :class="{ 'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black shadow-lg': page.isActive}"
                                                aria-current="page">{{ page.name }}</a></router-link>
               </template>
 
@@ -62,10 +62,10 @@
                    data-size="large">
               </div>
             </div>
-            <NavbarButtons class="sm:mr-4 mr-2 dark:hover:bg-fuchsia-200" :class="{'border-gray-900 text-gray-900 dark:border-white dark:text-white' : intersecting}" @click="openSignInModal">Sign in
+            <NavbarButtons class="sm:mr-4 mr-2" :noIntersecting="noIntersecting" @click="openSignInModal">Sign in
             </NavbarButtons>
             <router-link to="/register">
-              <NavbarButtons class="dark:hover:bg-fuchsia-200" :class="{'border-gray-900 text-gray-900 dark:border-white dark:text-white' : intersecting}">Register</NavbarButtons>
+              <NavbarButtons :noIntersecting="noIntersecting" >Register</NavbarButtons>
             </router-link>
           </div>
         </div>
@@ -105,7 +105,7 @@ import DropdownItems from "../dorpdown/DropdownItems.vue"
 import {darkMode} from "../../SealConstants";
 
 defineProps({
-  intersecting: {type: Boolean, default: false}
+  noIntersecting: {type: Boolean, default: false}
 })
 const userNavigation = {
   profile: {name: 'Your Profile', href: 'Profile'},

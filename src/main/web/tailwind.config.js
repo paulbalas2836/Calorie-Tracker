@@ -6,7 +6,12 @@ module.exports = {
   ],
   theme: {
 
-    extend: {},
+    extend: {
+      backgroundImage:{
+        'light-home': "url('/background_home.png')",
+        'dark-home': "url('/background_dark_home.png')",
+      }
+    },
   },
   plugins: [],
 }

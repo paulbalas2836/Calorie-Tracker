@@ -1,14 +1,13 @@
 <template>
   <div class="min-h-full">
     <header>
-      <navbar :intersecting="intersecting"></navbar>
-      <canvas ref="canvas" class="w-full h-[30rem]"/>
+      <navbar :noIntersecting="intersecting"></navbar>
+<!--      <canvas ref="canvas" class="w-full h-[30rem]"/>-->
     </header>
 <!--    <canvas ref="canvas" ></canvas>-->
     <main>
       <router-view></router-view>
     </main>
-    <Footer/>
   </div>
 </template>
 
@@ -20,7 +19,7 @@ import {onMounted, ref, watch} from "vue";
 import {darkMode} from "../SealConstants";
 import Particle from '../Particle.js'
 
-const canvas = ref(null)
+// const canvas = ref(null)
 const savedContext = ref(null)
 const cssWidth = ref(null)
 const cssHeight = ref(null)
@@ -31,45 +30,45 @@ const intersecting = ref(false)
 const image = ref(null)
 const mouse = ref({x: null, y: null, radius: 100})
 
+//
+// watch(darkMode, () => {
+//   if (!darkMode.value) {
+//     canvas.value.style.background = "#fcba03"
+//   } else {
+//     canvas.value.style.background = "#34495E"
+//   }
+// })
 
-watch(darkMode, () => {
-  if (!darkMode.value) {
-    canvas.value.style.background = "#fcba03"
-  } else {
-    canvas.value.style.background = "#34495E"
-  }
-})
-
-onMounted(() => {
-  let particlesArray = [];
-  function redraw() {
-    dpr.value = window.devicePixelRatio
-    cssWidth.value = canvas.value.clientWidth
-    cssHeight.value = canvas.value.clientHeight
-    pxWidth.value = Math.round(dpr.value * cssWidth.value)
-    pxHeight.value = Math.round(dpr.value * cssHeight.value)
-    canvas.value.width = pxWidth.value
-    canvas.value.height = pxHeight.value
-    const context = canvas.value.getContext("2d")
-    context.scale(dpr.value, dpr.value)
-    savedContext.value = context
-
-    const img = new Image()
-    img.src = '/navigation.png'
-    img.onload = function () {
-      savedContext.value.drawImage(img, 0, 0, cssWidth.value, cssHeight.value);
-    }
-  }
-
-  const navbarOptions = {};
-  const navbarObserver = new IntersectionObserver(function (entries, navbarObserver) {
-    entries.forEach(entry => {
-      intersecting.value = !entry.isIntersecting;
-    })
-  }, navbarOptions);
-  navbarObserver.observe(canvas.value);
-
-  new ResizeObserver(() => redraw()).observe(canvas.value)
+// onMounted(() => {
+//   let particlesArray = [];
+//   function redraw() {
+//     dpr.value = window.devicePixelRatio
+//     cssWidth.value = canvas.value.clientWidth
+//     cssHeight.value = canvas.value.clientHeight
+//     pxWidth.value = Math.round(dpr.value * cssWidth.value)
+//     pxHeight.value = Math.round(dpr.value * cssHeight.value)
+//     canvas.value.width = pxWidth.value
+//     canvas.value.height = pxHeight.value
+//     const context = canvas.value.getContext("2d")
+//     context.scale(dpr.value, dpr.value)
+//     savedContext.value = context
+//
+//     const img = new Image()
+//     img.src = '/navigation.png'
+//     img.onload = function () {
+//       savedContext.value.drawImage(img, 0, 0, cssWidth.value, cssHeight.value);
+//     }
+//   }
+//
+//   const navbarOptions = {};
+//   const navbarObserver = new IntersectionObserver(function (entries, navbarObserver) {
+//     entries.forEach(entry => {
+//       intersecting.value = !entry.isIntersecting;
+//     })
+//   }, navbarOptions);
+//   navbarObserver.observe(canvas.value);
+//
+//   new ResizeObserver(() => redraw()).observe(canvas.value)
 
 //
 //   window.addEventListener('mousemove',
@@ -115,7 +114,7 @@ onMounted(() => {
 //     savedContext.value.drawImage(img, 0,0);
 //     drawImage()
 //   }
-})
+// })
 
 
 </script>
