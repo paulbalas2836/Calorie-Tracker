@@ -1,7 +1,14 @@
 <template>
-  <div class="overflow-hidden py-10 px-8 flex justify-center">
-    <div class="bg-light-home h-[36rem] w-9/12 absolute z-0"> </div>
-      <canvas ref="canvas" class="h-screen w-full absolute z-10"></canvas>
+  <div class="overflow-hidden flex justify-center">
+<!--    <div class="bg-light-home h-[36rem] w-9/12 absolute z-0"> </div>-->
+    <div class="absolute z-10 text-7xl font-extrabold dark:text-white" ref="titleText">Arti FOOD</div>
+    <div class="absolute z-10 text-9xl font-extrabold mt-20 dark:text-white" ref="bigText">GET CALORIES FAST</div>
+    <div class="absolute z-10 text-9xl font-extrabold mt-20 dark:text-white" ref="normalText">GET CALORIES FAST</div>
+    <img src="/FishImage.png" alt="" ref="fishImage" class="absolute z-10">
+    <img src="/AvogadoImage.png" alt="" class="absolute z-10">
+    <img src="/BrocoliImage.png" alt="" class="absolute z-10">
+    <img src="/BananaImage.png" alt="" class="absolute z-10">
+<!--      <canvas ref="canvas" class="h-screen w-full absolute z-10"></canvas>-->
   </div>
 </template>
 
@@ -9,52 +16,21 @@
 import {darkMode} from "../SealConstants";
 import {onMounted, ref, watch} from 'vue'
 
+const fishImage = ref(null);
+const titleText = ref(null);
+const bigText = ref(null);
+const normalText = ref(null);
 
-const canvas = ref(null)
-onMounted(() => {
-  let context = null;
-  let dpr = window.devicePixelRatio;
-  let cssWidth = canvas.value.clientWidth;
-  let cssHeight = canvas.value.clientHeight;
-  let pxWidth = Math.round(dpr * cssWidth);
-  let pxHeight = Math.round(dpr * cssHeight);
-  let fade = 0;
-  let shouldAnimate = true;
-  let animation = null;
-  let handY = 1000;
-  const robotImg = new Image();
-  robotImg.src = '/hand.png'
+addEventListener("mousemove", parallax);
 
-  function redraw() {
-    canvas.value.width = pxWidth;
-    canvas.value.height = pxHeight;
-    context = canvas.value.getContext("2d");
-    context.scale(dpr, dpr);
-  }
+function parallax(e){
+  let x = (e.clientX * 5)/250;
+  let y = (e.clientY*4)/250;
+  fishImage.value.style.transform = "translateX(" + x + "px) translateY(" + y + "px)";
+  titleText.value.style.transform = "translateX(" + (e.clientX * 2)/250 + "px) translateY(" + e.clientY/250 + "px)";
+  bigText.value.style.transform = "translateX(" + (e.clientX * 2)/250 + "px) translateY(" + e.clientY/250 + "px)";
+  normalText.value.style.transform = "translateX(" + (e.clientX * 2)/250 + "px) translateY(" + e.clientY/250 + "px)";
 
-  redraw()
+}
 
-  function animate() {
-    if (animation) {
-      window.cancelAnimationFrame(animation)
-    }
-    animation = requestAnimationFrame(animate);
-
-    if(shouldAnimate) {
-      context.clearRect(0, 0, cssWidth, cssHeight);
-      context.drawImage(robotImg, 0, handY, 600, 700);
-      handY -= 10;
-    }
-    if(handY === 0){
-      handY = 1000
-      shouldAnimate = false
-    }
-
-  }
-
-  watch(darkMode, () => {
-    animate()
-    shouldAnimate = true
-  })
-})
 </script>

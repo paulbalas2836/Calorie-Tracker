@@ -3,7 +3,7 @@
     <div class="min-h-screen max-w-7xl mx-auto px-4 py-10">
       <div class="lg:grid lg:grid-cols-3 gap-6">
         <div
-            class="dark:bg-neutral-900 min-h-fit px-3 py-5 bg-white shadows-md rounded-md grid grid-rows-4 justify-center items-center">
+            class="dark:bg-neutral-900 min-h-fit px-3 py-5 bg-white shadow-2xl rounded-md grid grid-rows-4 justify-center items-center">
           <div class="row-span-3 w-max h-max justify-self-center">
             <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
@@ -22,7 +22,7 @@
           </div>
         </div>
         <div class="md:col-span-2 sm:mt-0 mt-4">
-          <div class="dark:bg-neutral-900 bg-white shadows-md px-4 py-5 rounded-md flex flex-col lg:mt-0 mt-4">
+          <div class="dark:bg-neutral-900 bg-white shadow-2xl px-4 py-5 rounded-md flex flex-col lg:mt-0 mt-4">
             <div v-show="label !== null"
                  class="flex justify-center text-center  text-xl dark:text-white text-gray-700">
               {{ label }}: {{ quantity }}g
@@ -36,7 +36,7 @@
               <MacroNutrients :macroNutrients="macroNutrients"/>
             </div>
           </div>
-          <div class="dark:bg-neutral-900 bg-white shadows-md px-6 py-8 rounded-md flex flex-col mt-4 gap-8">
+          <div class="dark:bg-neutral-900 bg-white shadow-2xl px-6 py-8 rounded-md flex flex-col mt-4 gap-8">
             <MicroNutrients :microNutrients="microNutrients"></MicroNutrients>
           </div>
         </div>
