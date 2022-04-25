@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full dark:bg-neutral-900 bg-white border border-transparent " >
+  <div class="w-full dark:bg-neutral-900 bg-white border border-transparent" >
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -62,10 +62,10 @@
                    data-size="large">
               </div>
             </div>
-            <NavbarButtons class="sm:mr-4 mr-2" :noIntersecting="noIntersecting" @click="openSignInModal">Sign in
+            <NavbarButtons class="sm:mr-4 mr-2" :homePage="homePage" @click="openSignInModal">Sign in
             </NavbarButtons>
             <router-link to="/register">
-              <NavbarButtons :noIntersecting="noIntersecting" >Register</NavbarButtons>
+              <NavbarButtons :homePage="homePage" >Register</NavbarButtons>
             </router-link>
           </div>
         </div>
@@ -104,13 +104,11 @@ import DropdownContent from "../dorpdown/DropdownContent.vue"
 import DropdownItems from "../dorpdown/DropdownItems.vue"
 import {darkMode} from "../../SealConstants";
 
-defineProps({
-  noIntersecting: {type: Boolean, default: false}
-})
 const userNavigation = {
   profile: {name: 'Your Profile', href: 'Profile'},
   logout: {name: 'Sign out', href: '#'},
 }
+const homePage = ref(false)
 const navbarPages = ref([{name: "About", route: '/', isActive: false},
   {name: "Check Calories", route: "/Calories", isActive: false},
   {name: "History", route: "/History", isActive: false}])
@@ -122,6 +120,7 @@ const userStore = useUserStore()
 watch(currentRouteName, () => {
   navbarPages.value.forEach(el => {
     el.isActive = el.name === currentRouteName.name;
+    homePage.value = currentRouteName.name === 'Home';
   })
 })
 

@@ -7,6 +7,6 @@
 
 <script setup>
 defineProps({
-  noIntersecting: {type: Boolean, default: false}
+  homePage: {type: Boolean, default: false}
 })
 </script>

@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {useUserStore} from "../store/userStore";
 
-const About = () => import('../pages/About.vue')
+const Home = () => import('../pages/Home.vue')
 const CheckCalories = () => import('../pages/check_calories/CheckCalories.vue')
 const CheckHistory = () => import('../pages/check_history/CheckHistory.vue')
 const Register = () => import('../pages/authentication/Register.vue')
@@ -12,8 +12,8 @@ const ProfileContent = () => import('../pages/profile/ProfileContent.vue')
 const routes = [
     {
         path: '/',
-        name: 'About',
-        component: About,
+        name: 'Home',
+        component: Home,
         meta: {requireUserAuth: false, requireUserNoAuth: false}
     },
     {
