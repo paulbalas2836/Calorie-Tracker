@@ -9,7 +9,7 @@
 <script setup>
 import {darkMode} from "../SealConstants";
 import {onMounted, onUnmounted, ref, watch} from 'vue'
-
+import Navbar from "../components/navbar/Navbar.vue"
 const canvas = ref(null);
 const savedContext= ref(null);
 const mouse = ref({x:null, y:null})
@@ -40,6 +40,7 @@ onMounted(()=>{
   let pxHeight = null;
   let context = null;
   let animation = null;
+  let scrollType = "steady";
   const leftImage = new Image();
   const rightImage = new Image();
   const middleImage = new Image();
@@ -77,6 +78,14 @@ onMounted(()=>{
   // const resizeObserver = new ResizeObserver(() => redraw())
   // resizeObserver.observe(canvas.value)
 
+  function checkScroll(event){
+    if(event.wheelDelta >= 0 && scrollType === "steady")
+      scrollType = "up"
+    if(event.wheelDelta <= 0 && scrollType === "steady")
+      scrollType = "down"
+  }
+
+
   function parallax() {
     if (animation) {
       window.cancelAnimationFrame(animation)
@@ -87,11 +96,22 @@ onMounted(()=>{
 
     let rightImageX = (mouse.value.x * 2) / 250;
     let rightImageY = (mouse.value.y * 2) / 250;
-
     context.clearRect(0, 0, cssWidth, cssHeight);
     context.drawImage(leftImage,leftImageXPosition,leftImageYPosition + rightImageY, cssWidth, cssHeight);
     context.drawImage(rightImage,rightImageXPosition + rightImageX,rightImageYPosition + rightImageY, cssWidth, cssHeight);
     context.drawImage(middleImage,middleImageXPosition + bowlImageX,middleImageYPosition + bowlImageY, cssWidth, cssHeight);
+
+    if(scrollType === "up" && middleImageYPosition !== -600){
+      middleImageYPosition -= 5;
+    }
+
+    if(scrollType === "down" && middleImageYPosition !== 50){
+      middleImageYPosition += 5;
+    }
+
+    if(middleImageYPosition === -600 || middleImageYPosition === 50)
+    scrollType = "steady";
+
     //
     // rightFoodsImage.value.style.transform = "translateX(" + rightImageX + "px) translateY(" + rightImageY + "px)";
     // leftFoodsImage.value.style.transform = "translateY(" + bowlImageY + "px)";
@@ -103,10 +123,11 @@ onMounted(()=>{
   }
   parallax()
 
+  window.addEventListener('mousewheel', checkScroll);
   addEventListener("mousemove", getMousePosition);
-
   onUnmounted(() => {
     removeEventListener("mousemove", getMousePosition);
+    removeEventListener("mousewheel", checkScroll);
     // resizeObserver.disconnect()
   })
 })
