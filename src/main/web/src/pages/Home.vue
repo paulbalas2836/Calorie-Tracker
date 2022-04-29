@@ -1,13 +1,20 @@
 <template>
-  <div v-show="scrollUpOpacityText >= 0" class="flex justify-center">
-    <div class="absolute z-10 lg:text-6xl text-4xl font-extrabold dark:text-white mt-10" ref="titleText">Artificial
+  <div v-show="firstPageOpacityText >= 0" class="flex flex-col absolute z-10 text-center w-full">
+    <div class="lg:text-6xl text-4xl font-extrabold dark:text-white mt-10" ref="firstPageTitleText">Artificial
       FOOD
     </div>
-    <div class="absolute z-10 lg:text-7xl text-5xl font-extrabold mt-28 dark:text-white" ref="subtitleText">CHECK
+    <div class="lg:text-7xl text-5xl font-extrabold dark:text-white" ref="firstPageSubtitleText">CHECK
       CALORIES FAST
     </div>
   </div>
-  <canvas class="min-h-screen w-full absolute " ref="canvas"></canvas>
+  <div v-show="secondPageOpacityText > 0" class="flex flex-col text-center w-full absolute z-10 bottom-52">
+    <div class="lg:text-6xl text-4xl font-extrabold dark:text-white mt-10" ref="secondPageTitleText">Over 100 foods
+    </div>
+    <div class="lg:text-7xl text-5xl font-extrabold dark:text-white" ref="secondPageSubtitleText">Upload image and see the
+      results
+    </div>
+  </div>
+  <canvas class="min-h-screen w-full relative" ref="canvas"></canvas>
 </template>
 
 <script setup>
@@ -18,9 +25,13 @@ import Navbar from "../components/navbar/Navbar.vue"
 const canvas = ref(null);
 const savedContext = ref(null);
 const mouse = ref({x: null, y: null})
-const titleText = ref(null);
-const subtitleText = ref(null);
-const scrollUpOpacityText = ref(1);
+const firstPageTitleText = ref(null);
+const firstPageSubtitleText = ref(null);
+const currentPage = ref(1);
+const secondPageTitleText = ref(null);
+const secondPageSubtitleText = ref(null);
+const firstPageOpacityText = ref(1);
+const secondPageOpacityText = ref(0);
 
 function getMousePosition(event) {
   mouse.value.x = event.clientX
@@ -29,19 +40,17 @@ function getMousePosition(event) {
 
 
 onMounted(() => {
-  let leftImageXPosition = 0;
-  let leftImageYPosition = 100;
+  let leftImageXPosition = -400;
+  let leftImageYPosition = 200;
 
-  let rightImageXPosition = 0;
-  let rightImageYPosition = 100;
+  let rightImageXPosition = 750;
+  let rightImageYPosition = 200;
 
   let middleImageXPosition = 0;
   let middleImageYPosition = 100;
 
-  let scrollUpTranslateTextY = 0;
-
-  let scrollDownTranslateTextY = 0;
-  let scrollDownOpacityText = 0;
+  let firstPageTranslateTextY = 0;
+  let secondPageTranslateTextY = 0;
 
   let cssWidth = null;
   let cssHeight = null;
@@ -54,6 +63,39 @@ onMounted(() => {
   const leftImage = new Image();
   const rightImage = new Image();
   const middleImage = new Image();
+
+  function scrollDownTextTransform(){
+    firstPageTranslateTextY--;
+    firstPageOpacityText.value -= 0.02;
+    firstPageTitleText.value.style.transform = "translateY(" + firstPageTranslateTextY + "px)";
+    firstPageTitleText.value.style.opacity = firstPageOpacityText.value;
+    firstPageSubtitleText.value.style.transform = "translateY(" + firstPageTranslateTextY + "px)";
+    firstPageSubtitleText.value.style.opacity = firstPageOpacityText.value;
+
+    secondPageOpacityText.value += 0.02;
+    secondPageTranslateTextY ++;
+    secondPageTitleText.value.style.transform = "translateY("+secondPageTranslateTextY + "px)";
+    secondPageTitleText.value.style.opacity = secondPageOpacityText.value;
+    secondPageSubtitleText.value.style.transform = "translateY("+secondPageTranslateTextY + "px)";
+    secondPageSubtitleText.value.style.opacity = secondPageOpacityText.value;
+  }
+
+  function scrollUpTextTransform(){
+    firstPageTranslateTextY++;
+    firstPageOpacityText.value += 0.02;
+    firstPageTitleText.value.style.transform = "translateY(" + firstPageTranslateTextY + "px)";
+    firstPageTitleText.value.style.opacity = firstPageOpacityText.value;
+    firstPageSubtitleText.value.style.transform = "translateY(" + firstPageTranslateTextY + "px)";
+    firstPageSubtitleText.value.style.opacity = firstPageOpacityText.value;
+
+
+    secondPageOpacityText.value -= 0.02
+    secondPageTranslateTextY --;
+    secondPageTitleText.value.style.transform = "translateY("+secondPageTranslateTextY + "px)";
+    secondPageTitleText.value.style.opacity = secondPageOpacityText.value;
+    secondPageSubtitleText.value.style.transform = "translateY("+secondPageTranslateTextY + "px)";
+    secondPageSubtitleText.value.style.opacity = secondPageOpacityText.value;
+  }
 
   function redraw() {
     dpr = window.devicePixelRatio
@@ -69,12 +111,13 @@ onMounted(() => {
 
     leftImage.src = '/leftFoodsImage.png';
     leftImage.onload = function () {
-      context.drawImage(leftImage, leftImageXPosition, leftImageYPosition, cssWidth, cssHeight);
+      context.drawImage(leftImage, leftImageXPosition, leftImageYPosition, cssWidth*1.5/2, cssHeight);
+      // console.log(this.width, this.height, cssWidth/2, cssHeight/2);
     }
 
     rightImage.src = '/rightFoodsImage.png';
     rightImage.onload = function () {
-      context.drawImage(rightImage, rightImageXPosition, rightImageYPosition, cssWidth, cssHeight);
+      context.drawImage(rightImage, rightImageXPosition, rightImageYPosition, cssWidth*1.5/2, cssHeight);
     }
 
     middleImage.src = '/CerealImage.png';
@@ -88,10 +131,14 @@ onMounted(() => {
   // resizeObserver.observe(canvas.value)
 
   function checkScroll(event) {
-    if (event.wheelDelta >= 0 && scrollType === "steady")
+    if (event.wheelDelta >= 0 && scrollType === "steady" && currentPage.value === 2) {
       scrollType = "up"
-    if (event.wheelDelta <= 0 && scrollType === "steady")
+      currentPage.value = 1
+    }
+    if (event.wheelDelta <= 0 && scrollType === "steady" && currentPage.value === 1) {
       scrollType = "down"
+      currentPage.value = 2
+    }
   }
 
 
@@ -108,35 +155,26 @@ onMounted(() => {
 
 
     context.clearRect(0, 0, cssWidth, cssHeight);
-    context.drawImage(leftImage, leftImageXPosition, leftImageYPosition + rightImageY, cssWidth, cssHeight);
-    context.drawImage(rightImage, rightImageXPosition + rightImageX, rightImageYPosition + rightImageY, cssWidth, cssHeight);
+    context.drawImage(leftImage, leftImageXPosition, leftImageYPosition + rightImageY, cssWidth*1.5/2, cssHeight);
+    context.drawImage(rightImage, rightImageXPosition + rightImageX, rightImageYPosition + rightImageY, cssWidth*1.5/2, cssHeight);
     context.drawImage(middleImage, middleImageXPosition + bowlImageX, middleImageYPosition + bowlImageY, cssWidth, cssHeight);
-
     if (scrollType === "down" && middleImageYPosition !== -600) {
       middleImageYPosition -= 10;
       rightImageXPosition += 10;
       leftImageXPosition -= 10;
-      scrollUpTranslateTextY--;
-      scrollUpOpacityText.value -= 0.02;
-      titleText.value.style.transform = "translateY(" + scrollUpTranslateTextY + "px)";
-      titleText.value.style.opacity = scrollUpOpacityText.value;
-      subtitleText.value.style.transform = "translateY(" + scrollUpTranslateTextY + "px)";
-      subtitleText.value.style.opacity = scrollUpOpacityText.value;
+
+      scrollDownTextTransform();
     }
 
-    if (scrollType === "up" && middleImageYPosition !== 50) {
+    if (scrollType === "up" && middleImageYPosition !== 100) {
       middleImageYPosition += 10;
       rightImageXPosition -= 10;
       leftImageXPosition += 10;
-      scrollUpTranslateTextY++;
-      scrollUpOpacityText.value += 0.02;
-      titleText.value.style.transform = "translateY(" + scrollUpTranslateTextY + "px)";
-      titleText.value.style.opacity = scrollUpOpacityText.value;
-      subtitleText.value.style.transform = "translateY(" + scrollUpTranslateTextY + "px)";
-      subtitleText.value.style.opacity = scrollUpOpacityText.value;
+
+      scrollUpTextTransform();
     }
 
-    if (middleImageYPosition === -600 || middleImageYPosition === 50) {
+    if (middleImageYPosition === -600 || middleImageYPosition === 100) {
       scrollType = "steady";
     }
 
