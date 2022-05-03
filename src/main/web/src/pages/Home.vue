@@ -7,7 +7,15 @@
       CALORIES FAST
     </div>
   </div>
-  <div v-show="secondPageOpacityText > 0" class="flex flex-col text-center w-full absolute z-10 bottom-28">
+  <div v-show="currentPage === 1" class="flex flex-col w-full bottom-28 z-10 absolute justify-center items-center">
+    <div class="lg:text-xl text-lg font-bold dark:text-white">Scroll Down</div>
+    <div class="">&#8595;</div>
+  </div>
+  <div v-show="currentPage === 2"
+       class="flex flex-col w-full top-28 z-10 absolute text-center lg:text-xl text-lg font-bold dark:text-white">Scroll
+    Up &#8593
+  </div>
+  <div v-show="secondPageOpacityText > 0" class="flex flex-col text-center w-full absolute z-10 bottom-56">
     <div class="lg:text-6xl text-4xl font-extrabold dark:text-white mt-10" ref="secondPageTitleText">Over 100 foods
     </div>
     <div class="lg:text-7xl text-5xl font-extrabold dark:text-white" ref="secondPageSubtitleText">Upload image and see
@@ -48,12 +56,14 @@ onMounted(() => {
   let cerealBowlImageYPosition = 0;
   let cerealBowlImageHeight = 0;
   let cerealBowlImageWidth = 0;
+  let copyCerealBowlImageYPosition = 0;
 
   let firstPageTranslateTextY = 0;
   let secondPageTranslateTextY = 0;
 
   let fishBowlImageXPosition = 0;
   let fishBowlImageYPosition = 0;
+  let startingPointFishBowlImageXPosition = 0;
 
   let fruitBowlImageXPosition = 0;
   let fruitBowlImageYPosition = 0;
@@ -68,8 +78,7 @@ onMounted(() => {
   let pxHeight = null;
   let context = null;
   let animation = null;
-  let scrollType = "steady";
-  let secondPageImageTransition = null;
+  let scrollType = "steady"
   const leftSideVeggiesImage = new Image();
   const rightSideVeggiesImage = new Image();
   const cerealBowlImage = new Image();
@@ -121,60 +130,62 @@ onMounted(() => {
     context = canvas.value.getContext("2d");
     context.scale(dpr, dpr);
 
-    fishBowlImageXPosition = -canvas.value.width - 100;
-    fishBowlImageYPosition = (canvas.value.height + 100) / 2;
+    fishBowlImageXPosition = -cssWidth - 100;
+    fishBowlImageYPosition = (cssHeight + 100) / 2;
+    startingPointFishBowlImageXPosition = fishBowlImageXPosition;
 
-    fruitBowlImageXPosition = -canvas.value.width - 100;
-    fruitBowlImageYPosition = (canvas.value.height + 100) / 2;
+    fruitBowlImageXPosition = -cssWidth - 100;
+    fruitBowlImageYPosition = (cssHeight + 100) / 2;
 
-    veggiesBowlImageXPosition = -canvas.value.width - 100;
-    veggiesBowlImageYPosition = (canvas.value.height + 100) / 2;
+    veggiesBowlImageXPosition = -cssWidth - 100;
+    veggiesBowlImageYPosition = (cssHeight + 100) / 2;
 
-    leftSideVeggiesImageXPosition = -cssWidth/4;
-    leftSideVeggiesImageYPosition =  cssHeight/3;
+    leftSideVeggiesImageXPosition = -cssWidth / 4;
+    leftSideVeggiesImageYPosition = cssHeight / 3;
 
-    rightSideVeggiesImageXPosition = cssWidth/2;
-    rightSideVeggiesImageYPosition =  cssHeight/2.5;
+    rightSideVeggiesImageXPosition = cssWidth / 2;
+    rightSideVeggiesImageYPosition = cssHeight / 2.5;
 
-    if (cssWidth > 1000) {
-      cerealBowlImageHeight = cssWidth / 4;
-      cerealBowlImageWidth = cssWidth / 4;
-      cerealBowlImageXPosition = cssWidth / 2 - cssWidth / 7.8;
+    if (cssWidth > 768) {
+      cerealBowlImageHeight = cssWidth / 3 - cssWidth / 10;
+      cerealBowlImageWidth = cssWidth / 3;
+      cerealBowlImageXPosition = cssWidth / 2 - cssWidth / 6.3;
       cerealBowlImageYPosition = cssHeight - cssWidth / 9;
+
+      leftSideVeggiesImage.src = '/leftSideVeggiesImage.png'
+      leftSideVeggiesImage.onload = function () {
+        context.drawImage(leftSideVeggiesImage, leftSideVeggiesImageXPosition, leftSideVeggiesImageYPosition, cssWidth * 1.5 / 2, cssHeight);
+      }
+
+      rightSideVeggiesImage.src = '/rightSideVeggiesImage.png'
+      rightSideVeggiesImage.onload = function () {
+        context.drawImage(rightSideVeggiesImage, rightSideVeggiesImageXPosition, rightSideVeggiesImageYPosition, cssWidth * 1.5 / 2, cssHeight);
+      }
     } else {
-      cerealBowlImageHeight = cssWidth / 2;
-      cerealBowlImageWidth = cssWidth /2;
+      cerealBowlImageHeight = cssWidth / 2 - cssWidth / 10;
+      cerealBowlImageWidth = cssWidth / 2;
       cerealBowlImageXPosition = cssWidth / 2 - cssWidth / 4;
       cerealBowlImageYPosition = cssHeight - cssWidth / 4;
     }
+    copyCerealBowlImageYPosition = cerealBowlImageYPosition;
 
-    leftSideVeggiesImage.src = '/leftSideVeggiesImage.png'
-    leftSideVeggiesImage.onload = function () {
-      context.drawImage(leftSideVeggiesImage, leftSideVeggiesImageXPosition, leftSideVeggiesImageYPosition, cssWidth * 1.5 / 2, cssHeight);
-    }
-
-    rightSideVeggiesImage.src = '/rightSideVeggiesImage.png'
-    rightSideVeggiesImage.onload = function () {
-      context.drawImage(rightSideVeggiesImage, rightSideVeggiesImageXPosition, rightSideVeggiesImageYPosition, cssWidth * 1.5 / 2, cssHeight);
-    }
 
     cerealBowlImage.src = '/cerealBowlImage.png';
     cerealBowlImage.onload = function () {
       context.drawImage(cerealBowlImage, cerealBowlImageXPosition, cerealBowlImageYPosition, cerealBowlImageWidth, cerealBowlImageHeight);
 
     }
-
     fishBowlImage.src = '/fishBowlImage.png';
     fishBowlImage.onload = function () {
-      context.drawImage(fishBowlImage, fishBowlImageXPosition, fishBowlImageYPosition, 400, 300)
+      context.drawImage(fishBowlImage, fishBowlImageXPosition, fishBowlImageYPosition, cssWidth / 4 + 100, cssWidth / 4)
     }
     fruitBowlImage.src = '/fruitBowlImage.png';
     fruitBowlImage.onload = function () {
-      context.drawImage(fruitBowlImage, fruitBowlImageXPosition, fruitBowlImageYPosition, 400, 300)
+      context.drawImage(fruitBowlImage, fruitBowlImageXPosition, fruitBowlImageYPosition, cssWidth / 4 + 100, cssWidth / 4)
     }
     veggiesBowlImage.src = '/veggiesBowlImage.png';
     veggiesBowlImage.onload = function () {
-      context.drawImage(veggiesBowlImage, veggiesBowlImageXPosition, veggiesBowlImageYPosition, 400, 300)
+      context.drawImage(veggiesBowlImage, veggiesBowlImageXPosition, veggiesBowlImageYPosition, cssWidth / 4 + 100, cssWidth / 4)
     }
   }
 
@@ -200,58 +211,69 @@ onMounted(() => {
     }
     animation = requestAnimationFrame(parallax)
 
-    let cerealBowlImageMoveX = 0;
-    let cerealBowlImageMoveY = 0;
+    let mouseMiddleImageMoveX = 0;
+    let mouseMiddleImageMoveY = 0;
+    let mouseRightImageMoveX = 0;
+    let mouseRightImageMoveY = 0;
+    let mouseLeftImageMoveX = 0;
+    let mouseLeftImageMoveY = 0;
+
     let topPosition = -100;
     let bottomPosition = cssHeight - cssWidth / 4
+    let numberOfCallsForTransition = Math.abs(Math.floor((Math.abs(topPosition) - copyCerealBowlImageYPosition) / 10));
+    let secondPageImageTransition = Math.abs(Math.abs(startingPointFishBowlImageXPosition) - Math.abs(cssWidth) / 2) / numberOfCallsForTransition
+    if (cssWidth > 768) {
+      mouseMiddleImageMoveX = (mouse.value.x * 4) / 250;
+      mouseMiddleImageMoveY = (mouse.value.y * 4) / 250;
 
-    if (cssWidth > 1000) {
-      cerealBowlImageMoveX = (mouse.value.x * 4) / 250;
-      cerealBowlImageMoveY = (mouse.value.y * 4) / 250;
+      mouseRightImageMoveX = -(mouse.value.x * 3) / 250;
+      mouseRightImageMoveY = (mouse.value.y * 2) / 250;
+
+      mouseLeftImageMoveX = +(mouse.value.x * 3) / 250;
+      mouseLeftImageMoveY = (mouse.value.y * 2) / 250;
       bottomPosition = cssHeight - cssWidth / 9
       topPosition = -200;
     }
     let rightImageX = (mouse.value.x * 2) / 250;
     let rightImageY = (mouse.value.y * 2) / 250;
 
-
     context.clearRect(0, 0, cssWidth, cssHeight);
-    context.drawImage(leftSideVeggiesImage, leftSideVeggiesImageXPosition, leftSideVeggiesImageYPosition + rightImageY, cssWidth * 1.5 / 2, cssHeight);
-    context.drawImage(rightSideVeggiesImage, rightSideVeggiesImageXPosition + rightImageX, rightSideVeggiesImageYPosition + rightImageY, cssWidth * 1.5 / 2, cssHeight);
-    context.drawImage(cerealBowlImage, cerealBowlImageXPosition + cerealBowlImageMoveX, cerealBowlImageYPosition + cerealBowlImageMoveY, cerealBowlImageWidth, cerealBowlImageHeight);
-    context.drawImage(fishBowlImage, fishBowlImageXPosition, fishBowlImageYPosition, 400, 300)
-    context.drawImage(fruitBowlImage, fruitBowlImageXPosition, fruitBowlImageYPosition, 400, 300)
-    context.drawImage(veggiesBowlImage, veggiesBowlImageXPosition, veggiesBowlImageYPosition, 400, 300)
+    if (cssWidth > 768) {
+      context.drawImage(leftSideVeggiesImage, leftSideVeggiesImageXPosition + rightImageX, leftSideVeggiesImageYPosition + rightImageY, cssWidth * 1.5 / 2, cssHeight);
+      context.drawImage(rightSideVeggiesImage, rightSideVeggiesImageXPosition + rightImageX, rightSideVeggiesImageYPosition + rightImageY, cssWidth * 1.5 / 2, cssHeight);
+    }
+    context.drawImage(cerealBowlImage, cerealBowlImageXPosition - mouseMiddleImageMoveX, cerealBowlImageYPosition + mouseMiddleImageMoveY, cerealBowlImageWidth, cerealBowlImageHeight);
+    context.drawImage(fruitBowlImage, fruitBowlImageXPosition + mouseMiddleImageMoveX, fruitBowlImageYPosition + mouseMiddleImageMoveY, cssWidth / 4 + 100, cssWidth / 4)
+
+    context.drawImage(fishBowlImage, fishBowlImageXPosition + mouseLeftImageMoveX, fishBowlImageYPosition + mouseLeftImageMoveY, cssWidth / 4 + 100, cssWidth / 4)
+    context.drawImage(veggiesBowlImage, veggiesBowlImageXPosition + mouseRightImageMoveX, veggiesBowlImageYPosition + mouseRightImageMoveY, cssWidth / 4 + 100, cssWidth / 4)
+
     if (scrollType === "down" && cerealBowlImageYPosition >= topPosition) {
       cerealBowlImageYPosition -= 10;
-      rightSideVeggiesImageXPosition += 10;
-      leftSideVeggiesImageXPosition -= 10;
+      if (cssWidth > 768) {
+        rightSideVeggiesImageXPosition += 10;
+        leftSideVeggiesImageXPosition -= 10;
+      }
       fishBowlImageXPosition += secondPageImageTransition
-      fruitBowlImageXPosition += 2 * secondPageImageTransition - 1;
-      veggiesBowlImageXPosition += 3 * secondPageImageTransition - 2;
+      fruitBowlImageXPosition += 2 * secondPageImageTransition - secondPageImageTransition / 2;
+      veggiesBowlImageXPosition += 2 * secondPageImageTransition;
       scrollDownTextTransform();
     }
     if (scrollType === "up" && cerealBowlImageYPosition !== bottomPosition) {
       cerealBowlImageYPosition += 10;
-      rightSideVeggiesImageXPosition -= 10;
-      leftSideVeggiesImageXPosition += 10;
+      if (cssWidth > 768) {
+        rightSideVeggiesImageXPosition -= 10;
+        leftSideVeggiesImageXPosition += 10;
+      }
       fishBowlImageXPosition -= secondPageImageTransition
-      fruitBowlImageXPosition -= 2 * secondPageImageTransition - 1;
-      veggiesBowlImageXPosition -= 3 * secondPageImageTransition - 2;
+      fruitBowlImageXPosition -= 2 * secondPageImageTransition - secondPageImageTransition / 2;
+      veggiesBowlImageXPosition -= 2 * secondPageImageTransition;
 
       scrollUpTextTransform();
     }
     if (cerealBowlImageYPosition <= topPosition || cerealBowlImageYPosition === bottomPosition) {
       scrollType = "steady";
     }
-
-    //
-    // rightFoodsImage.value.style.transform = "translateX(" + rightImageX + "px) translateY(" + rightImageY + "px)";
-    // leftFoodsImage.value.style.transform = "translateY(" + bowlImageY + "px)";
-
-    // titleText.value.style.transform = "translateX(" + (e.clientX * 2) / 250 + "px) translateY(" + e.clientY / 250 + "px)";
-    // bigText.value.style.transform = "translateX(" + (e.clientX * 2) / 250 + "px) translateY(" + e.clientY / 250 + "px)";
-    // normalText.value.style.transform = "translateX(" + (e.clientX * 2) / 250 + "px) translateY(" + e.clientY / 250 + "px)";
 
   }
 
