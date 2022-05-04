@@ -3,15 +3,15 @@
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-          <MenuButton @click="mobileToggleNavbarPages"></MenuButton>
+          <MenuButton @click="mobileToggleNavbarPages" :showMobileNavbarPages="showMobileNavbarPages"></MenuButton>
         </div>
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
               <template v-for="page in navbarPages" :key="page.name">
                 <router-link :to=page.route><a href="#"
-                                               class="dark:hover:bg-fuchsia-200 text-gray-900 dark:text-white dark:hover:text-gray-900 hover:bg-emerald-400 dark:text-white text-white px-3 py-2 rounded-md text-sm font-medium"
-                                               :class="{ 'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black shadow-lg': page.isActive}"
+                                               class="dark:hover:bg-fuchsia-200 dark:text-white dark:hover:text-gray-900 hover:bg-emerald-400 px-3 py-2 rounded-md text-sm font-medium"
+                                               :class="{ 'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black shadow-lg text-white': page.isActive}"
                                                aria-current="page">{{ page.name }}</a></router-link>
               </template>
 
@@ -72,12 +72,12 @@
       </div>
     </div>
   </div>
-  <div class="sm:hidden fixed w-full" id="mobile-menu" v-show="mobileNavbarPages">
-    <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-blue-500">
+  <div class="sm:hidden w-full" id="mobile-menu" v-show="showMobileNavbarPages" :class="{'absolute z-10 bg-opacity-75 bg-gray-500 h-full top-16' : homePage}">
+    <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white" :class="{'bg-inherit': homePage}">
       <template v-for="page in navbarPages" :key="page.name">
-        <router-link :to=page.route><a href="#"
-                                       class="text-white block px-3 py-2 rounded-md text-base font-medium"
-                                       :class="{'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black': page.isActive }"
+        <router-link :to=page.route><a href="#" @click="showMobileNavbarPages = false"
+                                       class=" block px-3 py-2 rounded-md text-base font-medium"
+                                       :class="{'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black text-white': page.isActive }"
                                        aria-current="page">{{ page.name }}</a></router-link>
       </template>
     </div>
@@ -114,7 +114,7 @@ const navbarPages = ref([{name: "About", route: '/', isActive: false},
   {name: "History", route: "/History", isActive: false}])
 const currentRouteName = useRoute();
 const signInModal = ref(false)
-const mobileNavbarPages = ref(false)
+const showMobileNavbarPages = ref(false)
 const userStore = useUserStore()
 
 watch(currentRouteName, () => {
@@ -137,7 +137,7 @@ function logout() {
 }
 
 function mobileToggleNavbarPages() {
-  mobileNavbarPages.value = !mobileNavbarPages.value
+  showMobileNavbarPages.value = !showMobileNavbarPages.value
 }
 
 

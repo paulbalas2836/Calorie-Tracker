@@ -1,5 +1,4 @@
 import {ref} from "vue";
-import {exp} from "@tensorflow/tfjs";
 
 export const microNutrients = Object.seal(ref({
     calcium: {

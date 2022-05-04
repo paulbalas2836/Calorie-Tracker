@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {useUserStore} from "../store/userStore";
 
-const Home = () => import('../pages/Home.vue')
+const Home = () => import('../pages/home/Home.vue')
 const CheckCalories = () => import('../pages/check_calories/CheckCalories.vue')
 const CheckHistory = () => import('../pages/check_history/CheckHistory.vue')
 const Register = () => import('../pages/authentication/Register.vue')

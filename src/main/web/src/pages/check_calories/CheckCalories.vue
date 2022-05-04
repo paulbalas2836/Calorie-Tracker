@@ -60,63 +60,63 @@ import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 import MacroNutrients from './MacroNutrients.vue'
 import {microNutrients, macroNutrientChart, macroNutrients} from '../../SealConstants'
 
-const user = useUserStore()
-const chartRef = ref(null)
-const image = ref(null)
-const saveToHistory = new FormData()
-const isImageUploaded = ref(false)
-const imageError = ref(null)
-const imageTensor = ref(null)
-const saveHistoryDto = ref({weight: null, label: null, email: null})
-const label = ref(null)
-const quantity = ref(null)
-let model = null
+const user = useUserStore();
+const chartRef = ref(null);
+const image = ref(null);
+const saveToHistory = new FormData();
+const isImageUploaded = ref(false);
+const imageError = ref(null);
+const imageTensor = ref(null);
+const saveHistoryDto = ref({weight: null, label: '', email: user.getEmail});
+const label = ref(null);
+const quantity = ref(null);
+let model = null;
 
 function imageValidator(value) {
   if (!(value.type.split('/')[0] === 'image'))
-    return "File must be an image"
+    return "File must be an image";
 
   if (value.size > 52428800)
-    return "File is too big"
+    return "File is too big";
 
   return true
 }
 
 function onFileSelected(event) {
   if (event.target.files.length === 0)
-    return
+    return;
 
   const file = event.target.files[0];
   if (!imageValidator(file) === true) {
-    imageError.value = imageValidator(file)
+    imageError.value = imageValidator(file);
     return;
   }
 
 
-  saveToHistory.append("image", file)
-  imageError.value = null
-  isImageUploaded.value = true
-  image.value = URL.createObjectURL(file)
+  saveToHistory.append("image", file);
+  imageError.value = null;
+  image.value = URL.createObjectURL(file);
+  isImageUploaded.value = true;
 
-  const img = new Image()
-  img.src = image.value
+  //Resize image for a faster prediction
+  const img = new Image();
+  img.src = image.value;
   img.onload = () => {
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    ctx.drawImage(img, 0, 0, 64, 64)
-    imageTensor.value = ctx.getImageData(0, 0, 64, 64)
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    imageTensor.value = ctx.getImageData(0, 0, 64, 64);
   }
 }
 
-function initMicroNutrients() {
-  microNutrients.value.potassium.amount = 0
-  microNutrients.value.sodium.amount = 0
-  microNutrients.value.calcium.amount = 0
-  microNutrients.value.cholesterol.amount = 0
-  microNutrients.value.iron.amount = 0
+function initMicroNutrients(potassium, sodium, calcium, cholesterol, iron) {
+  microNutrients.value.potassium.amount = potassium;
+  microNutrients.value.sodium.amount = sodium;
+  microNutrients.value.calcium.amount = calcium;
+  microNutrients.value.cholesterol.amount = cholesterol;
+  microNutrients.value.iron.amount = iron;
 }
 
-function initMacroNutrient() {
+function initMacroNutrient(calories, fiber, proteinsAmount, proteinsPercentage, fatsAmount, fatsPercentage, carbsAmount, carbsPercentage) {
   macroNutrientChart.data.datasets = [
     {
       backgroundColor: [
@@ -124,45 +124,46 @@ function initMacroNutrient() {
         '#00CC66',
         '#0080FF',
       ],
-      data: [35, 20, 45]
+      data: [proteinsAmount, fatsAmount, carbsAmount]
     }
-  ]
-  chartRef.value.update()
+  ];
+  chartRef.value.update();
 
-  macroNutrients.value.fiber.amount = 8
-  macroNutrients.value.calories.amount = 500
-  macroNutrients.value.fats.amount = 20
-  macroNutrients.value.carbs.amount = 45
-  macroNutrients.value.proteins.amount = 35
-  macroNutrients.value.fats.percentage = 20
-  macroNutrients.value.carbs.percentage = 45
-  macroNutrients.value.proteins.percentage = 35
+  macroNutrients.value.calories.amount = calories;
+  macroNutrients.value.fiber.amount = fiber;
+
+  macroNutrients.value.proteins.amount = proteinsAmount;
+  macroNutrients.value.proteins.percentage = proteinsPercentage;
+  macroNutrients.value.fats.amount = fatsAmount;
+  macroNutrients.value.fats.percentage = fatsPercentage;
+  macroNutrients.value.carbs.amount = carbsAmount;
+  macroNutrients.value.carbs.percentage = carbsPercentage;
 }
 
 onMounted(async () => {
-  initMacroNutrient()
-  initMicroNutrients()
+  initMacroNutrient(500, 8, 35, 35, 20, 20, 45, 45);
+  initMicroNutrients(0, 0, 0, 0, 0);
   tf.serialization.registerClass(L2)
   model = await tf.loadLayersModel("http://127.0.0.1:8081/model.json")
 })
 
 function getLabel(prediction) {
-  let labelByIndex = -1
-  let value = -1
-  for (let i = 0; i < prediction.length; i++) {
-    if (prediction[i] > value) {
-      value = prediction[i]
-      labelByIndex = i
-    }
-  }
-  return constants.PRODUCT_MAP.get(labelByIndex)
+  const max = Math.max.apply(null, prediction);
+  const index = prediction.indexOf(max);
+
+  return constants.PRODUCT_MAP.get(index);
 }
 
-async function getCalories() {
-  const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255))
-  const prediction = model.predict(normalizedData.expandDims()).dataSync()
-  label.value = getLabel(prediction)
-  saveHistoryDto.value.email = user.getEmail;
+function getCalories() {
+  if (!isImageUploaded.value) {
+    imageError.value = "You need to upload an image!";
+    return;
+  }
+
+  const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255));
+  const prediction = model.predict(normalizedData.expandDims()).dataSync();
+  label.value = getLabel(prediction);
+
   saveHistoryDto.value.label = label.value;
   saveToHistory.append("saveHistoryDto", new Blob([JSON.stringify({
     "weight": saveHistoryDto.value.weight,
@@ -170,43 +171,24 @@ async function getCalories() {
     "email": saveHistoryDto.value.email
   })], {
     type: "application/json"
-  }))
+  }));
+
   axios.post(constants.BACKEND_URL + 'history/prediction', saveToHistory,
       {
         headers: {
           "Content-Type": undefined
         }
-      }).then(res => {
-    macroNutrients.value.calories.amount = res.data.calories
-    macroNutrients.value.carbs.amount = res.data.carbs
-    macroNutrients.value.fiber.amount = res.data.fiber
-    macroNutrients.value.fats.amount = res.data.fat
-    macroNutrients.value.proteins.amount = res.data.protein
-    macroNutrients.value.proteins.percentage = Math.round((res.data.protein * 4 * 100) / res.data.calories)
-    macroNutrients.value.fats.percentage = Math.round((res.data.fat * 9 * 100) / res.data.calories)
-    macroNutrients.value.carbs.percentage = 100 - macroNutrients.value.proteins.percentage - macroNutrients.value.fats.percentage
+      })
+      .then(res => {
+        const data = res.data;
+        const proteinPercentage = Math.round((data.protein * 4 * 100) / data.calories);
+        const fatPercentage = Math.round((data.fat * 9 * 100) / data.calories);
+        const carbsPercentage = 100 - proteinPercentage - fatPercentage;
+        initMacroNutrient(data.calories, data.fiber, data.protein, proteinPercentage, data.fat, fatPercentage, data.carbs, carbsPercentage);
+        initMicroNutrients(data.potassium, data.sodium, data.calcium, data.cholesterol, data.iron);
 
-    microNutrients.value.calcium.amount = res.data.calcium
-    microNutrients.value.iron.amount = res.data.iron
-    microNutrients.value.cholesterol.amount = res.data.cholesterol
-    microNutrients.value.sodium.amount = res.data.sodium
-    microNutrients.value.potassium.amount = res.data.potassium
-
-    macroNutrientChart.data.datasets = [
-      {
-        backgroundColor: [
-          '#FF9933',
-          '#00CC66',
-          '#0080FF',
-        ],
-        data: [res.data.protein, res.data.fat, res.data.carbs]
-      }
-    ]
-
-    chartRef.value.update()
-    quantity.value = res.data.quantity
-    saveToHistory.delete("saveHistoryDto")
-    saveToHistory.delete("image")
-  }).catch(err => console.log(err.response.data))
+        quantity.value = data.quantity;
+        saveToHistory.delete("saveHistoryDto");
+      }).catch(err => console.log(err.response.data));
 }
 </script>
