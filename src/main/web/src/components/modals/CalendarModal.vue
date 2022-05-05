@@ -33,8 +33,8 @@
 import ModalBase from './ModalBase.vue'
 import {computed, ref, watch} from 'vue'
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
-import constants from '../../FrozenConstants.js'
-import {darkMode} from "../../SealConstants";
+import constants from '../../utils/FrozenConstants.js'
+import {darkMode} from "../../utils/SealConstants";
 
 const props = defineProps({
   selectedDate: Date

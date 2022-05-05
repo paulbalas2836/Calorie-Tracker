@@ -33,7 +33,7 @@ import Button from "../basic/Button.vue"
 import ErrorMessage from "../../components/basic/ErrorMessage.vue";
 import {ref} from 'vue'
 import {useUserStore} from '../../store/userStore'
-import constants from "../../FrozenConstants.js";
+import constants from "../../utils/FrozenConstants.js";
 
 const emit = defineEmits(['closeSignInModal'])
 const loginForm = ref({email: '', password: ''})

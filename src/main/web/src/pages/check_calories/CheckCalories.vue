@@ -54,11 +54,12 @@ import Input from "../../components/basic/Input.vue"
 import {useUserStore} from "../../store/userStore";
 import ErrorMessage from "../../components/basic/ErrorMessage.vue"
 import axios from "axios";
-import constants from "../../FrozenConstants.js"
-import {L2} from "../../L2.js"
+import constants from "../../utils/FrozenConstants.js"
+import {L2} from "../../utils/L2.js"
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 import MacroNutrients from './MacroNutrients.vue'
-import {microNutrients, macroNutrientChart, macroNutrients} from '../../SealConstants'
+import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/SealConstants'
+import {initMicroNutrients, initMacroNutrient} from '../../utils/ReusableFunctions.js'
 
 const user = useUserStore();
 const chartRef = ref(null);
@@ -108,40 +109,9 @@ function onFileSelected(event) {
   }
 }
 
-function initMicroNutrients(potassium, sodium, calcium, cholesterol, iron) {
-  microNutrients.value.potassium.amount = potassium;
-  microNutrients.value.sodium.amount = sodium;
-  microNutrients.value.calcium.amount = calcium;
-  microNutrients.value.cholesterol.amount = cholesterol;
-  microNutrients.value.iron.amount = iron;
-}
-
-function initMacroNutrient(calories, fiber, proteinsAmount, proteinsPercentage, fatsAmount, fatsPercentage, carbsAmount, carbsPercentage) {
-  macroNutrientChart.data.datasets = [
-    {
-      backgroundColor: [
-        '#FF9933',
-        '#00CC66',
-        '#0080FF',
-      ],
-      data: [proteinsAmount, fatsAmount, carbsAmount]
-    }
-  ];
-  chartRef.value.update();
-
-  macroNutrients.value.calories.amount = calories;
-  macroNutrients.value.fiber.amount = fiber;
-
-  macroNutrients.value.proteins.amount = proteinsAmount;
-  macroNutrients.value.proteins.percentage = proteinsPercentage;
-  macroNutrients.value.fats.amount = fatsAmount;
-  macroNutrients.value.fats.percentage = fatsPercentage;
-  macroNutrients.value.carbs.amount = carbsAmount;
-  macroNutrients.value.carbs.percentage = carbsPercentage;
-}
 
 onMounted(async () => {
-  initMacroNutrient(500, 8, 35, 35, 20, 20, 45, 45);
+  initMacroNutrient(macroNutrientChart, chartRef, 500, 8, 35, 35, 20, 20, 45, 45);
   initMicroNutrients(0, 0, 0, 0, 0);
   tf.serialization.registerClass(L2)
   model = await tf.loadLayersModel("http://127.0.0.1:8081/model.json")
@@ -181,10 +151,7 @@ function getCalories() {
       })
       .then(res => {
         const data = res.data;
-        const proteinPercentage = Math.round((data.protein * 4 * 100) / data.calories);
-        const fatPercentage = Math.round((data.fat * 9 * 100) / data.calories);
-        const carbsPercentage = 100 - proteinPercentage - fatPercentage;
-        initMacroNutrient(data.calories, data.fiber, data.protein, proteinPercentage, data.fat, fatPercentage, data.carbs, carbsPercentage);
+        initMacroNutrient(macroNutrientChart,chartRef,data.calories, data.fiber, data.protein, data.fat, data.carbs);
         initMicroNutrients(data.potassium, data.sodium, data.calcium, data.cholesterol, data.iron);
 
         quantity.value = data.quantity;

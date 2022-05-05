@@ -50,16 +50,17 @@
 
 <script setup>
 import FoodCard from "./FoodCard.vue"
-import constants from "../../FrozenConstants";
+import constants from "../../utils/FrozenConstants";
 import axios from "axios";
 import {onBeforeMount, ref, watch} from 'vue'
 import {useUserStore} from "../../store/userStore";
 import MicroNutrients from "../check_calories/MicroNutrients.vue";
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
-import {microNutrients, macroNutrientChart, macroNutrients} from '../../SealConstants'
 import MacroNutrients from '../check_calories/MacroNutrients.vue'
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 import CalendarModal from '../../components/modals/CalendarModal.vue'
+import {initMicroNutrients, initMacroNutrient} from "../../utils/ReusableFunctions";
+import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/SealConstants'
 
 const user = useUserStore()
 
@@ -73,7 +74,7 @@ function getSelectedDate() {
 }
 
 
-async function getHistoryByWeek() {
+async function getHistoryByDay() {
   await axios.get(constants.BACKEND_URL + 'history/getHistory/' + user.getEmail, {
     params: {
       selectedDate: getSelectedDate(),
@@ -83,56 +84,30 @@ async function getHistoryByWeek() {
     }
   }).then(res => {
     historyByDay.value = res.data
-    microNutrients.value.calcium.amount = res.data.dailyNutrients.calcium
-    microNutrients.value.potassium.amount = res.data.dailyNutrients.potassium
-    microNutrients.value.sodium.amount = res.data.dailyNutrients.sodium
-    microNutrients.value.cholesterol.amount = res.data.dailyNutrients.cholesterol
-    microNutrients.value.iron.amount = res.data.dailyNutrients.iron
-
-    macroNutrients.value.proteins.amount = res.data.dailyNutrients.protein
-    macroNutrients.value.carbs.amount = res.data.dailyNutrients.carbs
-    macroNutrients.value.fats.amount = res.data.dailyNutrients.fat
-    macroNutrients.value.fiber.amount = res.data.dailyNutrients.fiber
-    macroNutrients.value.calories.amount = res.data.dailyNutrients.calories
-
-    macroNutrients.value.proteins.percentage = Math.round((res.data.dailyNutrients.protein * 4 * 100) / res.data.dailyNutrients.calories)
-    macroNutrients.value.fats.percentage = Math.round((res.data.dailyNutrients.fat * 9 * 100) / res.data.dailyNutrients.calories)
-    macroNutrients.value.carbs.percentage = 100 - macroNutrients.value.proteins.percentage - macroNutrients.value.fats.percentage
-
-    macroNutrientChart.data.datasets = [
-      {
-        backgroundColor: [
-          '#FF9933',
-          '#00CC66',
-          '#0080FF',
-        ],
-        data: [res.data.dailyNutrients.protein, res.data.dailyNutrients.fat, res.data.dailyNutrients.carbs]
-      }
-    ]
-
-    chartRef.value.update()
-    console.log(res.data)
+    const nutrients = res.data.dailyNutrients;
+    initMicroNutrients(nutrients.potassium, nutrients.sodium, nutrients.calcium, nutrients.cholesterol, nutrients.iron);
+    initMacroNutrient(macroNutrientChart, chartRef, nutrients.calories, nutrients.fiber, nutrients.protein, nutrients.fat, nutrients.carbs);
   }).catch(err => console.log(err.response))
 }
 
-onBeforeMount(() => {
-  getHistoryByWeek()
+onBeforeMount(async () => {
+  await getHistoryByDay();
 })
 
 function previousDay() {
   selectedDate.value.setDate(selectedDate.value.getDate() - 1)
-  getHistoryByWeek()
+  getHistoryByDay()
 }
 
 function nextDay() {
   selectedDate.value.setDate(selectedDate.value.getDate() + 1)
-  getHistoryByWeek()
+  getHistoryByDay()
 }
 
 function getNewDate(newDate) {
   selectedDate.value = newDate
   openCalendarModal.value = false
-  getHistoryByWeek()
+  getHistoryByDay()
 }
 
 </script>

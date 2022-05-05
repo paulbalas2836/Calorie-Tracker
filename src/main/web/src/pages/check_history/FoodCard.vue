@@ -1,7 +1,7 @@
 <template>
   <div @mouseover="hover = true" @mouseleave="hover = false"
        class="h-52 w-52 sm:h-72 sm:w-72 border border-transparent cursor-pointer rounded-md items-center block ">
-    <img :src="constants.HISTORY_IMAGES+food.path" alt="" class="rounded-md absolute sm:h-72 sm:w-72 h-52 w-52"
+    <img :src="constants.HISTORY_IMAGES+food.path" alt="" class="rounded-md absolute sm:h-72 sm:w-72 h-52 w-52 border border-2"
          :class="hover ? 'opacity-50' : 'opacity-100'"/>
     <div v-show="hover"
          class="h-52 w-52 sm:h-72 sm:w-72 rounded-md relative flex flex-col text-center py-4 px-4 bg-emerald-400/70 dark:bg-fuchsia-300/70">
@@ -45,7 +45,7 @@
 <script setup>
 import {useUserStore} from "../../store/userStore";
 import {ref} from "vue"
-import constants from "../../FrozenConstants";
+import constants from "../../utils/FrozenConstants";
 
 defineProps({
   food: Object

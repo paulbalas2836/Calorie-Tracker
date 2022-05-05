@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full dark:bg-neutral-900 bg-white border border-transparent bg-inherit" :class="{'absolute z-10' : homePage}" >
+  <div class="w-full border border-transparent" :class="{'absolute z-10' : homePage}" >
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -10,8 +10,8 @@
             <div class="flex space-x-4">
               <template v-for="page in navbarPages" :key="page.name">
                 <router-link :to=page.route><a href="#"
-                                               class="dark:hover:bg-fuchsia-200 dark:text-white dark:hover:text-gray-900 hover:bg-emerald-400 px-3 py-2 rounded-md text-sm font-medium"
-                                               :class="{ 'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black shadow-lg text-white': page.isActive}"
+                                               class="dark:hover:bg-fuchsia-200 dark:text-white dark:hover:text-gray-900 hover:bg-lint hover:text-white px-3 py-2 rounded-md text-md font-medium"
+                                               :class="{ 'dark:bg-kelly-green bg-emerald-green dark:text-black shadow-lg text-white': page.isActive}"
                                                aria-current="page">{{ page.name }}</a></router-link>
               </template>
 
@@ -72,8 +72,8 @@
       </div>
     </div>
   </div>
-  <div class="sm:hidden w-full" id="mobile-menu" v-show="showMobileNavbarPages" :class="{'absolute z-10 bg-opacity-75 bg-gray-500 h-full top-16' : homePage}">
-    <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white" :class="{'bg-inherit': homePage}">
+  <div class="sm:hidden w-full top-16 z-10 absolute" id="mobile-menu" v-show="showMobileNavbarPages">
+    <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white">
       <template v-for="page in navbarPages" :key="page.name">
         <router-link :to=page.route><a href="#" @click="showMobileNavbarPages = false"
                                        class=" block px-3 py-2 rounded-md text-base font-medium"
@@ -102,14 +102,14 @@ import {useUserStore} from '../../store/userStore'
 import Dropdown from "../dorpdown/Dropdown.vue"
 import DropdownContent from "../dorpdown/DropdownContent.vue"
 import DropdownItems from "../dorpdown/DropdownItems.vue"
-import {darkMode} from "../../SealConstants";
+import {darkMode} from "../../utils/SealConstants";
 
 const userNavigation = {
   profile: {name: 'Your Profile', href: 'Profile'},
   logout: {name: 'Sign out', href: '#'},
 }
 const homePage = ref(false)
-const navbarPages = ref([{name: "About", route: '/', isActive: false},
+const navbarPages = ref([{name: "Home", route: '/', isActive: false},
   {name: "Check Calories", route: "/Calories", isActive: false},
   {name: "History", route: "/History", isActive: false}])
 const currentRouteName = useRoute();
