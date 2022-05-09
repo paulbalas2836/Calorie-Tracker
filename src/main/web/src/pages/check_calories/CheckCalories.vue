@@ -1,5 +1,5 @@
 <template>
-  <div class="dark:bg-gray-800 bg-gray-200">
+  <div class="dark:bg-neutral-800 bg-gray-200">
     <div class="min-h-screen max-w-7xl mx-auto px-4 py-10">
       <div class="lg:grid lg:grid-cols-3 gap-6">
         <div
@@ -8,7 +8,7 @@
             <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
               <label
-                  class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-emerald-400 hover:bg-emerald-300 dark:hover:bg-fuchsia-200 dark:bg-fuchsia-300 text-sm font-medium shadow-md">
+                  class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
                 <span>Upload a file</span>
                 <input id="file_upload" type="file" class="sr-only" @change="onFileSelected"
                        accept=".jpg, .jpeg, .png"/>
@@ -18,7 +18,7 @@
           </div>
           <div class="flex gap-2">
             <Input placeholder="Weight in grams" v-model="saveHistoryDto.weight"/>
-            <Button class="self-end" @click="getCalories">Get Calories</Button>
+            <Button class="self-end" @click="getCalories">Calculate</Button>
           </div>
         </div>
         <div class="md:col-span-2 sm:mt-0 mt-4">
@@ -143,7 +143,7 @@ function getCalories() {
     type: "application/json"
   }));
 
-  axios.post(constants.BACKEND_URL + 'history/prediction', saveToHistory,
+  axios.post(constants.API + '/history/prediction', saveToHistory,
       {
         headers: {
           "Content-Type": undefined

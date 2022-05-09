@@ -8,13 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
       <script>
-
-          if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-              document.documentElement.classList.add('dark')
-          } else {
-              document.documentElement.classList.remove('dark')
-          }
-
           function connectWithGoogle(tokens){
               const URL = "http://localhost:8080/login/google"
               fetch(URL,{
@@ -25,17 +18,19 @@
                   },
                   body:  tokens.credential,
               }).then(response => response.json()).then(data => {
-                  sessionStorage.setItem("name", data.appUserDto.name)
-                  sessionStorage.setItem("email", data.appUserDto.email)
-                  sessionStorage.setItem("image", data.appUserDto.image)
-                  sessionStorage.setItem("token",data.jwt)
-                  sessionStorage.setItem("provider", data.appUserDto.provider)
-                  location.reload()
+                  const {name, email, image, provider} = data.appUserDto;
+                  sessionStorage.setItem("name", name);
+                  sessionStorage.setItem("email", email);
+                  sessionStorage.setItem("image", image);
+                  sessionStorage.setItem("provider", provider);
+
+                  sessionStorage.setItem("token",data.jwt);
+                  location.reload();
               }).catch(err => {console.log(err)})
           }
       </script>
   </head>
-  <body class="dark:bg-neutral-900 bg-white">
+  <body class="dark:bg-neutral-800 bg-gray-200">
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

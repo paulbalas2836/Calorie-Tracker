@@ -108,7 +108,7 @@ function confirmPasswordValidator(value) {
 }
 
 const submitRegister = handleSubmit(values => {
-  axios.post(constants.BACKEND_URL + "register", {
+  axios.post(constants.API + "/register", {
     name: values.name,
     email: values.email,
     password: values.password,

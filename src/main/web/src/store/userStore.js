@@ -19,7 +19,7 @@ export const useUserStore = defineStore('user', {
         getImage: (state) => state.image,
         getToken: (state) => state.token,
         getProvider: (state) => state.provider,
-        getIsUserAuth: state => { return state.email != null }
+        isUserAuth: state => state.email != null,
     },
 
     actions: {
@@ -27,31 +27,51 @@ export const useUserStore = defineStore('user', {
             return new Promise((resolve, reject) => {
                 axios.post(url, {email: user.value.email, password: user.value.password})
                     .then(response => {
-                        this.name = response.data.appUserDto.name
-                        this.email = response.data.appUserDto.email
-                        this.image= response.data.appUserDto.image
-                        this.token = response.data.jwt
-                        this.provider = response.data.appUserDto.provider
-                        sessionStorage.setItem("name", this.name)
-                        sessionStorage.setItem("email", this.email)
-                        sessionStorage.setItem("image", this.image)
-                        sessionStorage.setItem("token", this.token)
-                        sessionStorage.setItem("provider", this.provider)
-                        resolve(response)
+                        const {name, email, image, provider} = response.data.appUserDto;
+                        sessionStorage.setItem("name", name);
+                        sessionStorage.setItem("email", email);
+                        sessionStorage.setItem("image", image);
+                        sessionStorage.setItem("provider", provider);
+
+                        sessionStorage.setItem("token", response.data.jwt);
+                        location.reload();
+                        resolve(response);
                     }).catch(error => {
-                    reject(error.response)
+                    reject(error.response);
                 })
             })
         },
-        logout(){
+        loginWithGoogle(tokens) {
+            return new Promise((resolve, reject) => {
+                fetch(URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: tokens.credential,
+                }).then(response => response.json()).then(data => {
+                    sessionStorage.setItem("name", data.appUserDto.name);
+                    sessionStorage.setItem("email", data.appUserDto.email);
+                    sessionStorage.setItem("image", data.appUserDto.image);
+                    sessionStorage.setItem("token", data.jwt);
+                    sessionStorage.setItem("provider", data.appUserDto.provider);
+                    resolve(data);
+                    location.reload();
+                }).catch(err => {
+                    reject(err)
+                })
+            })
+        },
+        logout() {
             return new Promise((resolve => {
-                sessionStorage.removeItem("image")
-                sessionStorage.removeItem("email")
-                sessionStorage.removeItem("name")
-                sessionStorage.removeItem("token")
-                sessionStorage.removeItem("provider")
-                location.reload()
-                resolve()
+                sessionStorage.removeItem("image");
+                sessionStorage.removeItem("email");
+                sessionStorage.removeItem("name");
+                sessionStorage.removeItem("token");
+                sessionStorage.removeItem("provider");
+                location.reload();
+                resolve();
             }))
         },
     },

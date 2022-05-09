@@ -9,7 +9,6 @@ import licenta.project.Exceptions.AppException;
 import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
 import licenta.project.Models.AppUser;
 import licenta.project.Models.ConfirmationToken;
-import licenta.project.Models.History;
 import licenta.project.Repositories.AppUserRepository;
 import licenta.project.Repositories.Interfaces.EmailSender;
 import licenta.project.Struct.Provider;
@@ -78,8 +77,8 @@ public class AppUserService implements UserDetailsService {
     }
 
 
-    public int enableAppUser(String email) {
-        return appUserRepository.enableAppUser(email);
+    public void enableAppUser(String email) {
+        appUserRepository.enableAppUser(email);
     }
 
     @Transactional

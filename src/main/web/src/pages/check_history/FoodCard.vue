@@ -1,10 +1,10 @@
 <template>
   <div @mouseover="hover = true" @mouseleave="hover = false"
        class="h-52 w-52 sm:h-72 sm:w-72 border border-transparent cursor-pointer rounded-md items-center block ">
-    <img :src="constants.HISTORY_IMAGES+food.path" alt="" class="rounded-md absolute sm:h-72 sm:w-72 h-52 w-52 border border-2"
+    <img :src="constants.HISTORY_IMAGES+'/'+food.path" alt="" class="rounded-md absolute sm:h-72 sm:w-72 h-52 w-52 border border-2"
          :class="hover ? 'opacity-50' : 'opacity-100'"/>
     <div v-show="hover"
-         class="h-52 w-52 sm:h-72 sm:w-72 rounded-md relative flex flex-col text-center py-4 px-4 bg-emerald-400/70 dark:bg-fuchsia-300/70">
+         class="h-52 w-52 sm:h-72 sm:w-72 rounded-md relative flex flex-col text-center py-4 px-4 bg-light-mode-green/70 dark:bg-dark-mode-green/70">
       <Transition enter-active-class="transition ease-out duration-300"
                   enter-from-class="transform opacity-0 scale-95 translate-y-6"
                   enter-to-class="transform opacity-100 scale-100 translate-y-0"

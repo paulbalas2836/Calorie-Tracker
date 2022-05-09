@@ -118,7 +118,7 @@ function confirmNewPasswordValidator(value) {
 
 const submitChangePassword = handleSubmit(values => {
   successMessage.value = ''
-  axios.put(constants.BACKEND_URL + "user/changePassword/" + useUser.getEmail, {
+  axios.put(constants.API + "/user/changePassword/" + useUser.getEmail, {
     currentPassword: values.currentPassword,
     newPassword: values.newPassword,
     confirmNewPassword: values.confirmNewPassword,

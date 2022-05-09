@@ -1,27 +1,18 @@
 <template>
-<!--  <div v-show="currentPage === 1" class="bottom-10 flex flex-col w-full z-10 absolute justify-center items-center">-->
-<!--    <div class="lg:text-xl text-lg font-bold dark:text-white">Scroll Down</div>-->
-<!--    <div class="">&#8595;</div>-->
-<!--  </div>-->
-<!--  <div v-show="currentPage === 2" class="top-28 flex flex-col w-full z-10 absolute justify-center items-center">-->
-<!--    <div class="lg:text-xl text-lg font-bold dark:text-white">Scroll Up</div>-->
-<!--    <div class="">&#8595;</div>-->
-<!--  </div>-->
-
   <div v-show="firstPageOpacityText >= 0" class="flex flex-col absolute text-center w-full top-36" ref="firstPageText">
-    <div class="lg:text-6xl text-3xl font-extrabold dark:text-white mt-10">Artificial
+    <div class="lg:text-6xl text-3xl font-extrabold mt-10">Artificial
       FOOD
     </div>
-    <div class="lg:text-7xl text-5xl font-extrabold dark:text-white">CHECK
+    <div class="lg:text-7xl text-5xl font-extrabold">CHECK
       CALORIES FAST
     </div>
   </div>
   <div v-show="secondPageOpacityText > 0" class="flex flex-col text-center w-full absolute top-52"
        ref="secondPageText">
-    <div class="lg:text-4xl text-3xl font-extrabold dark:text-white mt-10">Over 60 foods
+    <div class="lg:text-4xl text-3xl font-extrabold mt-10">Over 60 foods
       that the AI can identify
     </div>
-    <div class="lg:text-4xl text-3xl font-extrabold dark:text-white">Upload image and see
+    <div class="lg:text-4xl text-3xl font-extrabold">Upload an image and see
       the results
     </div>
   </div>
@@ -47,18 +38,18 @@ function getMousePosition(event) {
   mouse.value.y = event.clientY
 }
 
-function getTouches(event){
+function getTouches(event) {
   return event.touches || event.originalEvent.touches;
 }
 
-function handleTouchStart(event){
+function handleTouchStart(event) {
   const firstTouch = getTouches(event)[0];
   xDown = firstTouch.clientX;
   yDown = firstTouch.clientY;
 }
 
-function handleTouchMove(event){
-  if(!xDown || !yDown){
+function handleTouchMove(event) {
+  if (!xDown || !yDown) {
     return;
   }
   let xUp = event.touches[0].clientX;
@@ -67,10 +58,10 @@ function handleTouchMove(event){
   let xDiff = xDown - xUp;
   let yDiff = yDown - yUp;
 
-  if(Math.abs( xDiff ) < Math.abs( yDiff )){
-    if( yDiff > 0){
+  if (Math.abs(xDiff) < Math.abs(yDiff)) {
+    if (yDiff > 0) {
       scrollType.value = "down";
-    }else scrollType.value = "up";
+    } else scrollType.value = "up";
   }
 
   xDown = null;

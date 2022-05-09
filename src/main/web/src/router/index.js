@@ -14,43 +14,43 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home,
-        meta: {requireUserAuth: false, requireUserNoAuth: false}
+        meta: {requireUserAuth: false}
     },
     {
         path: '/Calories',
         name: 'Check Calories',
         component: CheckCalories,
-        meta: {requireUserAuth: false, requireUserNoAuth: false}
+        meta: {requireUserAuth: false}
     },
     {
         path: '/History',
         name: 'History',
         component: CheckHistory,
-        meta: {requireUserAuth: true, requireUserNoAuth: false}
+        meta: {requireUserAuth: true}
     },
     {
         path: '/register',
         name: 'Register',
         component: Register,
-        meta: {requireUserAuth: false, requireUserNoAuth: true}
+        meta: {requireUserAuth: false}
     },
     {
         path: '/register/confirm',
         name: 'Confirm Email',
         component: ConfirmEmail,
-        meta: {requireUserAuth: false, requireUserNoAuth: true}
+        meta: {requireUserAuth: false}
     },
     {
         path: '/register/success',
         name: 'Registration Success',
         component: RegistrationSuccess,
-        meta: {requireUserAuth: false, requireUserNoAuth: true}
+        meta: {requireUserAuth: false}
     },
     {
         path: '/profile',
         name: 'Profile',
         component: ProfileContent,
-        meta: {requireUserAuth: true, requireUserNoAuth: false}
+        meta: {requireUserAuth: true}
     },
 ]
 
@@ -60,10 +60,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.meta.requireUserAuth && !useUserStore().getIsUserAuth) {
-        next({name: 'About'})
-    } else if (to.meta.requireUserNoAuth && useUserStore().getIsUserAuth) {
-        next({name: 'About'})
+    if (to.meta.requireUserAuth && !useUserStore().isUserAuth) {
+        next({name: 'Home'})
     } else next()
 })
 

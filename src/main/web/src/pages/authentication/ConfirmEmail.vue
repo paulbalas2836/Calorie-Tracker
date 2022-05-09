@@ -5,7 +5,7 @@
         <div class="text-center dark:text-white text-xl font-medium">Your email address has been verified with
           success!
         </div>
-        <BadgeCheckIcon class="dark:fill-emerald-400 w-24 fill-emerald-500"></BadgeCheckIcon>
+        <BadgeCheckIcon class="dark:fill-dark-mode-green w-24 fill-dark-mode-green"></BadgeCheckIcon>
       </div>
     </template>
   </Card>

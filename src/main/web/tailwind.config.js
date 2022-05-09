@@ -8,16 +8,15 @@ module.exports = {
 
     extend: {
       backgroundImage:{
-        'light-home': "url('/lightBackground1.png')",
+        'light-home': "url('/backgroundImage.png')",
         'dark-home': "url('/darkBackground.png')",
       },
       colors: {
-        'emerald-green': '#004400',
-        'forest-green': '#00762E',
-        'lint': '#BACC81',
-        'light-lint': '#CDD193',
-        'kelly-green': '#74E39A',
-      }
+        'light-mode-hover-green': '#00BA34',
+        'light-mode-green': '#00A72E',
+        'dark-mode-hover-green': '#66D585',
+        'dark-mode-green': '#4CCE70',
+      },
     },
   },
   plugins: [],
