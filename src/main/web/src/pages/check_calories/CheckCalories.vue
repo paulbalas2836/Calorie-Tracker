@@ -5,9 +5,9 @@
         <div
             class="dark:bg-neutral-900 min-h-fit px-3 py-5 bg-white shadow-2xl rounded-md grid grid-rows-4 justify-center items-center">
           <div class="row-span-3 w-max h-max justify-self-center">
-            <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
+            <img :src="image" alt="" height="240" width="320" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
-              <video v-show="!isImageUploaded" ref="camera" height="240" width="240" autoplay/>
+              <video v-show="isCameraOpen" ref="videoRef" height="240" width="320" autoplay/>
               <label
                   class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
                 <span>{{ isImageUploaded === false ? "Upload a file" : "Upload another file" }}</span>
@@ -70,6 +70,8 @@ import {checkIfMobile} from "../../utils/Functions.js";
 
 const user = useUserStore();
 const chartRef = ref(null);
+const videoRef = ref(null);
+
 const image = ref(null);
 const saveToHistory = new FormData();
 const imageError = ref(null);
@@ -77,11 +79,8 @@ const imageTensor = ref(null);
 const saveHistoryDto = ref({weight: null, label: '', email: user.getEmail});
 const label = ref(null);
 const quantity = ref(null);
-const camera = ref(null);
 const isCameraOpen = ref(false);
-const isPhotoTaken = ref(false);
 const isImageUploaded = ref(false);
-const canvas = ref(null);
 let model = null;
 
 
@@ -97,7 +96,6 @@ function imageValidator(value) {
 
 function onFileSelected(event) {
   if (isCameraOpen.value) {
-    isCameraOpen.value = false;
     stopCameraStream();
   }
 
@@ -130,9 +128,7 @@ function getTensorOfImage() {
 
 function toggleCamera() {
   isImageUploaded.value = false
-  isCameraOpen.value = !isCameraOpen.value;
-  if (!isCameraOpen.value) {
-    isPhotoTaken.value = false;
+  if (isCameraOpen.value) {
     stopCameraStream();
     return;
   }
@@ -142,35 +138,40 @@ function toggleCamera() {
 }
 
 function createCameraElement() {
+  isCameraOpen.value = true;
   const constraints = (window.constraints = {
     audio: false,
     video: true
   });
 
   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-    camera.value.srcObject = stream;
+    videoRef.value.srcObject = stream;
   }).catch(() => {
     imageError.value = "The browser doesn't support or there is some error."
   })
 }
 
 function stopCameraStream() {
-
-  let tracks = camera.value.srcObject.getTracks();
+  isCameraOpen.value = false;
+  let tracks = videoRef.value.srcObject.getTracks();
   tracks.forEach(track => {
     track.stop();
   })
 }
 
 function takePhoto() {
-  isPhotoTaken.value = !isPhotoTaken.value;
+  saveToHistory.delete("image");
+
   isImageUploaded.value = true;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
-  ctx.drawImage(camera.value, 0, 0, 240, 240);
-  image.value = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
-  saveToHistory.append("image", image.value);
+  ctx.drawImage(videoRef.value, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob(function (blob) {
+    saveToHistory.append("image", blob);
+  }, "image/jpeg")
+  image.value = canvas.toDataURL("image/jpeg");
   getTensorOfImage();
+  stopCameraStream();
 }
 
 onMounted(async () => {
@@ -188,8 +189,6 @@ function getLabel(prediction) {
 }
 
 function getCalories() {
-  console.log(imageTensor.value);
-
   if (!isImageUploaded.value) {
     imageError.value = "You need to upload an image!";
     return;
@@ -198,7 +197,6 @@ function getCalories() {
   const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255));
   const prediction = model.predict(normalizedData.expandDims()).dataSync();
   label.value = getLabel(prediction);
-
   saveHistoryDto.value.label = label.value;
   saveToHistory.append("saveHistoryDto", new Blob([JSON.stringify({
     "weight": saveHistoryDto.value.weight,
@@ -207,7 +205,6 @@ function getCalories() {
   })], {
     type: "application/json"
   }));
-
   axios.post(constants.API + '/history/prediction', saveToHistory,
       {
         headers: {
