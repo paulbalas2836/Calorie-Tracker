@@ -60,7 +60,7 @@ import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 import MacroNutrients from '../check_calories/MacroNutrients.vue'
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 import CalendarModal from '../../components/modals/CalendarModal.vue'
-import {initMicroNutrients, initMacroNutrient} from "../../utils/ReusableFunctions";
+import {initMicroNutrients, initMacroNutrient} from "../../utils/Functions";
 import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/SealConstants'
 
 const user = useUserStore()

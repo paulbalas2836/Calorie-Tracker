@@ -46,7 +46,7 @@
             </dropdown>
           </div>
           <div v-else class="flex">
-            <div class="mr-2">
+            <div class="sm:mr-4 mr-2">
               <div id="g_id_onload"
                    data-client_id="1078733011731-q159frn9qatl2h8iiqt11jkhh8o68nmq.apps.googleusercontent.com"
                    data-context="signin"

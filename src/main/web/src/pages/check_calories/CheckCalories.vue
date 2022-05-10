@@ -7,12 +7,18 @@
           <div class="row-span-3 w-max h-max justify-self-center">
             <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
+              <video v-show="!isImageUploaded" ref="camera" height="240" width="240" autoplay/>
               <label
                   class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
-                <span>Upload a file</span>
+                <span>{{ isImageUploaded === false ? "Upload a file" : "Upload another file" }}</span>
                 <input id="file_upload" type="file" class="sr-only" @change="onFileSelected"
                        accept=".jpg, .jpeg, .png"/>
               </label>
+              <Button class="mt-2 mb-4" @click="toggleCamera()">{{
+                  isCameraOpen ? "Close camera" : "Open camera"
+                }}
+              </Button>
+              <Button class="mt-2 mb-4" @click="takePhoto()">Take a photo</Button>
               <ErrorMessage class="mt-2">{{ imageError }}</ErrorMessage>
             </div>
           </div>
@@ -59,19 +65,25 @@ import {L2} from "../../utils/L2.js"
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 import MacroNutrients from './MacroNutrients.vue'
 import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/SealConstants'
-import {initMicroNutrients, initMacroNutrient} from '../../utils/ReusableFunctions.js'
+import {initMicroNutrients, initMacroNutrient} from '../../utils/Functions.js'
+import {checkIfMobile} from "../../utils/Functions.js";
 
 const user = useUserStore();
 const chartRef = ref(null);
 const image = ref(null);
 const saveToHistory = new FormData();
-const isImageUploaded = ref(false);
 const imageError = ref(null);
 const imageTensor = ref(null);
 const saveHistoryDto = ref({weight: null, label: '', email: user.getEmail});
 const label = ref(null);
 const quantity = ref(null);
+const camera = ref(null);
+const isCameraOpen = ref(false);
+const isPhotoTaken = ref(false);
+const isImageUploaded = ref(false);
+const canvas = ref(null);
 let model = null;
+
 
 function imageValidator(value) {
   if (!(value.type.split('/')[0] === 'image'))
@@ -84,6 +96,11 @@ function imageValidator(value) {
 }
 
 function onFileSelected(event) {
+  if (isCameraOpen.value) {
+    isCameraOpen.value = false;
+    stopCameraStream();
+  }
+
   if (event.target.files.length === 0)
     return;
 
@@ -98,8 +115,10 @@ function onFileSelected(event) {
   imageError.value = null;
   image.value = URL.createObjectURL(file);
   isImageUploaded.value = true;
+  getTensorOfImage();
+}
 
-  //Resize image for a faster prediction
+function getTensorOfImage() {
   const img = new Image();
   img.src = image.value;
   img.onload = () => {
@@ -109,9 +128,53 @@ function onFileSelected(event) {
   }
 }
 
+function toggleCamera() {
+  isImageUploaded.value = false
+  isCameraOpen.value = !isCameraOpen.value;
+  if (!isCameraOpen.value) {
+    isPhotoTaken.value = false;
+    stopCameraStream();
+    return;
+  }
+
+  createCameraElement();
+
+}
+
+function createCameraElement() {
+  const constraints = (window.constraints = {
+    audio: false,
+    video: true
+  });
+
+  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+    camera.value.srcObject = stream;
+  }).catch(() => {
+    imageError.value = "The browser doesn't support or there is some error."
+  })
+}
+
+function stopCameraStream() {
+
+  let tracks = camera.value.srcObject.getTracks();
+  tracks.forEach(track => {
+    track.stop();
+  })
+}
+
+function takePhoto() {
+  isPhotoTaken.value = !isPhotoTaken.value;
+  isImageUploaded.value = true;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(camera.value, 0, 0, 240, 240);
+  image.value = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+  saveToHistory.append("image", image.value);
+  getTensorOfImage();
+}
 
 onMounted(async () => {
-  initMacroNutrient(macroNutrientChart, chartRef, 500, 8, 35, 35, 20, 20, 45, 45);
+  initMacroNutrient(macroNutrientChart, chartRef, 500, 8, 35, 20, 45, 20, 45, 45);
   initMicroNutrients(0, 0, 0, 0, 0);
   tf.serialization.registerClass(L2)
   model = await tf.loadLayersModel("http://127.0.0.1:8081/model.json")
@@ -125,6 +188,8 @@ function getLabel(prediction) {
 }
 
 function getCalories() {
+  console.log(imageTensor.value);
+
   if (!isImageUploaded.value) {
     imageError.value = "You need to upload an image!";
     return;
@@ -151,11 +216,11 @@ function getCalories() {
       })
       .then(res => {
         const data = res.data;
-        initMacroNutrient(macroNutrientChart,chartRef,data.calories, data.fiber, data.protein, data.fat, data.carbs);
+        initMacroNutrient(macroNutrientChart, chartRef, data.calories, data.fiber, data.protein, data.fat, data.carbs);
         initMicroNutrients(data.potassium, data.sodium, data.calcium, data.cholesterol, data.iron);
 
         quantity.value = data.quantity;
         saveToHistory.delete("saveHistoryDto");
-      }).catch(err => console.log(err.response.data));
+      }).catch(err => console.log(err.response));
 }
 </script>
