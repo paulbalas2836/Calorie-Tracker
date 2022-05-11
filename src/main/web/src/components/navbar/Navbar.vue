@@ -11,7 +11,7 @@
             <div class="flex space-x-4">
               <template v-for="page in navbarPages" :key="page.name">
                 <router-link :to=page.route><a href="#"
-                                               class="dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-md font-medium"
+                                               class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-medium"
                                                :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': page.isActive, 'dark:text-white' : !homePage}"
                                                aria-current="page">{{ page.name }}</a></router-link>
               </template>
@@ -20,13 +20,14 @@
           </div>
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-          <DarkModeToggle v-if="!homePage" class="mr-4" :darkMode="darkMode" @click="toggleDarkLightMode"/>
+          <DarkModeToggle v-if="!homePage" class="mr-4 hidden sm:block" :darkMode="darkMode"
+                          @click="toggleDarkLightMode"/>
           <div v-if="userStore.isUserAuth">
             <dropdown>
               <template #toggle>
                 <button
                     class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-light-mode-green "
-                :class="{'dark:focus:dark-mode-green dark:focus:ring-offset-neutral-900': !homePage}">
+                    :class="{'dark:focus:dark-mode-green dark:focus:ring-offset-neutral-900': !homePage}">
                   <span class="sr-only">Open user menu</span>
                   <img class="h-10 w-10 rounded-full"
                        :src="userStore.getImage"
@@ -74,8 +75,9 @@
       </div>
     </div>
   </div>
-  <div class="sm:hidden w-full" id="mobile-menu" v-show="showMobileNavbarPages">
-    <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white">
+  <div class="sm:hidden absolute z-30 w-full h-full bg-gray-900/60" id="mobile-menu " v-show="showMobileNavbarPages">
+    <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white h-full w-1/2 flex flex-col justify-start ">
+      <MenuButton @click="mobileToggleNavbarPages" :showMobileNavbarPages="showMobileNavbarPages" v-if="homePage"></MenuButton>
       <template v-for="page in navbarPages" :key="page.name">
         <router-link :to=page.route><a href="#" @click="showMobileNavbarPages = false"
                                        class=" block px-3 py-2 rounded-md text-base font-medium"
@@ -141,6 +143,10 @@ function logout() {
 function mobileToggleNavbarPages() {
   showMobileNavbarPages.value = !showMobileNavbarPages.value
 }
+
+watch(showMobileNavbarPages, () => {
+  showMobileNavbarPages.value === true ? document.body.style.overflow = "hidden" : document.body.style.overflow = "auto"
+})
 
 
 function toggleDarkLightMode() {

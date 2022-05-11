@@ -5,20 +5,20 @@
         <div
             class="dark:bg-neutral-900 min-h-fit px-3 py-5 bg-white shadow-2xl rounded-md grid grid-rows-4 justify-center items-center">
           <div class="row-span-3 w-max h-max justify-self-center">
-            <img :src="image" alt="" height="240" width="320" v-show="isImageUploaded" class="relative"/>
+            <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
-              <video v-show="isCameraOpen" ref="videoRef" height="240" width="320" autoplay/>
+              <video v-show="isCameraOpen" v-if="checkIfMobile()" ref="videoRef" height="240" width="320" autoplay/>
               <label
                   class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
                 <span>{{ isImageUploaded === false ? "Upload a file" : "Upload another file" }}</span>
                 <input id="file_upload" type="file" class="sr-only" @change="onFileSelected"
                        accept=".jpg, .jpeg, .png"/>
               </label>
-              <Button class="mt-2 mb-4" @click="toggleCamera()">{{
+              <Button class="mt-2 mb-4" @click="toggleCamera()" v-if="checkIfMobile()">{{
                   isCameraOpen ? "Close camera" : "Open camera"
                 }}
               </Button>
-              <Button class="mt-2 mb-4" @click="takePhoto()">Take a photo</Button>
+              <Button class="mt-2 mb-4" @click="takePhoto()" v-if="checkIfMobile()">Take a photo</Button>
               <ErrorMessage class="mt-2">{{ imageError }}</ErrorMessage>
             </div>
           </div>

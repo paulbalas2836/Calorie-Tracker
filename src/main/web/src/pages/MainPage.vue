@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-full w-full">
-    <div class="bg-light-home min-h-screen w-full absolute z-0" v-show="homePage"></div>
+    <div class="bg-home-page h-full w-full absolute z-0" v-show="homePage"></div>
     <navbar></navbar>
     <main>
       <router-view></router-view>

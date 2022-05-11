@@ -83,22 +83,22 @@ function checkScroll(event) {
 
 onMounted(() => {
   const leftSideVeggiesImage = new Image();
-  leftSideVeggiesImage.src = '/leftSideVeggiesImage.png'
+  leftSideVeggiesImage.src = 'home_page_images/leftSideVeggies.png'
 
   const rightSideVeggiesImage = new Image();
-  rightSideVeggiesImage.src = '/rightSideVeggiesImage.png'
+  rightSideVeggiesImage.src = 'home_page_images//rightSideVeggies.png'
 
   const cerealBowlImage = new Image();
-  cerealBowlImage.src = '/cerealBowlImage.png';
+  cerealBowlImage.src = 'home_page_images//cerealBowl.png';
 
   const fishBowlImage = new Image();
-  fishBowlImage.src = '/fishBowlImage.png';
+  fishBowlImage.src = 'home_page_images//fishBowl.png';
 
   const fruitBowlImage = new Image();
-  fruitBowlImage.src = '/fruitBowlImage.png';
+  fruitBowlImage.src = 'home_page_images//fruitBowl.png';
 
   const veggiesBowlImage = new Image();
-  veggiesBowlImage.src = '/veggiesBowlImage.png';
+  veggiesBowlImage.src = 'home_page_images//veggiesBowl.png';
 
 
   let leftSideVeggiesObject = {x: 0, y: 0, height: 0, width: 0};

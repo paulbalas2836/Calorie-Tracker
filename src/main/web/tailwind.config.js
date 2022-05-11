@@ -8,8 +8,7 @@ module.exports = {
 
     extend: {
       backgroundImage:{
-        'light-home': "url('/backgroundImage.png')",
-        'dark-home': "url('/darkBackground.png')",
+        'home-page': "url('/home_page_images/background.png')",
       },
       colors: {
         'light-mode-hover-green': '#00BA34',

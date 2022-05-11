@@ -1,15 +1,18 @@
 <template>
-  <div class="min-h-screen py-12 px-8">
-    <p class="flex text-center justify-center text-2xl mb-2 font-md">Select Date</p>
+  <div class="min-h-screen py-4 px-8">
     <div class="flex items-center justify-center text-center mb-8">
-      <div class="flex flex-row flex-wrap gap-x-1 items-center shadow-2xl">
-        <ChevronLeftIcon @click="previousDay" class="h-[52px] bg-white dark:bg-neutral-900 cursor-pointer dark:fill-white"/>
-        <div @click="openCalendarModal = true"
-             class="text-xl dark:text-white px-3 py-3 text-gray-800 font-medium bg-white dark:bg-neutral-900 cursor-pointer">
-          {{ getSelectedDate() }}
+      <div class="flex flex-row gap-x-1 items-center shadow-2xl">
+        <ChevronLeftIcon @click="previousDay"
+                         class="h-[75px] bg-white dark:bg-neutral-900 cursor-pointer dark:fill-white"/>
+        <div class="w-full px-3 py-2 cursor-pointer bg-white dark:bg-neutral-900 flex flex-col">
+          <p class="text-gray-800 text-lg dark:text-white">Pick a date</p>
+          <div @click="openCalendarModal = true"
+               class="text-xl dark:text-white text-gray-800 font-medium">
+            {{ getSelectedDate() }}
+          </div>
         </div>
         <ChevronRightIcon @click="nextDay"
-                          class="h-[52px] py-2 px-2 bg-white dark:bg-neutral-900 cursor-pointer dark:fill-white"/>
+                          class="h-[75px] py-2 px-2 bg-white dark:bg-neutral-900 cursor-pointer dark:fill-white"/>
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-20 mt-12 items-center justify-center">
