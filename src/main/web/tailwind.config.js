@@ -5,8 +5,10 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-
     extend: {
+      fontFamily:{
+        'signika-negative':['Signika Negative', 'sans-serif'],
+      },
       backgroundImage:{
         'home-page': "url('/home_page_images/background.png')",
       },

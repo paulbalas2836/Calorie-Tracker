@@ -63,8 +63,8 @@ import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 import MacroNutrients from '../check_calories/MacroNutrients.vue'
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/vue/solid'
 import CalendarModal from '../../components/modals/CalendarModal.vue'
-import {initMicroNutrients, initMacroNutrient} from "../../utils/Functions";
-import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/SealConstants'
+import {useInitMicroNutrients, useInitMacroNutrient} from "../../utils/Composable";
+import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/ReactiveConstants'
 
 const user = useUserStore()
 
@@ -89,8 +89,8 @@ async function getHistoryByDay() {
   }).then(res => {
     historyByDay.value = res.data
     const nutrients = res.data.dailyNutrients;
-    initMicroNutrients(nutrients.potassium, nutrients.sodium, nutrients.calcium, nutrients.cholesterol, nutrients.iron);
-    initMacroNutrient(macroNutrientChart, chartRef, nutrients.calories, nutrients.fiber, nutrients.protein, nutrients.fat, nutrients.carbs);
+    useInitMicroNutrients(nutrients.potassium, nutrients.sodium, nutrients.calcium, nutrients.cholesterol, nutrients.iron);
+    useInitMacroNutrient(macroNutrientChart, chartRef, nutrients.calories, nutrients.fiber, nutrients.protein, nutrients.fat, nutrients.carbs);
   }).catch(err => console.log(err.response))
 }
 

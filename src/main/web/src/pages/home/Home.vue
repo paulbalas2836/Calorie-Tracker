@@ -1,18 +1,18 @@
 <template>
   <div v-show="firstPageOpacityText >= 0" class="flex flex-col absolute text-center w-full top-36" ref="firstPageText">
-    <div class="lg:text-6xl text-3xl font-extrabold mt-10">Artificial
+    <div class="lg:text-7xl text-3xl mt-10 font-signika-negative">Artificial
       FOOD
     </div>
-    <div class="lg:text-7xl text-5xl font-extrabold">CHECK
+    <div class="lg:text-8xl text-5xl font-signika-negative">CHECK
       CALORIES FAST
     </div>
   </div>
   <div v-show="secondPageOpacityText > 0" class="flex flex-col text-center w-full absolute top-64"
        ref="secondPageText">
-    <div class="lg:text-4xl text-3xl font-extrabold mt-10">
+    <div class="lg:text-6xl text-3xl  font-signika-negative mt-10">
       Tracking calories has never been easier
     </div>
-    <div class="lg:text-4xl text-3xl font-extrabold">60+ foods
+    <div class="lg:text-6xl text-3xl font-signika-negative">60+ foods
       that the AI can identify
     </div>
   </div>
@@ -21,7 +21,7 @@
 
 <script setup>
 import {onMounted, onUnmounted, ref} from 'vue'
-import {checkIfMobile} from "../../utils/Functions";
+import {useCheckIfMobile} from "../../utils/Composable";
 
 const canvas = ref(null);
 const mouse = ref({x: null, y: null})
@@ -208,7 +208,7 @@ onMounted(() => {
       window.cancelAnimationFrame(animation)
     }
     animation = requestAnimationFrame(animate)
-    if (checkIfMobile) {
+    if (!useCheckIfMobile()) {
       mouseMiddleImageMovement = {x: (mouse.value.x * 4) / 250, y: (mouse.value.y * 4) / 250};
       mouseRightImageMovement = {x: -(mouse.value.x * 3) / 250, y: (mouse.value.y * 2) / 250};
       mouseLeftImageMovement = {x: +(mouse.value.x * 3) / 250, y: (mouse.value.y * 2) / 250};

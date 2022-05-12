@@ -1,8 +1,8 @@
 <template>
   <Card>
     <template #header>
-      <div class="text-3xl mb-2">Sign Up</div>
-      <div class="mb-4">Want to sign up fill this form!</div>
+      <div class="text-3xl mb-2 font-signika-negative">Sign Up</div>
+      <div class="mb-4 font-signika-negative">Want to sign up fill this form!</div>
       <hr>
     </template>
     <template #main>

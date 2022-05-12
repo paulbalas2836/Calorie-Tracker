@@ -7,18 +7,18 @@
           <div class="row-span-3 w-max h-max justify-self-center">
             <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
-              <video v-show="isCameraOpen" v-if="checkIfMobile()" ref="videoRef" height="240" width="320" autoplay/>
+              <video v-show="isCameraOpen" v-if="useCheckIfMobile()" ref="videoRef" height="240" width="320" autoplay/>
               <label
                   class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
                 <span>{{ isImageUploaded === false ? "Upload a file" : "Upload another file" }}</span>
                 <input id="file_upload" type="file" class="sr-only" @change="onFileSelected"
                        accept=".jpg, .jpeg, .png"/>
               </label>
-              <Button class="mt-2 mb-4" @click="toggleCamera()" v-if="checkIfMobile()">{{
+              <Button class="mt-2 mb-4" @click="toggleCamera()" v-if="useCheckIfMobile()">{{
                   isCameraOpen ? "Close camera" : "Open camera"
                 }}
               </Button>
-              <Button class="mt-2 mb-4" @click="takePhoto()" v-if="checkIfMobile()">Take a photo</Button>
+              <Button class="mt-2 mb-4" @click="takePhoto()" v-if="useCheckIfMobile()">Take a photo</Button>
               <ErrorMessage class="mt-2">{{ imageError }}</ErrorMessage>
             </div>
           </div>
@@ -64,9 +64,8 @@ import constants from "../../utils/FrozenConstants.js"
 import {L2} from "../../utils/L2.js"
 import Vue3ChartJs from '@j-t-mcc/vue3-chartjs'
 import MacroNutrients from './MacroNutrients.vue'
-import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/SealConstants'
-import {initMicroNutrients, initMacroNutrient} from '../../utils/Functions.js'
-import {checkIfMobile} from "../../utils/Functions.js";
+import {microNutrients, macroNutrientChart, macroNutrients} from '../../utils/ReactiveConstants'
+import {useInitMicroNutrients, useInitMacroNutrient, useCheckIfMobile} from '../../utils/Composable.js'
 
 const user = useUserStore();
 const chartRef = ref(null);
@@ -175,8 +174,8 @@ function takePhoto() {
 }
 
 onMounted(async () => {
-  initMacroNutrient(macroNutrientChart, chartRef, 500, 8, 35, 20, 45, 20, 45, 45);
-  initMicroNutrients(0, 0, 0, 0, 0);
+  useInitMacroNutrient(macroNutrientChart, chartRef, 500, 8, 35, 20, 45, 20, 45, 45);
+  useInitMicroNutrients(0, 0, 0, 0, 0);
   tf.serialization.registerClass(L2)
   model = await tf.loadLayersModel("http://127.0.0.1:8081/model.json")
 })
@@ -213,8 +212,8 @@ function getCalories() {
       })
       .then(res => {
         const data = res.data;
-        initMacroNutrient(macroNutrientChart, chartRef, data.calories, data.fiber, data.protein, data.fat, data.carbs);
-        initMicroNutrients(data.potassium, data.sodium, data.calcium, data.cholesterol, data.iron);
+        useInitMacroNutrient(macroNutrientChart, chartRef, data.calories, data.fiber, data.protein, data.fat, data.carbs);
+        useInitMicroNutrients(data.potassium, data.sodium, data.calcium, data.cholesterol, data.iron);
 
         quantity.value = data.quantity;
         saveToHistory.delete("saveHistoryDto");

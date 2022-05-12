@@ -11,7 +11,7 @@
             <div class="flex space-x-4">
               <template v-for="page in navbarPages" :key="page.name">
                 <router-link :to=page.route><a href="#"
-                                               class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-medium"
+                                               class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-signika-negative"
                                                :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': page.isActive, 'dark:text-white' : !homePage}"
                                                aria-current="page">{{ page.name }}</a></router-link>
               </template>
@@ -68,7 +68,7 @@
             <NavbarButtons class="sm:mr-4 mr-2" :homePage="homePage" @click="openSignInModal">Sign in
             </NavbarButtons>
             <router-link to="/register">
-              <NavbarButtons :homePage="homePage">Register</NavbarButtons>
+              <NavbarButtons :homePage="homePage" >Register</NavbarButtons>
             </router-link>
           </div>
         </div>
@@ -106,7 +106,7 @@ import {useUserStore} from '../../store/userStore'
 import Dropdown from "../dorpdown/Dropdown.vue"
 import DropdownContent from "../dorpdown/DropdownContent.vue"
 import DropdownItems from "../dorpdown/DropdownItems.vue"
-import {darkMode} from "../../utils/SealConstants";
+import {darkMode} from "../../utils/ReactiveConstants";
 
 const userNavigation = {
   profile: {name: 'Your Profile', href: 'Profile'},
