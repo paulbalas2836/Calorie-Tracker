@@ -6,6 +6,7 @@ import licenta.project.Services.AppUserService;
 import licenta.project.Services.LoginService;
 import licenta.project.Utils.JwtToken;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,11 @@ import org.springframework.web.client.HttpServerErrorException;
 @AllArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class LoginController {
+    @Autowired
     private LoginService loginService;
+    @Autowired
     private JwtToken jwtToken;
+    @Autowired
     private AppUserService appUserService;
 
     @PostMapping

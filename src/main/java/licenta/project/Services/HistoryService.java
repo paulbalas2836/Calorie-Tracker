@@ -8,10 +8,13 @@ import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
 import licenta.project.Models.Food;
 import licenta.project.Models.History;
+import licenta.project.Models.HistoryImage;
+import licenta.project.Repositories.HistoryImageRepository;
 import licenta.project.Repositories.HistoryRepository;
 import licenta.project.Utils.ImageManipulation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +27,16 @@ import java.util.*;
 @Getter
 @AllArgsConstructor
 public class HistoryService {
+    @Autowired
     private HistoryRepository historyRepository;
+    @Autowired
     private AppUserService appUserService;
+    @Autowired
     private ImageManipulation imageManipulation;
+    @Autowired
     private FoodService foodService;
+    @Autowired
+    private HistoryImageRepository historyImageRepository;
 
     public FoodDto getDataFromPrediction(MultipartFile image, SaveHistoryDto saveHistoryDto) throws AppException {
         Optional<Food> defaultFood = foodService.getFood(saveHistoryDto.getLabel());
@@ -35,22 +44,20 @@ public class HistoryService {
         FoodDto foodDto = new FoodDto(saveHistoryDto.getLabel(), saveHistoryDto.getWeight());
         if (foodDto.getQuantity() == null)
             foodDto.setQuantity(defaultFood.get().getDefaultQuantity());
+        HistoryImage historyImage = new HistoryImage();
+        addHistoryImage( historyImage);
 
-        String filename = imageManipulation.saveImage(image, saveHistoryDto.getLabel());
+        String path = "TrainImages/" + saveHistoryDto.getLabel();
+        imageManipulation.saveImage(image, saveHistoryDto.getLabel(), path, historyImage);
 
-        if (appUserService.emailExists(saveHistoryDto.getEmail())) {
-            addToHistory(saveHistoryDto.getEmail(), defaultFood.get(), filename, foodDto.getQuantity());
-        }
+        addToHistory(saveHistoryDto.getEmail(), defaultFood.get(), foodDto.getQuantity(), historyImage);
+
         return foodService.calculateNutritionalValues(defaultFood.get(), foodDto);
     }
 
-    public void addToHistory(String email, Food food, String filename, Double quantity) {
-        History history = new History();
+    public void addToHistory(String email, Food food, Double quantity, HistoryImage historyImage) {
         AppUser appUser = (AppUser) appUserService.loadUserByUsername(email);
-        history.setAppUser(appUser);
-        history.setFood(food);
-        history.setQuantity(quantity);
-        history.setPath(filename + ".jpg");
+        History history = new History(appUser,food,quantity,historyImage);
         historyRepository.save(history);
     }
 
@@ -74,7 +81,7 @@ public class HistoryService {
             String historyDate = dateFormat.format(history.getCreatedAt());
             String currentDate = dateFormat.format(date);
             if (Objects.equals(currentDate, historyDate)) {
-                FoodDto foodDto = new FoodDto(history.getFood().getName(), history.getQuantity(), history.getPath());
+                FoodDto foodDto = new FoodDto(history.getFood().getName(), history.getQuantity(), history.getHistoryImage().getPath());
                 FoodDto calculatedFoodDto = foodService.calculateNutritionalValues(history.getFood(), foodDto);
                 foodListByDay.add(calculatedFoodDto);
                 foodService.getDailyNutrients(dailyNutrientsDto, calculatedFoodDto);
@@ -85,5 +92,8 @@ public class HistoryService {
         return historyListByDay;
     }
 
+    public void addHistoryImage(HistoryImage historyImage) {
+        historyImageRepository.save(historyImage);
+    }
 
 }

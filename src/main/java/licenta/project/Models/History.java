@@ -13,7 +13,6 @@ import java.util.Date;
 @Entity
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class History {
     @Id
@@ -29,11 +28,20 @@ public class History {
     private Food food;
 
     @Column(nullable = false)
-    private String path;
-    @Column(nullable = false)
     private Double quantity;
 
     @Column(nullable = false)
     @CreationTimestamp
     private Date createdAt;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "histroy_image_id", referencedColumnName = "id")
+    private HistoryImage historyImage;
+
+    public History(AppUser appUser, Food food, Double quantity, HistoryImage historyImage) {
+        this.appUser = appUser;
+        this.food = food;
+        this.quantity = quantity;
+        this.historyImage = historyImage;
+    }
 }

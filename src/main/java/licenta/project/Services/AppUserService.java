@@ -14,11 +14,13 @@ import licenta.project.Repositories.Interfaces.EmailSender;
 import licenta.project.Struct.Provider;
 import licenta.project.Utils.JwtToken;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -29,7 +31,9 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class AppUserService implements UserDetailsService {
+    @Autowired
     private AppUserRepository appUserRepository;
+    @Autowired
     private ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
     private final JwtToken jwtToken;
@@ -143,6 +147,10 @@ public class AppUserService implements UserDetailsService {
 
         appUser.setPassword(BCrypt.hashpw(changePasswordDto.getNewPassword(), BCrypt.gensalt(10)));
         appUserRepository.save(appUser);
+    }
+
+    public void changeProfileImage(String email, MultipartFile image){
+        
     }
 
 }

@@ -5,6 +5,7 @@ import licenta.project.Dto.FoodDto;
 import licenta.project.Models.Food;
 import licenta.project.Repositories.FoodRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class FoodService {
-
+    @Autowired
     private FoodRepository foodRepository;
 
     public Optional<Food> getFood(String label) {

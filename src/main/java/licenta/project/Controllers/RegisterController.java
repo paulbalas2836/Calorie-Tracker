@@ -4,6 +4,7 @@ import licenta.project.Dto.RegisterDto;
 import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
 import licenta.project.Services.AppUserService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 @AllArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000"})
 public class RegisterController {
+    @Autowired
     private AppUserService appUserService;
 
     @PostMapping

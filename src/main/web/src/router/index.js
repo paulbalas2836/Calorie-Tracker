@@ -61,7 +61,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.meta.requireUserAuth && !useUserStore().isUserAuth) {
-        next({name: 'Home'})
+       next(from)
     } else next()
 })
 

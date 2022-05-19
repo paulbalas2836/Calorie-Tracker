@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-          <DarkModeToggle v-if="!homePage" class="mr-4 hidden sm:block" :darkMode="darkMode"
+          <DarkModeToggle v-if="!homePage" class="mr-4" :darkMode="darkMode"
                           @click="toggleDarkLightMode"/>
           <div v-if="userStore.isUserAuth">
             <dropdown>
@@ -79,9 +79,9 @@
     <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white h-full w-1/2 flex flex-col justify-start ">
       <MenuButton @click="mobileToggleNavbarPages" :showMobileNavbarPages="showMobileNavbarPages" v-if="homePage"></MenuButton>
       <template v-for="page in navbarPages" :key="page.name">
-        <router-link :to=page.route><a href="#" @click="showMobileNavbarPages = false"
-                                       class=" block px-3 py-2 rounded-md text-base font-medium"
-                                       :class="{'dark:bg-fuchsia-300 bg-emerald-500 dark:text-black text-white': page.isActive }"
+        <router-link :to=page.route><a href="#" @click="closeMobileNavbar()"
+                                       class=" block px-3 py-2 rounded-md text-base font-medium dark:text-white text-black"
+                                       :class="{'dark:bg-dark-mode-green bg-light-mode-green dark:text-black text-white': page.isActive }"
                                        aria-current="page">{{ page.name }}</a></router-link>
       </template>
     </div>
@@ -121,19 +121,16 @@ const signInModal = ref(false)
 const showMobileNavbarPages = ref(false)
 const userStore = useUserStore()
 
-watch(currentRouteName, () => {
-  navbarPages.value.forEach(el => {
-    el.isActive = el.name === currentRouteName.name;
-    homePage.value = currentRouteName.name === 'Home';
-  })
-})
-
 function openSignInModal() {
   signInModal.value = true
 }
 
 function closeSignInModal() {
   signInModal.value = false
+}
+
+function closeMobileNavbar(){
+  showMobileNavbarPages.value = false;
 }
 
 function logout() {
@@ -148,6 +145,12 @@ watch(showMobileNavbarPages, () => {
   showMobileNavbarPages.value === true ? document.body.style.overflow = "hidden" : document.body.style.overflow = "auto"
 })
 
+watch(currentRouteName, () => {
+  navbarPages.value.forEach(el => {
+    el.isActive = el.name === currentRouteName.name;
+    homePage.value = currentRouteName.name === 'Home';
+  })
+})
 
 function toggleDarkLightMode() {
   darkMode.value = !darkMode.value

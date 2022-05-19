@@ -7,7 +7,7 @@
           <div class="row-span-3 w-max h-max justify-self-center">
             <img :src="image" alt="" height="240" width="240" v-show="isImageUploaded" class="relative"/>
             <div class="flex flex-col justify-center mt-8 items-center">
-              <video v-show="isCameraOpen" v-if="useCheckIfMobile()" ref="videoRef" height="240" width="320" autoplay/>
+              <video v-show="isCameraOpen" v-if="useCheckIfMobile()" class="mb-4" ref="videoRef" height="240" width="320" autoplay/>
               <label
                   class="relative cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
                 <span>{{ isImageUploaded === false ? "Upload a file" : "Upload another file" }}</span>
@@ -18,7 +18,7 @@
                   isCameraOpen ? "Close camera" : "Open camera"
                 }}
               </Button>
-              <Button class="mt-2 mb-4" @click="takePhoto()" v-if="useCheckIfMobile()">Take a photo</Button>
+              <Button class="mt-2 mb-4" @click="takePhoto()" v-if="useCheckIfMobile() && isCameraOpen">Take a photo</Button>
               <ErrorMessage class="mt-2">{{ imageError }}</ErrorMessage>
             </div>
           </div>
@@ -107,7 +107,9 @@ function onFileSelected(event) {
     return;
   }
 
-
+  if(saveToHistory.get("image") != null){
+    saveToHistory.delete("image");
+  }
   saveToHistory.append("image", file);
   imageError.value = null;
   image.value = URL.createObjectURL(file);
@@ -121,6 +123,7 @@ function getTensorOfImage() {
   img.onload = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 64, 64);
     imageTensor.value = ctx.getImageData(0, 0, 64, 64);
   }
 }
@@ -192,7 +195,6 @@ function getCalories() {
     imageError.value = "You need to upload an image!";
     return;
   }
-
   const normalizedData = tf.browser.fromPixels(imageTensor.value).toFloat().div(tf.scalar(255));
   const prediction = model.predict(normalizedData.expandDims()).dataSync();
   label.value = getLabel(prediction);
