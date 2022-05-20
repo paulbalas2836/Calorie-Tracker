@@ -102,7 +102,7 @@ function onFileSelected(event) {
     return;
 
   const file = event.target.files[0];
-  if (!imageValidator(file) === true) {
+  if (imageValidator(file) !== true) {
     imageError.value = imageValidator(file);
     return;
   }

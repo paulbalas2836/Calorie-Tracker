@@ -43,8 +43,14 @@
                 <Label for="photo" label="Photo" class="sm:hidden"/>
                 <span class="sr-only">Open user menu</span>
                 <img :src="useUser.getImage" class="rounded-full w-14 h-14 " alt=""/>
-                <Button class="h-10 w-24 self-center sm:ml-8 mt-8 sm:mt-0">Choose</Button>
+                <label
+                    class="sm:ml-4 mt-8 sm:mt-0 cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
+                  <span> Change picture </span>
+                  <Input id="file_upload" type="file" class="sr-only" @change="onFileSelected"
+                         accept=".jpg, .jpeg, .png"/>
+                </label>
               </div>
+              <ErrorMessage>{{profileImageError}}</ErrorMessage>
             </div>
           </div>
         </div>
@@ -80,6 +86,8 @@ const {
   value: confirmNewPassword,
   errorMessage: confirmNewPasswordError
 } = useField('confirmNewPassword', confirmNewPasswordValidator, {initialValue: ''})
+
+const profileImageError = ref(null);
 const successMessage = ref('')
 
 function passwordValidator(value) {
@@ -88,6 +96,16 @@ function passwordValidator(value) {
 
   if (value.length < 8)
     return "The password requires at least 8 characters!"
+
+  return true
+}
+
+function profileImageValidator(value){
+  if (!(value.type.split('/')[0] === 'image'))
+    return "File must be an image";
+
+  if (value.size > 52428800)
+    return "File is too big";
 
   return true
 }
@@ -113,6 +131,18 @@ function confirmNewPasswordValidator(value) {
     return "The passwords don't match!"
 
   return true
+
+}
+
+function onFileSelected(event){
+  if (event.target.files.length === 0)
+    return;
+
+  const file = event.target.files[0];
+  if (profileImageValidator(file) !== true) {
+    profileImageError.value = profileImageValidator(file);
+    return;
+  }
 
 }
 

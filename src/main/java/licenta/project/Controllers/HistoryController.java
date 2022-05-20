@@ -5,8 +5,7 @@ import licenta.project.Dto.HistoryDateDto;
 import licenta.project.Dto.SaveHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Services.HistoryService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,20 +15,18 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path="/history")
-@AllArgsConstructor
+@RequestMapping(path = "/history")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost/3000")
 public class HistoryController {
-    @Autowired
-    private HistoryService historyService;
+    private final HistoryService historyService;
 
     @GetMapping(path = "getHistory/{email}")
-    private ResponseEntity<Map<String, Object>> getHistoryByDay(@PathVariable String email, HistoryDateDto historyDateDto) throws ParseException, AppException {
-       return new ResponseEntity<>(historyService.getHistory(email, historyDateDto), HttpStatus.ACCEPTED);
+    private ResponseEntity<Map<String, Object>> getHistoryByDay(@PathVariable String email, HistoryDateDto historyDateDto) throws ParseException {
+        return new ResponseEntity<>(historyService.getHistory(email, historyDateDto), HttpStatus.ACCEPTED);
     }
 
     @PostMapping(path = "/prediction")

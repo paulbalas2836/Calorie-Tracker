@@ -20,7 +20,7 @@ public class History {
     private Long id;
 
     @ManyToOne(targetEntity = AppUser.class)
-    @JoinColumn(name = "app_user_id", nullable = false)
+    @JoinColumn(name = "app_user_id")
     private AppUser appUser;
 
     @ManyToOne(targetEntity = Food.class)
