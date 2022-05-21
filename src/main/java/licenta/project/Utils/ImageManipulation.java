@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface ImageManipulation {
     void saveHistoryImage(MultipartFile image, String label, String storingPath, HistoryImage historyImage) throws IOException;
-    void saveProfileImage(MultipartFile image, String storingPath, String imageName) throws IOException;
+    void saveProfileImage(MultipartFile image, String storingPath) throws IOException;
 }

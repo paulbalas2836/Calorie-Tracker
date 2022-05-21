@@ -18,13 +18,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 @Component
 @RequiredArgsConstructor
 public class ImageManipulationImpl implements ImageManipulation {
     private final static Integer IMAGE_HEIGHT = 300;
     private final static Integer IMAGE_WIDTH = 300;
+    private final static Integer PROFILE_IMAGE_HEIGHT = 300;
+    private final static Integer PROFILE_IMAGE_WIDTH = 300;
     private final HistoryImageRepository historyImageRepository;
 
     @Override
@@ -55,12 +56,17 @@ public class ImageManipulationImpl implements ImageManipulation {
     }
 
     @Override
-    public void saveProfileImage(MultipartFile image, String storingPath, String imageName) throws IOException {
-        Path uploadPath = Paths.get(storingPath);
+    public void saveProfileImage(MultipartFile image, String relativePath) throws IOException {
+        String absolutePath = "./src/main/web/public" + relativePath;
+        Path uploadPath = Paths.get(absolutePath);
 
-        try (InputStream inputStream = image.getInputStream()) {
-            Path filePath = uploadPath.resolve(imageName);
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        try {
+            byte[] imageByte = image.getBytes();
+            InputStream inputStream = new ByteArrayInputStream(imageByte);
+            BufferedImage bufferedImage = ImageIO.read(inputStream);
+            BufferedImage resizedImage = Scalr.resize(bufferedImage, PROFILE_IMAGE_WIDTH, PROFILE_IMAGE_HEIGHT);
+            File newImageFile = uploadPath.toFile();
+            ImageIO.write(resizedImage, "png", newImageFile);
         } catch (IOException ioe) {
             throw new IOException("Could not save the image", ioe);
         }

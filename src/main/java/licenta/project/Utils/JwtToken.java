@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
 
-import java.util.Date;
 import java.util.Map;
 
 public interface JwtToken {

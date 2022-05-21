@@ -84,10 +84,6 @@ public class AppUserServiceImpl implements AppUserService {
         return appUserRepository.findByEmail(email).isPresent();
     }
 
-    public void enableAppUser(String email) {
-        appUserRepository.enableAppUser(email);
-    }
-
     @Transactional
     @Override
     public void confirmToken(String token) {
@@ -145,17 +141,31 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void changeProfileImage(String email, MultipartFile image) throws IOException {
+    public String changeProfileImage(String email, MultipartFile image) throws IOException {
         AppUser appUser = (AppUser) loadUserByUsername(email);
-        String imageName= "image_" + appUser.getId();
-        String path = "./profile_images/" + imageName + ".jpg";
-        appUser.setProfileImage(path);
-        imageManipulation.saveProfileImage(image, email, imageName);
+        String imageName = "image_" + appUser.getId();
+        String path = "/profile_images/" + imageName + ".png";
+        String relativePath = "." + path;
+        appUser.setProfileImage(relativePath);
+        appUserRepository.save(appUser);
+        imageManipulation.saveProfileImage(image, path);
+        return relativePath;
+    }
+
+    public void disableAppUser(String email) throws AppException {
+        if(emailExists(email)) {
+            appUserRepository.disableAppUser(email);
+        }else{
+            throw new AppException("Something went wrong!");
+        }
+    }
+
+    public void enableAppUser(String email) {
+        appUserRepository.enableAppUser(email);
     }
 
     public AppUserDto getAppUserById(Long userId) throws AppException {
-        AppUser appUser;
-        appUser = findAppUserById(userId);
+        AppUser appUser = findAppUserById(userId);
 
         AppUserDto appUserDto = new AppUserDto();
         appUserDto.setImage(appUser.getProfileImage());

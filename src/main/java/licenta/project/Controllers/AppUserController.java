@@ -31,15 +31,23 @@ public class AppUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping(path = "/changeProfileImage/{userEmail}")
-    public ResponseEntity<?> changeProfileImage(@PathVariable String userEmail, @Valid @NotEmpty @NotNull @RequestPart("image") MultipartFile image){
-        try{
-            appUserService.changeProfileImage(userEmail, image);
-        }catch (IOException e){
+    @PatchMapping(path = "/changeProfileImage/{userEmail}")
+    public ResponseEntity<String> changeProfileImage(@PathVariable String userEmail, @RequestPart("image") @Valid @NotNull @NotEmpty MultipartFile image) {
+        try {
+            return new ResponseEntity<>(appUserService.changeProfileImage(userEmail, image), HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping(path = "/disableAppUser/{userEmail}")
+    public ResponseEntity<?> disableAppUser(@PathVariable String userEmail) {
+        try {
+            appUserService.disableAppUser(userEmail);
+        } catch (AppException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }

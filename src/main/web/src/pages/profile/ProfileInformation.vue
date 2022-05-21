@@ -42,7 +42,9 @@
               <div class="flex flex-col sm:flex-row items-center">
                 <Label for="photo" label="Photo" class="sm:hidden"/>
                 <span class="sr-only">Open user menu</span>
-                <img :src="useUser.getImage" class="rounded-full w-14 h-14 " alt=""/>
+                <img
+                    :src="isImageUploaded ? profileImage : useUser.getImage"
+                    class="rounded-full w-14 h-14 " alt=""/>
                 <label
                     class="sm:ml-4 mt-8 sm:mt-0 cursor-pointer border border-transparent dark:text-gray-900 text-white rounded-md py-2 px-4 bg-light-mode-green hover:bg-light-mode-hover-green dark:hover:bg-dark-mode-hover-green dark:bg-dark-mode-green text-sm font-medium shadow-md">
                   <span> Change picture </span>
@@ -50,7 +52,8 @@
                          accept=".jpg, .jpeg, .png"/>
                 </label>
               </div>
-              <ErrorMessage>{{profileImageError}}</ErrorMessage>
+              <ErrorMessage>{{ profileImageError }}</ErrorMessage>
+              <Button v-show="isImageUploaded" class="mt-4" @click="changeProfileImage">Save</Button>
             </div>
           </div>
         </div>
@@ -88,7 +91,10 @@ const {
 } = useField('confirmNewPassword', confirmNewPasswordValidator, {initialValue: ''})
 
 const profileImageError = ref(null);
-const successMessage = ref('')
+const isImageUploaded = ref(false);
+const profileImage = ref(null);
+const profileImageData = new FormData();
+const successMessage = ref('');
 
 function passwordValidator(value) {
   if (!value || (value.trim().length === 0))
@@ -100,7 +106,7 @@ function passwordValidator(value) {
   return true
 }
 
-function profileImageValidator(value){
+function profileImageValidator(value) {
   if (!(value.type.split('/')[0] === 'image'))
     return "File must be an image";
 
@@ -134,16 +140,31 @@ function confirmNewPasswordValidator(value) {
 
 }
 
-function onFileSelected(event){
+function onFileSelected(event) {
   if (event.target.files.length === 0)
     return;
 
   const file = event.target.files[0];
   if (profileImageValidator(file) !== true) {
     profileImageError.value = profileImageValidator(file);
+    isImageUploaded.value = false;
+    profileImage.value = null;
+    if (profileImageData.get("image"))
+      profileImageData.delete("image")
     return;
   }
 
+  profileImage.value = URL.createObjectURL(file);
+  profileImageData.append("image", file);
+  profileImageError.value = null;
+  isImageUploaded.value = true;
+}
+
+function changeProfileImage() {
+  const url = constants.API + "/user/changeProfileImage/" + useUser.getEmail;
+  useUser.changeProfileImage(url, profileImageData).catch((err)=>{
+    profileImageError.value = err;
+  });
 }
 
 const submitChangePassword = handleSubmit(values => {

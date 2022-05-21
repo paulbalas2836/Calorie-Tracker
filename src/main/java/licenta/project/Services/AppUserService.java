@@ -37,5 +37,7 @@ public interface AppUserService {
 
     void changePassword(String email, ChangePasswordDto changePasswordDto) throws AppException;
 
-    void changeProfileImage(String email, MultipartFile image) throws IOException;
+    String changeProfileImage(String email, MultipartFile image) throws IOException;
+
+    void disableAppUser(String email) throws AppException;
 }

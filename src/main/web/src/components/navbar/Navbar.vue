@@ -29,7 +29,7 @@
                     class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-light-mode-green "
                     :class="{'dark:focus:dark-mode-green dark:focus:ring-offset-neutral-900': !homePage}">
                   <span class="sr-only">Open user menu</span>
-                  <img class="h-10 w-10 rounded-full"
+                  <img class="h-12 w-12 rounded-full"
                        :src="userStore.getImage"
                        alt="">
                 </button>

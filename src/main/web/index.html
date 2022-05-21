@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
-      <script src="https://accounts.google.com/gsi/client" async defer></script>
-      <meta name="google-signin-client_id" content="1078733011731-q159frn9qatl2h8iiqt11jkhh8o68nmq.apps.googleusercontent.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@500&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" href="/favicon.ico"/>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id"
+          content="1078733011731-q159frn9qatl2h8iiqt11jkhh8o68nmq.apps.googleusercontent.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@500&display=swap" rel="stylesheet">
     <title>Vite App</title>
-  </head>
-  <body class="dark:bg-neutral-800 bg-gray-200 overflow-auto">
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+</head>
+<body class="dark:bg-neutral-800 bg-gray-200 overflow-auto">
+<div id="app"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
 </html>
 
 <script>
-    function connectWithGoogle(tokens){
+    function connectWithGoogle(tokens) {
         const URL = "http://localhost:8080/login/google"
-        fetch(URL,{
+        fetch(URL, {
             method: 'POST',
             mode: 'cors',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
             },
-            body:  tokens.credential,
+            body: tokens.credential,
         }).then(response => response.json()).then(data => {
-            const {name, email, image, provider} = data.appUserDto;
-            sessionStorage.setItem("name", name);
-            sessionStorage.setItem("email", email);
-            sessionStorage.setItem("image", image);
-            sessionStorage.setItem("provider", provider);
+            sessionStorage.setItem("user", JSON.stringify(data.appUserDto));
+            sessionStorage.setItem("token", data.jwt);
 
-            sessionStorage.setItem("token",data.jwt);
             location.reload();
-        }).catch(err => {console.log(err)})
+        }).catch(err => {
+            console.log(err)
+        })
     }
 </script>
