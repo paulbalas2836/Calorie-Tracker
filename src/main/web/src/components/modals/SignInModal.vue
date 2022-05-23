@@ -19,7 +19,7 @@
 
     <template #footer>
       <Button @click="login"
-              class="mb-4">
+              class="mb-4" @keydown.enter="login">
         Login
       </Button>
     </template>
@@ -32,7 +32,7 @@ import Input from "../basic/Input.vue"
 import Label from "../basic/Label.vue"
 import Button from "../basic/Button.vue"
 import ErrorMessage from "../../components/basic/ErrorMessage.vue";
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {useUserStore} from '../../store/userStore'
 import constants from "../../utils/FrozenConstants.js";
 

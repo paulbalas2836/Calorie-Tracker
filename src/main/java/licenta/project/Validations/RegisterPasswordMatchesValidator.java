@@ -1,6 +1,6 @@
 package licenta.project.Validations;
 
-import licenta.project.Dto.RegisterDto;
+import licenta.project.Dto.RegisterDto.RegisterDto;
 import licenta.project.Annotations.RegisterPasswordMatches;
 
 import javax.validation.ConstraintValidator;

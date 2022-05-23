@@ -2,9 +2,9 @@ package licenta.project.Services.ServiceImpl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import io.jsonwebtoken.Claims;
-import licenta.project.Dto.AppUserDto;
-import licenta.project.Dto.ChangePasswordDto;
-import licenta.project.Dto.RegisterDto;
+import licenta.project.Dto.AppUserDto.ChangePasswordDto;
+import licenta.project.Dto.LoginDto.AppUserDto;
+import licenta.project.Dto.RegisterDto.RegisterDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
 import licenta.project.Models.AppUser;

@@ -1,9 +1,8 @@
 package licenta.project.Controllers;
 
-import licenta.project.Dto.RegisterDto;
+import licenta.project.Dto.RegisterDto.RegisterDto;
 import licenta.project.Exceptions.UserAlreadyExistAuthenticationException;
 import licenta.project.Services.AppUserService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

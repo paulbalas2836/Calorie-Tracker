@@ -1,4 +1,4 @@
-package licenta.project.Dto;
+package licenta.project.Dto.RegisterDto;
 
 import licenta.project.Annotations.RegisterPasswordMatches;
 import licenta.project.Annotations.ValidEmail;

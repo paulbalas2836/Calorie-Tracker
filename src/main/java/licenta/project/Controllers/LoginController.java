@@ -1,7 +1,7 @@
 package licenta.project.Controllers;
 
-import licenta.project.Dto.JwtDto;
-import licenta.project.Dto.LoginDto;
+import licenta.project.Dto.LoginDto.JwtDto;
+import licenta.project.Dto.LoginDto.LoginDto;
 import licenta.project.Services.AppUserService;
 import licenta.project.Services.LoginService;
 import licenta.project.Utils.JwtToken;

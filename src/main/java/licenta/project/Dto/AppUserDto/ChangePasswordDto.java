@@ -1,4 +1,4 @@
-package licenta.project.Dto;
+package licenta.project.Dto.AppUserDto;
 
 import com.sun.istack.NotNull;
 import licenta.project.Annotations.ChangePasswordMatches;

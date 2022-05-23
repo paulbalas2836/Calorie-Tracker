@@ -1,8 +1,8 @@
 package licenta.project.Controllers;
 
-import licenta.project.Dto.FoodDto;
-import licenta.project.Dto.HistoryDateDto;
-import licenta.project.Dto.SaveHistoryDto;
+import licenta.project.Dto.HistoryDto.FoodHistoryDto;
+import licenta.project.Dto.HistoryDto.HistoryDateDto;
+import licenta.project.Dto.HistoryDto.SaveHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Services.HistoryService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class HistoryController {
     }
 
     @PostMapping(path = "/prediction")
-    public ResponseEntity<FoodDto> prediction(@Valid @NotEmpty @NotNull @RequestPart("image") MultipartFile image, @RequestPart("saveHistoryDto") SaveHistoryDto saveHistoryDto) throws AppException {
+    public ResponseEntity<FoodHistoryDto> prediction(@Valid @NotEmpty @NotNull @RequestPart("image") MultipartFile image, @RequestPart("saveHistoryDto") SaveHistoryDto saveHistoryDto) throws AppException {
         return new ResponseEntity<>(historyService.getDataFromPrediction(image, saveHistoryDto), HttpStatus.ACCEPTED);
     }
 }

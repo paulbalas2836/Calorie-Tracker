@@ -1,4 +1,4 @@
-package licenta.project.Dto;
+package licenta.project.Dto.HistoryDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

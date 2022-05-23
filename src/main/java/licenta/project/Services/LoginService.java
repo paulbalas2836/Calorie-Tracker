@@ -1,6 +1,6 @@
 package licenta.project.Services;
 
-import licenta.project.Dto.LoginDto;
+import licenta.project.Dto.LoginDto.LoginDto;
 import licenta.project.Exceptions.AppException;
 
 import java.io.IOException;

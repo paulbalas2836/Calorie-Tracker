@@ -1,9 +1,9 @@
 package licenta.project.Services.ServiceImpl;
 
-import licenta.project.Dto.DailyNutrientsDto;
-import licenta.project.Dto.FoodDto;
-import licenta.project.Dto.HistoryDateDto;
-import licenta.project.Dto.SaveHistoryDto;
+import licenta.project.Dto.HistoryDto.DailyNutrientsDto;
+import licenta.project.Dto.HistoryDto.FoodHistoryDto;
+import licenta.project.Dto.HistoryDto.HistoryDateDto;
+import licenta.project.Dto.HistoryDto.SaveHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
 import licenta.project.Models.Food;
@@ -36,21 +36,21 @@ public class HistoryServiceImpl implements HistoryService {
     private final HistoryImageRepository historyImageRepository;
 
     @Override
-    public FoodDto getDataFromPrediction(MultipartFile image, SaveHistoryDto saveHistoryDto) throws AppException {
+    public FoodHistoryDto getDataFromPrediction(MultipartFile image, SaveHistoryDto saveHistoryDto) throws AppException {
         Optional<Food> defaultFood = foodService.getFood(saveHistoryDto.getLabel());
         if (defaultFood.isEmpty()) throw new AppException("No food found");
-        FoodDto foodDto = new FoodDto(saveHistoryDto.getLabel(), saveHistoryDto.getWeight());
-        if (foodDto.getQuantity() == null)
-            foodDto.setQuantity(defaultFood.get().getDefaultQuantity());
+        FoodHistoryDto foodHistoryDto = new FoodHistoryDto(saveHistoryDto.getLabel(), saveHistoryDto.getWeight());
+        if (foodHistoryDto.getQuantity() == null)
+            foodHistoryDto.setQuantity(defaultFood.get().getDefaultQuantity());
         HistoryImage historyImage = new HistoryImage();
         addHistoryImage(historyImage);
 
         String path = "TrainImages/" + saveHistoryDto.getLabel();
         imageManipulationImpl.saveHistoryImage(image, saveHistoryDto.getLabel(), path, historyImage);
 
-        addToHistory(saveHistoryDto.getEmail(), defaultFood.get(), foodDto.getQuantity(), historyImage);
+        addToHistory(saveHistoryDto.getEmail(), defaultFood.get(), foodHistoryDto.getQuantity(), historyImage);
 
-        return foodService.calculateNutritionalValues(defaultFood.get(), foodDto);
+        return foodService.calculateNutritionalValues(defaultFood.get(), foodHistoryDto);
     }
 
     public void addToHistory(String email, Food food, Double quantity, HistoryImage historyImage) {
@@ -86,10 +86,10 @@ public class HistoryServiceImpl implements HistoryService {
             String historyDate = dateFormat.format(history.getCreatedAt());
             String currentDate = dateFormat.format(date);
             if (Objects.equals(currentDate, historyDate)) {
-                FoodDto foodDto = new FoodDto(history.getFood().getName(), history.getQuantity(), history.getHistoryImage().getPath());
-                FoodDto calculatedFoodDto = foodService.calculateNutritionalValues(history.getFood(), foodDto);
-                foodListByDay.add(calculatedFoodDto);
-                foodService.getDailyNutrients(dailyNutrientsDto, calculatedFoodDto);
+                FoodHistoryDto foodHistoryDto = new FoodHistoryDto(history.getFood().getName(), history.getQuantity(), history.getHistoryImage().getPath());
+                FoodHistoryDto calculatedFoodHistoryDto = foodService.calculateNutritionalValues(history.getFood(), foodHistoryDto);
+                foodListByDay.add(calculatedFoodHistoryDto);
+                foodService.getDailyNutrients(dailyNutrientsDto, calculatedFoodHistoryDto);
             }
         }
         historyListByDay.put("products", foodListByDay);

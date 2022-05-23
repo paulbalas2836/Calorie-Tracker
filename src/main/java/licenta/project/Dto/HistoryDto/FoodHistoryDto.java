@@ -1,4 +1,4 @@
-package licenta.project.Dto;
+package licenta.project.Dto.HistoryDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FoodDto {
+public class FoodHistoryDto {
 
 
     private String name;
@@ -26,12 +26,12 @@ public class FoodDto {
     private Double quantity;
     private String path;
 
-    public FoodDto(String name, Double quantity){
+    public FoodHistoryDto(String name, Double quantity){
         this.path = null;
         this.name = name;
         this.quantity = quantity;
     }
-    public FoodDto(String name, Double quantity, String path){
+    public FoodHistoryDto(String name, Double quantity, String path){
         this.path = path;
         this.name = name;
         this.quantity = quantity;

@@ -1,6 +1,5 @@
 package licenta.project.Models;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
@@ -47,4 +45,20 @@ public class Food {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "food")
     private List<History> foodHistorySet = new ArrayList<>();
+
+    public Food(String name, Double calories, Double protein, Double fat, Double carbs, Double fiber,
+                Double calcium, Double cholesterol, Double potassium, Double sodium, Double iron, Double defaultQuantity) {
+        this.name = name;
+        this.calories = calories;
+        this.protein = protein;
+        this.fat = fat;
+        this.carbs = carbs;
+        this.fiber = fiber;
+        this.calcium = calcium;
+        this.cholesterol = cholesterol;
+        this.potassium = potassium;
+        this.sodium = sodium;
+        this.iron = iron;
+        this.defaultQuantity = defaultQuantity;
+    }
 }

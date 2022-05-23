@@ -1,7 +1,7 @@
 package licenta.project.Validations;
 
 import licenta.project.Annotations.ChangePasswordMatches;
-import licenta.project.Dto.ChangePasswordDto;
+import ChangePasswordDto;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

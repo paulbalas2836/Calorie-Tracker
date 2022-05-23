@@ -31,7 +31,7 @@ public class AppUser implements UserDetails {
     private Provider provider;
     @Column(nullable = false)
     private String email;
-    @Column(nullable = false,length = 50)
+    @Column(nullable = false, length = 50)
     private String name;
     private String password;
     @Column(nullable = false)

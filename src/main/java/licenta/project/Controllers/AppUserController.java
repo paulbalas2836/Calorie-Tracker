@@ -1,6 +1,6 @@
 package licenta.project.Controllers;
 
-import licenta.project.Dto.ChangePasswordDto;
+import licenta.project.Dto.AppUserDto.ChangePasswordDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Services.AppUserService;
 import lombok.RequiredArgsConstructor;

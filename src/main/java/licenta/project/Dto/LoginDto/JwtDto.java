@@ -1,4 +1,4 @@
-package licenta.project.Dto;
+package licenta.project.Dto.LoginDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

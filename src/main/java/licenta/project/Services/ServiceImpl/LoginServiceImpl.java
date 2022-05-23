@@ -5,7 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import licenta.project.Dto.LoginDto;
+import licenta.project.Dto.LoginDto.LoginDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.AppUser;
 import licenta.project.Services.AppUserService;
