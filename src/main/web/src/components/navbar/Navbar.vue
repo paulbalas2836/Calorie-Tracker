@@ -9,12 +9,32 @@
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
-              <template v-for="page in navbarPages" :key="page.name">
-                <router-link :to=page.route><a href="#"
-                                               class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-signika-negative"
-                                               :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': page.isActive, 'dark:text-white' : !homePage}"
-                                               aria-current="page">{{ page.name }}</a></router-link>
-              </template>
+              <router-link :to=navbarPages.home.route><a href="#"
+                                                         class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-signika-negative"
+                                                         :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': navbarPages.home.isActive, 'dark:text-white' : !homePage}"
+                                                         aria-current="page">{{ navbarPages.home.name }}</a>
+              </router-link>
+              <router-link :to=navbarPages.checkCalories.route><a href="#"
+                                                                  class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-signika-negative"
+                                                                  :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': navbarPages.checkCalories.isActive, 'dark:text-white' : !homePage}"
+                                                                  aria-current="page">{{
+                  navbarPages.checkCalories.name
+                }}</a>
+              </router-link>
+              <router-link :to=navbarPages.history.route v-if="userStore.isUserAuth"><a href="#"
+                                                                                        class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-signika-negative"
+                                                                                        :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': navbarPages.history.isActive, 'dark:text-white' : !homePage}"
+                                                                                        aria-current="page">{{
+                  navbarPages.history.name
+                }}</a>
+              </router-link>
+              <router-link :to=navbarPages.viewFood.route v-if="userStore.getRole === 'ADMIN'"><a href="#"
+                                                                                                  class=" dark:hover:bg-dark-mode-hover-green dark:hover:text-gray-900 hover:bg-light-mode-hover-green hover:text-white px-3 py-2 rounded-md text-lg font-signika-negative"
+                                                                                                  :class="{ 'dark:bg-dark-mode-green bg-light-mode-green dark:text-black shadow-lg text-white': navbarPages.viewFood.isActive, 'dark:text-white' : !homePage}"
+                                                                                                  aria-current="page">{{
+                  navbarPages.viewFood.name
+                }}</a>
+              </router-link>
 
             </div>
           </div>
@@ -68,7 +88,7 @@
             <NavbarButtons class="sm:mr-4 mr-2" :homePage="homePage" @click="openSignInModal">Sign in
             </NavbarButtons>
             <router-link to="/register">
-              <NavbarButtons :homePage="homePage" >Register</NavbarButtons>
+              <NavbarButtons :homePage="homePage">Register</NavbarButtons>
             </router-link>
           </div>
         </div>
@@ -77,7 +97,8 @@
   </div>
   <div class="sm:hidden absolute z-30 w-full h-full bg-gray-900/60" id="mobile-menu " v-show="showMobileNavbarPages">
     <div class="px-2 pt-2 pb-3 space-y-1 dark:bg-neutral-900 bg-white h-full w-1/2 flex flex-col justify-start ">
-      <MenuButton @click="mobileToggleNavbarPages" :showMobileNavbarPages="showMobileNavbarPages" v-if="homePage"></MenuButton>
+      <MenuButton @click="mobileToggleNavbarPages" :showMobileNavbarPages="showMobileNavbarPages"
+                  v-if="homePage"></MenuButton>
       <template v-for="page in navbarPages" :key="page.name">
         <router-link :to=page.route><a href="#" @click="closeMobileNavbar()"
                                        class=" block px-3 py-2 rounded-md text-base font-medium dark:text-white text-black"
@@ -113,9 +134,12 @@ const userNavigation = {
   logout: {name: 'Sign out', href: '#'},
 }
 const homePage = ref(false)
-const navbarPages = ref([{name: "Home", route: '/', isActive: false},
-  {name: "Check Calories", route: "/Calories", isActive: false},
-  {name: "History", route: "/History", isActive: false}])
+const navbarPages = ref({
+  home: {name: "Home", route: '/', isActive: false, requireAuth: false},
+  checkCalories: {name: "Check Calories", route: "/Calories", isActive: false, requireAuth: false},
+  history: {name: "History", route: "/History", isActive: false, requireAuth: true},
+  viewFood: {name: "View Food", route: "/viewFood", isActive: false, requireAuth: true}
+})
 const currentRouteName = useRoute();
 const signInModal = ref(false)
 const showMobileNavbarPages = ref(false)
@@ -129,7 +153,7 @@ function closeSignInModal() {
   signInModal.value = false
 }
 
-function closeMobileNavbar(){
+function closeMobileNavbar() {
   showMobileNavbarPages.value = false;
 }
 
@@ -146,10 +170,10 @@ watch(showMobileNavbarPages, () => {
 })
 
 watch(currentRouteName, () => {
-  navbarPages.value.forEach(el => {
-    el.isActive = el.name === currentRouteName.name;
+  for (let key of Object.keys(navbarPages.value)) {
+    navbarPages.value[key].isActive = navbarPages.value[key].name === currentRouteName.name;
     homePage.value = currentRouteName.name === 'Home';
-  })
+  }
 })
 
 function toggleDarkLightMode() {

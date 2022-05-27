@@ -14,6 +14,7 @@ import licenta.project.Services.AppUserService;
 import licenta.project.Services.ConfirmationTokenService;
 import licenta.project.Services.EmailService;
 import licenta.project.Struct.Provider;
+import licenta.project.Struct.Roles;
 import licenta.project.Utils.ImageManipulation;
 import licenta.project.Utils.JwtToken;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setPassword(encodedPassword);
         appUser.setProfileImage("./profile_images/default_photo.png");
         appUser.setProvider(Provider.LOCAL);
+        appUser.setRole(Roles.USER);
 
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(appUser, token, LocalDateTime.now(), LocalDateTime.now().plusMinutes(30));
@@ -76,6 +78,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setEnabled(true);
         appUser.setProfileImage((String) googleAppUser.get("picture"));
         appUser.setProvider(Provider.GOOGLE);
+        appUser.setRole(Roles.USER);
         appUserRepository.save(appUser);
     }
 
@@ -122,7 +125,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUserDto getAppUserByClaims(Claims claims) throws AppException {
         Long userId = jwtToken.extractId(claims);
-        return getAppUserById(userId);
+        return getLoginAppUserById(userId);
     }
 
     @Override
@@ -164,7 +167,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUserRepository.enableAppUser(email);
     }
 
-    public AppUserDto getAppUserById(Long userId) throws AppException {
+    public AppUserDto getLoginAppUserById(Long userId) throws AppException {
         AppUser appUser = findAppUserById(userId);
 
         AppUserDto appUserDto = new AppUserDto();
@@ -172,6 +175,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUserDto.setEmail(appUser.getEmail());
         appUserDto.setName(appUser.getName());
         appUserDto.setProvider(appUser.getProvider());
+        appUserDto.setRole(appUser.getRole());
         return appUserDto;
     }
 

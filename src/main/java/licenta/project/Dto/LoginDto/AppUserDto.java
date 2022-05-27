@@ -1,6 +1,7 @@
 package licenta.project.Dto.LoginDto;
 
 import licenta.project.Struct.Provider;
+import licenta.project.Struct.Roles;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,4 +28,8 @@ public class AppUserDto {
     @NotEmpty
     @NotNull
     private String name;
+
+    @NotEmpty
+    @NotNull
+    private Roles role;
 }

@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user', {
         getImage: (state) => state.user?.image,
         getToken: (state) => state.token,
         getProvider: (state) => state.user?.provider,
+        getRole: (state) => state.user?.role,
         isUserAuth: state => state.user?.email != null,
     },
 

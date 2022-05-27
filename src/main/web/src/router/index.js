@@ -8,50 +8,57 @@ const Register = () => import('../pages/authentication/Register.vue')
 const ConfirmEmail = () => import('../pages/authentication/ConfirmEmail.vue')
 const RegistrationSuccess = () => import('../pages/authentication/RegisterSuccess.vue')
 const ProfileContent = () => import('../pages/profile/ProfileContent.vue')
+const ViewFood = () => import('../pages/foods/ViewFood.vue')
 
 const routes = [
     {
         path: '/',
         name: 'Home',
         component: Home,
-        meta: {requireUserAuth: false}
+        meta: {requireUserAuth: false, roles: ['USER', 'ADMIN']}
     },
     {
         path: '/Calories',
         name: 'Check Calories',
         component: CheckCalories,
-        meta: {requireUserAuth: false}
+        meta: {requireUserAuth: false, roles: ['USER', 'ADMIN']}
     },
     {
         path: '/History',
         name: 'History',
         component: CheckHistory,
-        meta: {requireUserAuth: true}
+        meta: {requireUserAuth: true, roles: ['USER', 'ADMIN']}
     },
     {
         path: '/register',
         name: 'Register',
         component: Register,
-        meta: {requireUserAuth: false}
+        meta: {requireUserAuth: false, roles: ['USER', 'ADMIN']}
     },
     {
         path: '/register/confirm',
         name: 'Confirm Email',
         component: ConfirmEmail,
-        meta: {requireUserAuth: false}
+        meta: {requireUserAuth: false, roles: ['USER', 'ADMIN']}
     },
     {
         path: '/register/success',
         name: 'Registration Success',
         component: RegistrationSuccess,
-        meta: {requireUserAuth: false}
+        meta: {requireUserAuth: false, roles: ['USER', 'ADMIN']}
     },
     {
         path: '/profile',
         name: 'Profile',
         component: ProfileContent,
-        meta: {requireUserAuth: true}
+        meta: {requireUserAuth: true, roles: ['USER', 'ADMIN']}
     },
+    {
+        path: '/viewFood',
+        name: 'View Food',
+        component: ViewFood,
+        meta: {requireUserAuth: true, roles: ['ADMIN']}
+    }
 ]
 
 const router = createRouter({
@@ -60,9 +67,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.meta.requireUserAuth && !useUserStore().isUserAuth) {
-       next(from)
-    } else next()
+    if (to.meta.requireUserAuth) {
+        if (to.meta?.roles?.includes(useUserStore().getRole))
+            next();
+    } else next();
 })
 
 export default router

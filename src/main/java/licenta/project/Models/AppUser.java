@@ -2,19 +2,18 @@ package licenta.project.Models;
 
 
 import licenta.project.Struct.Provider;
+import licenta.project.Struct.Roles;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @NoArgsConstructor
 @Getter
@@ -26,18 +25,24 @@ public class AppUser implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Provider provider;
+
     @Column(nullable = false)
     private String email;
+
     @Column(nullable = false, length = 50)
     private String name;
     private String password;
+
     @Column(nullable = false)
     private Boolean enabled;
+
     @Column(nullable = false)
     private String profileImage;
+
+    @Column(nullable = false)
+    private Roles role;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "appUser")
     @ToString.Exclude
@@ -45,7 +50,9 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(getRole().toString()));
+        return authorities;
     }
 
     @Override
@@ -55,17 +62,17 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
