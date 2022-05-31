@@ -49,7 +49,7 @@
                     class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-light-mode-green "
                     :class="{'dark:focus:dark-mode-green dark:focus:ring-offset-neutral-900': !homePage}">
                   <span class="sr-only">Open user menu</span>
-                  <img class="h-12 w-12 rounded-full"
+                  <img class="h-10 w-10 rounded-full"
                        :src="userStore.getImage"
                        alt="">
                 </button>
@@ -112,7 +112,7 @@
               enter-to-class="transform opacity-100 scale-100 "
               leave-active-class="transition ease-in duration-300"
               leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-100">
-    <SignInModal v-if="signInModal" @closeModal="closeSignInModal" @closeSignInModal='closeSignInModal'/>
+    <SignInModal v-if="isSignInModalOpen" @closeModal="closeSignInModal" @closeSignInModal='closeSignInModal'/>
   </Transition>
 </template>
 
@@ -141,16 +141,16 @@ const navbarPages = ref({
   viewFood: {name: "View Food", route: "/viewFood", isActive: false, requireAuth: true}
 })
 const currentRouteName = useRoute();
-const signInModal = ref(false)
+const isSignInModalOpen = ref(false)
 const showMobileNavbarPages = ref(false)
 const userStore = useUserStore()
 
 function openSignInModal() {
-  signInModal.value = true
+  isSignInModalOpen.value = true
 }
 
 function closeSignInModal() {
-  signInModal.value = false
+  isSignInModalOpen.value = false
 }
 
 function closeMobileNavbar() {

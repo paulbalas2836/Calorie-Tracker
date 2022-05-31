@@ -5,6 +5,7 @@ import licenta.project.Dto.HistoryDto.DailyNutrientsDto;
 import licenta.project.Dto.HistoryDto.FoodHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.Food;
+import licenta.project.Records.FoodRecord;
 import licenta.project.Repositories.FoodRepository;
 import licenta.project.Services.FoodService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,8 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public List<Food> getAllFoods() {
-        return foodRepository.findAll();
+    public List<FoodRecord> getAllFoods() {
+        return foodRepository.findAllProjectionsBy();
     }
 
     @Override

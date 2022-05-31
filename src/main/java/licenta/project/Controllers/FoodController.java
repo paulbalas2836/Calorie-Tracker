@@ -2,7 +2,7 @@ package licenta.project.Controllers;
 
 import licenta.project.Dto.FoodDto.AddUpdateFoodDto;
 import licenta.project.Exceptions.AppException;
-import licenta.project.Models.Food;
+import licenta.project.Records.FoodRecord;
 import licenta.project.Services.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,19 +19,19 @@ import java.util.List;
 public class FoodController {
     private final FoodService foodService;
 
-    @GetMapping("/getAllFoods")
-    public ResponseEntity<List<Food>> getAllFoods() {
+    @GetMapping("/getAll")
+    public ResponseEntity<List<FoodRecord>> getAllFoods() {
         return new ResponseEntity<>(foodService.getAllFoods(), HttpStatus.OK);
     }
 
-    @PostMapping("/addFood")
+    @PostMapping("/create")
     public ResponseEntity<?> addFood(@Valid @RequestBody AddUpdateFoodDto addUpdateFoodDto) {
         foodService.addFood(addUpdateFoodDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/updateFood/{foodId}")
-    public ResponseEntity<?> updateFood(@PathVariable Long foodId, AddUpdateFoodDto addUpdateFoodDto) {
+    @PutMapping("/update/{foodId}")
+    public ResponseEntity<?> updateFood(@PathVariable Long foodId,@Valid @RequestBody AddUpdateFoodDto addUpdateFoodDto) {
         try {
             foodService.updateFood(foodId, addUpdateFoodDto);
         } catch (AppException e) {
@@ -40,7 +40,7 @@ public class FoodController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteFood/{foodId}")
+    @DeleteMapping("/delete/{foodId}")
     public ResponseEntity<?> deleteFood(@PathVariable Long foodId) {
         try {
             foodService.deleteFood(foodId);

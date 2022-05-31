@@ -5,6 +5,7 @@ import licenta.project.Dto.HistoryDto.DailyNutrientsDto;
 import licenta.project.Dto.HistoryDto.FoodHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.Food;
+import licenta.project.Records.FoodRecord;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.Optional;
 public interface FoodService {
     Optional<Food> getFood(String label);
 
-   List<Food> getAllFoods();
+   List<FoodRecord> getAllFoods();
 
     void addFood(AddUpdateFoodDto addUpdateFoodDto);
 
