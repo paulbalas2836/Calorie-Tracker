@@ -9,9 +9,12 @@ import licenta.project.Records.FoodRecord;
 import licenta.project.Repositories.FoodRepository;
 import licenta.project.Services.FoodService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,8 +31,17 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public List<FoodRecord> getAllFoods() {
-        return foodRepository.findAllProjectionsBy();
+    public Page<FoodRecord> getAllFoods(Integer page) throws AppException {
+        if (page == null)
+            page = 0;
+
+        if (page < 0) {
+            throw new AppException("Invalid page!");
+
+        }
+
+        Pageable getPage = PageRequest.of(page, 3, Sort.by("id").ascending());
+        return foodRepository.findAllProjectionsBy(getPage);
     }
 
     @Override
@@ -37,31 +49,32 @@ public class FoodServiceImpl implements FoodService {
         Food food = new Food(addUpdateFoodDto.getName(), addUpdateFoodDto.getCalories(), addUpdateFoodDto.getProtein(),
                 addUpdateFoodDto.getFat(), addUpdateFoodDto.getCarbs(), addUpdateFoodDto.getFiber(),
                 addUpdateFoodDto.getCalcium(), addUpdateFoodDto.getCholesterol(), addUpdateFoodDto.getPotassium(),
-                addUpdateFoodDto.getSodium(), addUpdateFoodDto.getIron(), addUpdateFoodDto.getQuantity());
+                addUpdateFoodDto.getSodium(), addUpdateFoodDto.getIron(), addUpdateFoodDto.getDefaultQuantity());
 
         foodRepository.save(food);
     }
 
     @Override
     public void updateFood(Long foodId, AddUpdateFoodDto addUpdateFoodDto) throws AppException {
-        if (foodExist(foodId)) {
-            Food food = foodRepository.getById(foodId);
-            food.setName(addUpdateFoodDto.getName());
-            food.setCalcium(addUpdateFoodDto.getCalcium());
-            food.setCalories(addUpdateFoodDto.getCalories());
-            food.setCarbs(addUpdateFoodDto.getCarbs());
-            food.setCholesterol(addUpdateFoodDto.getCholesterol());
-            food.setFat(addUpdateFoodDto.getFat());
-            food.setFiber(addUpdateFoodDto.getFiber());
-            food.setPotassium(addUpdateFoodDto.getPotassium());
-            food.setIron(addUpdateFoodDto.getIron());
-            food.setProtein(addUpdateFoodDto.getProtein());
-            food.setSodium(addUpdateFoodDto.getSodium());
+        if (!foodExist(foodId)) throw new AppException("No food found!");
 
-            foodRepository.save(food);
-        } else {
-            throw new AppException("No food found!");
-        }
+
+        Food food = foodRepository.getById(foodId);
+
+        food.setName(addUpdateFoodDto.getName());
+        food.setCalcium(addUpdateFoodDto.getCalcium());
+        food.setCalories(addUpdateFoodDto.getCalories());
+        food.setCarbs(addUpdateFoodDto.getCarbs());
+        food.setCholesterol(addUpdateFoodDto.getCholesterol());
+        food.setFat(addUpdateFoodDto.getFat());
+        food.setFiber(addUpdateFoodDto.getFiber());
+        food.setPotassium(addUpdateFoodDto.getPotassium());
+        food.setIron(addUpdateFoodDto.getIron());
+        food.setProtein(addUpdateFoodDto.getProtein());
+        food.setSodium(addUpdateFoodDto.getSodium());
+        food.setDefaultQuantity(addUpdateFoodDto.getDefaultQuantity());
+
+        foodRepository.save(food);
     }
 
     @Override

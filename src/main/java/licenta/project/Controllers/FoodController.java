@@ -5,11 +5,13 @@ import licenta.project.Exceptions.AppException;
 import licenta.project.Records.FoodRecord;
 import licenta.project.Services.FoodService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -20,8 +22,8 @@ public class FoodController {
     private final FoodService foodService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<FoodRecord>> getAllFoods() {
-        return new ResponseEntity<>(foodService.getAllFoods(), HttpStatus.OK);
+    public ResponseEntity<Page<FoodRecord>> getAllFoods(@RequestParam(required = false) Integer page) throws AppException {
+        return new ResponseEntity<>(foodService.getAllFoods(page), HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -31,7 +33,7 @@ public class FoodController {
     }
 
     @PutMapping("/update/{foodId}")
-    public ResponseEntity<?> updateFood(@PathVariable Long foodId,@Valid @RequestBody AddUpdateFoodDto addUpdateFoodDto) {
+    public ResponseEntity<?> updateFood(@PathVariable Long foodId, @Valid @RequestBody AddUpdateFoodDto addUpdateFoodDto) {
         try {
             foodService.updateFood(foodId, addUpdateFoodDto);
         } catch (AppException e) {

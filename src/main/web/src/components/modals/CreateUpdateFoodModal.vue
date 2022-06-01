@@ -7,65 +7,68 @@
       <form @submit.prevent="submit()">
         <div>
           <Label label="Name"/>
-          <Input name="food_name" placeholder="Name" v-model="food_name"/>
+          <Input name="foodName" placeholder="Name" v-model="foodName"/>
           <ErrorMessage>{{ foodNameError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Calories"/>
-          <Input type="number" :min="0" :step=".01" name="calories" placeholder="Calories" v-model="calories"/>
-          <ErrorMessage>{{ caloriesError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodCalories" placeholder="Calories" v-model="foodCalories"/>
+          <ErrorMessage>{{ foodCaloriesError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Protein"/>
-          <Input type="number" :min="0" :step=".01" name="protein" placeholder="Protein" v-model="protein"/>
-          <ErrorMessage>{{ proteinError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodProtein" placeholder="Protein" v-model="foodProtein"/>
+          <ErrorMessage>{{ foodProteinError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Fat"/>
-          <Input type="number" :min="0" :step=".01" name="fat" placeholder="Fat" v-model="fat"/>
-          <ErrorMessage>{{ fatError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodFat" placeholder="Fat" v-model="foodFat"/>
+          <ErrorMessage>{{ foodFatError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Carbs"/>
-          <Input type="number" :min="0" :step=".01" name="carbs" placeholder="Carbs" v-model="carbs"/>
-          <ErrorMessage>{{ carbsError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodCarbs" placeholder="Carbs" v-model="foodCarbs"/>
+          <ErrorMessage>{{ foodCarbsError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Fiber"/>
-          <Input type="number" :min="0" :step=".01" name="fiber" placeholder="Fiber" v-model="fiber"/>
-          <ErrorMessage>{{ fiberError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodFiber" placeholder="Fiber" v-model="foodFiber"/>
+          <ErrorMessage>{{ foodFiberError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Calcium"/>
-          <Input type="number" :min="0" :step=".01" name="calcium" placeholder="Calcium" v-model="calcium"/>
-          <ErrorMessage>{{ calciumError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodCalcium" placeholder="Calcium" v-model="foodCalcium"/>
+          <ErrorMessage>{{ foodCalciumError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Cholesterol"/>
-          <Input type="number" :min="0" :step=".01" name="cholesterol" placeholder="Cholesterol" v-model="cholesterol"/>
-          <ErrorMessage>{{ cholesterolError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodCholesterol" placeholder="Cholesterol"
+                 v-model="foodCholesterol"/>
+          <ErrorMessage>{{ foodCholesterolError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Potassium"/>
-          <Input type="number" :min="0" :step=".01" name="potassium" placeholder="Potassium" v-model="potassium"/>
-          <ErrorMessage>{{ potassiumError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodPotassium" placeholder="Potassium"
+                 v-model="foodPotassium"/>
+          <ErrorMessage>{{ foodPotassiumError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Sodium"/>
-          <Input type="number" :min="0" :step=".01" name="sodium" placeholder="Sodium" v-model="sodium"/>
-          <ErrorMessage>{{ sodiumError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodSodium" placeholder="Sodium" v-model="foodSodium"/>
+          <ErrorMessage>{{ foodSodiumError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Iron"/>
-          <Input type="number" :min="0" :step=".01" name="iron" placeholder="Iron" v-model="iron"/>
-          <ErrorMessage>{{ ironError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodIron" placeholder="Iron" v-model="foodIron"/>
+          <ErrorMessage>{{ foodIronError }}</ErrorMessage>
         </div>
         <div>
           <Label label="Default Quantity"/>
-          <Input type="number" :min="0" :step=".01" name="default_quantity" placeholder="Default Quantity"
-                 v-model="default_quantity"/>
-          <ErrorMessage>{{ defaultQuantityError }}</ErrorMessage>
+          <Input type="number" :min="0" :step=".01" name="foodDefaultQuantity" placeholder="Default Quantity"
+                 v-model="foodDefaultQuantity"/>
+          <ErrorMessage>{{ foodDefaultQuantityError }}</ErrorMessage>
         </div>
+        <ErrorMessage class="mt-2">{{ errorMessage }}</ErrorMessage>
         <Button class="mt-4" :disabled="isSubmitting">
           {{ actionType === "create" ? "Create" : "Update" }}
         </Button>
@@ -83,13 +86,13 @@ import ErrorMessage from "../basic/ErrorMessage.vue"
 import constants from "../../utils/FrozenConstants.js"
 import {useUserStore} from "../../store/userStore";
 import {useForm, useField} from 'vee-validate';
-import {useRouter} from 'vue-router'
 import axios from "axios";
+import {ref} from "vue";
 
 const useUser = useUserStore();
-const config = {"headers": {"Authorization": "Bearer " + useUser.getToken}}
+const config = {headers: {Authorization: "Bearer " + useUser.getToken}};
 
-const emit = defineEmits(['success']);
+const emit = defineEmits(["updateArrayData"]);
 
 const props = defineProps({
   actionType: {
@@ -102,57 +105,56 @@ const props = defineProps({
     },
   }
 })
-
+const errorMessage = ref(null);
 const {handleSubmit, isSubmitting, setFieldError} = useForm();
 const {
-  value: food_name,
+  value: foodName,
   errorMessage: foodNameError
-} = useField('food_name', foodNameValidator, {initialValue: props.actionType === "create" ? '' : props.data.name});
+} = useField('foodName', foodNameValidator, {initialValue: props.actionType === "create" ? '' : props.data.name});
 const {
-  value: calories,
-  errorMessage: caloriesError
-} = useField('calories', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.calories.toString()});
+  value: foodCalories,
+  errorMessage: foodCaloriesError
+} = useField('foodCalories', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.calories.toString()});
 const {
-  value: protein,
-  errorMessage: proteinError
-} = useField('protein', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.protein.toString()});
+  value: foodProtein,
+  errorMessage: foodProteinError
+} = useField('foodProtein', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.protein.toString()});
 const {
-  value: fat,
-  errorMessage: fatError
-} = useField('fat', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.fat.toString()});
+  value: foodFat,
+  errorMessage: foodFatError
+} = useField('foodFat', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.fat.toString()});
 const {
-  value: carbs,
-  errorMessage: carbsError
-} = useField('carbs', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.carbs.toString()});
+  value: foodCarbs,
+  errorMessage: foodCarbsError
+} = useField('foodCarbs', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.carbs.toString()});
 const {
-  value: fiber,
-  errorMessage: fiberError
-} = useField('fiber', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.fiber.toString()});
+  value: foodFiber,
+  errorMessage: foodFiberError
+} = useField('foodFiber', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.fiber.toString()});
 const {
-  value: calcium,
-  errorMessage: calciumError
-} = useField('calcium', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.calcium.toString()});
+  value: foodCalcium,
+  errorMessage: foodCalciumError
+} = useField('foodCalcium', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.calcium.toString()});
 const {
-  value: cholesterol,
-  errorMessage: cholesterolError
-} = useField('cholesterol', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.cholesterol.toString()});
+  value: foodCholesterol,
+  errorMessage: foodCholesterolError
+} = useField('foodCholesterol', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.cholesterol.toString()});
 const {
-  value: potassium,
-  errorMessage: potassiumError
-} = useField('potassium', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.potassium.toString()});
+  value: foodPotassium,
+  errorMessage: foodPotassiumError
+} = useField('foodPotassium', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.potassium.toString()});
 const {
-  value: sodium,
-  errorMessage: sodiumError
-} = useField('sodium', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.sodium.toString()});
+  value: foodSodium,
+  errorMessage: foodSodiumError
+} = useField('foodSodium', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.sodium.toString()});
 const {
-  value: iron,
-  errorMessage: ironError
-} = useField('iron', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.iron.toString()});
+  value: foodIron,
+  errorMessage: foodIronError
+} = useField('foodIron', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.iron.toString()});
 const {
-  value: default_quantity,
-  errorMessage: defaultQuantityError
-} = useField('default_quantity', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.defaultQuantity.toString()});
-
+  value: foodDefaultQuantity,
+  errorMessage: foodDefaultQuantityError
+} = useField('foodDefaultQuantity', nutrientsValidator, {initialValue: props.actionType === "create" ? '' : props.data.defaultQuantity.toString()});
 
 function foodNameValidator(value) {
   if (!value || (value.trim().length === 0))
@@ -171,77 +173,101 @@ function nutrientsValidator(value) {
 
 function setBody(values) {
   return {
-    name: values.food_name,
-    calories: values.calories,
-    protein: values.protein,
-    fat: values.fat,
-    carbs: values.carbs,
-    fiber: values.fiber,
-    calcium: values.calcium,
-    cholesterol: values.cholesterol,
-    potassium: values.potassium,
-    sodium: values.sodium,
-    iron: values.iron,
-    quantity: values.default_quantity
+    name: values.foodName,
+    calories: values.foodCalories,
+    protein: values.foodProtein,
+    fat: values.foodFat,
+    carbs: values.foodCarbs,
+    fiber: values.foodFiber,
+    calcium: values.foodCalcium,
+    cholesterol: values.foodCholesterol,
+    potassium: values.foodPotassium,
+    sodium: values.foodSodium,
+    iron: values.foodIron,
+    defaultQuantity: values.foodDefaultQuantity
   }
 }
 
 function setError(e) {
-  e.response.data.errors.forEach(err => {
-    if (err.includes("name"))
-      setFieldError("food_name", err);
+  console.log(e.response)
+  e.response.data?.errors.forEach(err => {
+    if (err.includes("name")) {
+      setFieldError("foodName", err);
+      return;
+    }
 
-    if (err.includes("calories"))
-      setFieldError("calories", err);
+    if (err.includes("calories")) {
+      setFieldError("foodCalories", err);
+      return;
+    }
 
-    if (err.includes("protein"))
-      setFieldError("protein", err);
+    if (err.includes("protein")) {
+      setFieldError("foodProtein", err);
+      return;
+    }
 
-    if (err.includes("fat"))
-      setFieldError("fat", err);
+    if (err.includes("fat")) {
+      setFieldError("foodFat", err);
+      return;
+    }
 
-    if (err.includes("carbs"))
-      setFieldError("carbs", err);
+    if (err.includes("carbs")) {
+      setFieldError("foodCarbs", err);
+      return;
+    }
 
-    if (err.includes("fiber"))
-      setFieldError("fiber", err);
+    if (err.includes("fiber")) {
+      setFieldError("foodFiber", err);
+      return;
+    }
 
-    if (err.includes("calcium"))
-      setFieldError("calcium", err);
+    if (err.includes("calcium")) {
+      setFieldError("foodCalcium", err);
+      return;
+    }
 
-    if (err.includes("cholesterol"))
-      setFieldError("cholesterol", err);
+    if (err.includes("cholesterol")) {
+      setFieldError("foodCholesterol", err);
+      return;
+    }
 
-    if (err.includes("potassium"))
-      setFieldError("potassium", err);
+    if (err.includes("potassium")) {
+      setFieldError("foodPotassium", err);
+      return;
+    }
 
-    if (err.includes("sodium"))
-      setFieldError("sodium", err);
+    if (err.includes("sodium")) {
+      setFieldError("foodSodium", err);
+      return;
+    }
 
-    if (err.includes("iron"))
-      setFieldError("iron", err);
+    if (err.includes("iron")) {
+      setFieldError("foodIron", err);
+      return;
+    }
 
-    if (err.includes("quantity"))
-      setFieldError("quantity", err);
+    if (err.includes("quantity")) {
+      setFieldError("foodDefaultQuantity", err);
+      return;
+    }
+
+    errorMessage.value = "Something went wrong!";
   })
 }
 
 
 const submit = handleSubmit(async values => {
-  if (props.actionType === "create") {
-    try {
-      await axios.post(constants.API + "/food/create", setBody(values), config)
-      emit('success');
-    } catch (e) {
-      setError(e);
+  try {
+    if (props.actionType === "create") {
+      const newData = setBody(values);
+      await axios.post(constants.API + "/food/create", newData, config);
+    } else {
+      const newData = {id: props.data.id, ...setBody(values)};
+      await axios.put(constants.API + `/food/update/${props.data.id}`, newData, config);
+      emit("updateArrayData", {...newData});
     }
-  } else {
-    try {
-      await axios.put(constants.API + `/food/update/${props.data.id}`, setBody(values), config)
-      emit('success');
-    } catch (e) {
-      setError(e);
-    }
+  } catch (e) {
+    setError(e);
   }
 })
 

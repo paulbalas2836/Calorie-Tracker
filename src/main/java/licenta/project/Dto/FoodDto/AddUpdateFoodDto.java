@@ -60,5 +60,5 @@ public class AddUpdateFoodDto {
 
     @NotNull(message = "Food quantity should not be null!")
     @Digits(integer = 6, fraction = 2, message = "Wrong format for quantity!")
-    private Double quantity;
+    private Double defaultQuantity;
 }

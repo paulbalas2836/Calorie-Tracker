@@ -6,14 +6,14 @@ import licenta.project.Dto.HistoryDto.FoodHistoryDto;
 import licenta.project.Exceptions.AppException;
 import licenta.project.Models.Food;
 import licenta.project.Records.FoodRecord;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface FoodService {
     Optional<Food> getFood(String label);
 
-   List<FoodRecord> getAllFoods();
+    Page<FoodRecord> getAllFoods(Integer page) throws AppException;
 
     void addFood(AddUpdateFoodDto addUpdateFoodDto);
 
