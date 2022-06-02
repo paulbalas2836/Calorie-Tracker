@@ -54,18 +54,20 @@ const props = defineProps({
 });
 
 const startPage = computed(() => {
-  if (props.currentPage === 0) return 0;
+  if (props.currentPage === 0) return 1;
 
-  if (props.currentPage === props.totalPages - 1) return props.totalPages - props.maxVisibleButtons;
+  if (props.currentPage === props.totalPages - 1) return props.totalPages - props.maxVisibleButtons + 1;
 
-  return props.currentPage - 1;
+  return props.currentPage;
 });
 
 const pages = computed(() => {
   const range = [];
-
   for (let i = startPage.value; i <= Math.min(startPage.value + props.maxVisibleButtons - 1, props.totalPages); i++) {
-    range.push({name: i + 1, isDisabled: i === props.currentPage});
+    if (i === 0 && Math.min(startPage.value + props.maxVisibleButtons - 1, props.totalPages) === 2)
+      continue;
+    console.log(startPage.value, Math.min(startPage.value + props.maxVisibleButtons - 1, props.totalPages))
+    range.push({name: i, isDisabled: i === props.currentPage + 1});
   }
   return range;
 });

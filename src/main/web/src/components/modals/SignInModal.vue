@@ -1,5 +1,5 @@
 <template>
-  <ModalBase>
+  <ModalBase @closeModal="$emit('closeModal')">
     <template #header>
       <h2 class="text-2xl text-dark dark:text-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">Sign in to your account</h2>
     </template>
@@ -18,8 +18,8 @@
     </template>
 
     <template #footer>
-      <Button @click="login"
-              class="mb-4" @keydown.enter="login">
+      <Button class="grow" @click="login"
+              @keydown.enter="login">
         Login
       </Button>
     </template>
@@ -36,7 +36,7 @@ import {onMounted, ref} from 'vue'
 import {useUserStore} from '../../store/userStore'
 import constants from "../../utils/FrozenConstants.js";
 
-const emit = defineEmits(['closeSignInModal'])
+const emit = defineEmits(['closeModal'])
 const loginForm = ref({email: '', password: ''})
 const userStore = useUserStore()
 let errorMessage = ref([])
@@ -44,7 +44,7 @@ let errorMessage = ref([])
 function login() {
   errorMessage.value = [];
   userStore.login(loginForm, constants.API + "/login").then(() => {
-    emit("closeSignInModal")
+    emit("closeModal")
   }).catch(err => {
     err.data.errors.forEach(err => {
       errorMessage.value.push(err)

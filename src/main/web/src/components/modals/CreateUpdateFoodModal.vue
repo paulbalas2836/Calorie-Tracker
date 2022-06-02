@@ -1,7 +1,7 @@
 <template>
-  <ModalBase>
+  <ModalBase @closeModal="$emit('closeModal')">
     <template #header>
-      <p>{{ actionType === "create" ? "Create food item" : "Update existing food item" }}</p>
+      <p class="mt-2">{{ actionType === "create" ? "Create food item" : "Update existing food item" }}</p>
     </template>
     <template #default>
       <form @submit.prevent="submit()">
@@ -92,7 +92,7 @@ import {ref} from "vue";
 const useUser = useUserStore();
 const config = {headers: {Authorization: "Bearer " + useUser.getToken}};
 
-const emit = defineEmits(["updateArrayData"]);
+const emit = defineEmits(["updateSuccess", "createSuccess", "closeModal"]);
 
 const props = defineProps({
   actionType: {
@@ -261,10 +261,11 @@ const submit = handleSubmit(async values => {
     if (props.actionType === "create") {
       const newData = setBody(values);
       await axios.post(constants.API + "/food/create", newData, config);
+      emit("createSuccess");
     } else {
       const newData = {id: props.data.id, ...setBody(values)};
       await axios.put(constants.API + `/food/update/${props.data.id}`, newData, config);
-      emit("updateArrayData", {...newData});
+      emit("updateSuccess", {...newData});
     }
   } catch (e) {
     setError(e);

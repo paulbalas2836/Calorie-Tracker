@@ -53,7 +53,7 @@ function updateRow(item) {
 }
 
 function deleteRow(item) {
-  emit('deleteRow', item);
+  emit('deleteRow', item.id);
 }
 
 </script>

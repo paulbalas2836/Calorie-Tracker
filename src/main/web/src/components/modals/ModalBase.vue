@@ -7,13 +7,13 @@
         <div
             class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
           <div class="dark:bg-neutral-900 bg-white">
-            <header class="flow-col justify-center text-center text-lg mt-2">
+            <header class="flow-col justify-center text-center text-lg">
               <slot name="header"></slot>
             </header>
             <main class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <slot></slot>
             </main>
-            <footer class="flex flex-col px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <footer class="flex flex-row px-4 pt-5 pb-4 sm:p-6 sm:pb-4 justify-between">
               <slot name="footer"></slot>
             </footer>
           </div>
