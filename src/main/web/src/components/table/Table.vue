@@ -1,8 +1,8 @@
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto mt-2">
     <table class="table-auto w-full">
       <thead>
-      <tr class="bg-light-mode-green dark:bg-dark-mode-green">
+      <tr class="bg-light-mode-green dark:bg-dark-mode-green dark:border-4">
         <th v-for="(column, columnIndex) in Object.keys(items.length !== 0 ? items[0] : [])" :key="columnIndex"
             class="sm:px-4 sm:py-6 p-2 text-white dark:text-black">{{
             columnName(column)
@@ -14,7 +14,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(item, itemIndex) in items" :key="itemIndex" class="border-x border-b">
+      <tr v-for="(item, itemIndex) in items" :key="itemIndex" class="dark:border-4 border-x border-b">
         <td class="text-center sm:px-4 sm:py-6 p-2 dark:text-white"
             v-for="(itemData, itemDataIndex) in Object.values(item)" :key="itemDataIndex">
           {{ itemData }}

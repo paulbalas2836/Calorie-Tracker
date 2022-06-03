@@ -31,7 +31,7 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
-    public Page<FoodRecord> getAllFoods(Integer page) throws AppException {
+    public Page<FoodRecord> getAllFoods(Integer page, String search) throws AppException {
         if (page == null)
             page = 0;
 
@@ -41,7 +41,7 @@ public class FoodServiceImpl implements FoodService {
         }
 
         Pageable getPage = PageRequest.of(page, 3, Sort.by("id").ascending());
-        return foodRepository.findAllProjectionsBy(getPage);
+        return foodRepository.findAllProjectionsByNameContaining(search, getPage);
     }
 
     @Override

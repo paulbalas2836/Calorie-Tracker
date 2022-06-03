@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface FoodService {
     Optional<Food> getFood(String label);
 
-    Page<FoodRecord> getAllFoods(Integer page) throws AppException;
+    Page<FoodRecord> getAllFoods(Integer page, String search) throws AppException;
 
     void addFood(AddUpdateFoodDto addUpdateFoodDto);
 

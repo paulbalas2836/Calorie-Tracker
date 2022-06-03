@@ -1,13 +1,13 @@
 <template>
   <ErrorMessage>{{ errorMessage }}</ErrorMessage>
   <div class="flex justify-between relative">
-    <Input type="input" placeholder="Search..." class="w-full"/>
+    <Input type="search" placeholder="Search..." class="w-full" v-model="searchParam"/>
     <Button class="shadow-none mb-2 ml-4 w-24" @click="openCreateModal">Create</Button>
   </div>
   <Table :items="data.content" @updateRow="openUpdateModal" @deleteRow="openDeleteModal"/>
-  <Pagination :totalPages="data.totalPages" :currentPage="data.number" @pageChange="changePage"/>
+  <Pagination :totalPages="data.totalPages" :currentPage="data.number" @pageChange="fetchData"/>
   <CreateUpdateModal v-if="isCreateUpdateModalOpen" :actionType="actionType" :data="updateData"
-                     @closeModal="closeCreateUpdateModal" @updateSuccess="updateArray" @createSuccess="fetchNewData"/>
+                     @closeModal="closeCreateUpdateModal" @updateSuccess="updateArray" @createSuccess="fetchData(0)"/>
   <DeleteModal v-if="isDeleteModalOpen" @closeModal="closeDeleteModal" :deleteData="deleteData"
                @deleteItem="itemDelete"/>
 </template>
@@ -22,12 +22,16 @@ import CreateUpdateModal from "../../components/modals/CreateUpdateFoodModal.vue
 import constants from '../../utils/FrozenConstants.js';
 import axios from "axios";
 import {useUserStore} from "../../store/userStore";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import DeleteModal from "../../components/modals/DeleteModal.vue";
 
 
 const useUser = useUserStore();
-const foodRequest = await axios.get(constants.API + `/food/getAll`, {headers: {Authorization: "Bearer " + useUser.getToken}});
+const searchParam = ref("");
+const foodRequest = await axios.get(constants.API + `/food/getAll`, {
+  headers: {Authorization: "Bearer " + useUser.getToken},
+  params: {search: searchParam.value},
+});
 const data = ref(foodRequest.data);
 const isCreateUpdateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -35,6 +39,7 @@ const updateData = ref(null);
 const deleteData = ref(null);
 const actionType = ref(null);
 const errorMessage = ref(null);
+
 
 function openUpdateModal(event) {
   actionType.value = "update";
@@ -60,10 +65,10 @@ function closeDeleteModal() {
   isDeleteModalOpen.value = false;
 }
 
-async function changePage(event) {
+async function fetchData(pagination) {
   try {
     const changePageRequest = await axios.get(constants.API + `/food/getAll`, {
-      params: {page: event},
+      params: {page: pagination, search: searchParam.value},
       headers: {Authorization: "Bearer " + useUser.getToken}
     });
     data.value = changePageRequest.data;
@@ -77,22 +82,11 @@ function updateArray(newData) {
   data.value.content[dataIndex] = {...newData};
 }
 
-async function itemDelete() {
+function itemDelete() {
   isDeleteModalOpen.value = false;
-  try {
-    const newRequestData = await axios.get(constants.API + `/food/getAll`, {headers: {Authorization: "Bearer " + useUser.getToken}});
-    data.value = newRequestData.data;
-  } catch (e) {
-    errorMessage.value = "Something went wrong!";
-  }
+  fetchData(0);
 }
 
-async function fetchNewData() {
-  try {
-    const newRequestData = await axios.get(constants.API + `/food/getAll`, {headers: {Authorization: "Bearer " + useUser.getToken}});
-    data.value = newRequestData.data;
-  } catch (e) {
-    errorMessage.value = "Something went wrong!";
-  }
-}
+watch(searchParam, () => fetchData(0))
+
 </script>

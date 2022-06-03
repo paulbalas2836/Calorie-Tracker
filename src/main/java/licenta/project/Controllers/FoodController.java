@@ -22,8 +22,8 @@ public class FoodController {
     private final FoodService foodService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<Page<FoodRecord>> getAllFoods(@RequestParam(required = false) Integer page) throws AppException {
-        return new ResponseEntity<>(foodService.getAllFoods(page), HttpStatus.OK);
+    public ResponseEntity<Page<FoodRecord>> getAllFoods(@RequestParam(required = false) Integer page, @RequestParam(required = false) String search) throws AppException {
+        return new ResponseEntity<>(foodService.getAllFoods(page, search), HttpStatus.OK);
     }
 
     @PostMapping("/create")

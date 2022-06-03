@@ -16,4 +16,5 @@ public interface FoodRepository extends JpaRepository<Food, Long> {
     Optional<Food> getFoodByName(String name);
 
     Page<FoodRecord> findAllProjectionsBy(Pageable page);
+    Page<FoodRecord> findAllProjectionsByNameContaining(String name,Pageable page);
 }
