@@ -1,6 +1,6 @@
 
 # Calorie Tracker
-### Calorie Tracker is a web application built with Vue.js, Spring Boot Java, and TensorFlow Python that enables users to track the calorie content of food products through image recognition powered by neural networks.
+## Calorie Tracker is a web application built with Vue.js, Spring Boot Java, and TensorFlow Python that enables users to track the calorie content of food products through image recognition powered by neural networks.
 
 ### Key Features
 Image Classification: 
